@@ -47,7 +47,7 @@ public:
       */
     void genSCPICmd(QMap<QString, QMap<QString, QList<cSCPIObject *> > > SCPIObjectMap);
     /**
-      @b Generates 1 x 1x 1 .. n x m x l scpi commands with 3 parent nodenames.
+      @b Generates 1 x 1 x 1 .. n x m x l scpi commands with 3 parent nodenames.
       */
     void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > SCPIObjectMap);
     /**
@@ -55,7 +55,7 @@ public:
       */
     void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > SCPIObjectMap);
     /**
-      @b Generates 1 x 1 x 1 x 1 x 1 .. n x m x l x k xj scpi commands with 5 parent nodenames.
+      @b Generates 1 x 1 x 1 x 1 x 1 .. n x m x l x k x j scpi commands with 5 parent nodenames.
       */
     void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > > SCPIObjectMap);
     /**
@@ -65,7 +65,7 @@ public:
     /**
       @b Decodes commands from input, returns null for invalid commands.
       @param input [in] the received command input
-      @param pPar position where to get parameters.
+      @param Param [out] position where to get parameters.
       */
     cSCPIObject* getSCPIObject(const QString& input, QString& Param);
     /**
@@ -79,7 +79,7 @@ public:
     void exportSCPIModelXML(QString &sxml);
     /**
       @b Generates a model form a xml representation.
-      @param sxml [in] the xml representation is read from QString.
+      @param ioDevice [in] the xml representation is read from QString.
       */
     bool importSCPIModelXML(QIODevice *ioDevice);
     /**

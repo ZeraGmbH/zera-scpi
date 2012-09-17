@@ -36,17 +36,18 @@ namespace SCPI
 enum eSCPICmdResult { ack, nak, busy, errcon, erraut, errval, errxml, errmmem,
                       errpath, errexec, errtimo, last };
 
-const QString scpiAnswer[errtimo+1] = { "ack",     // acknowledge (command recognized and executed)
-                                        "nak",     // not acknowledge (kommando not recognized)
-                                        "busy",    // device busy
-                                        "errcon",  // error connection (command recognized but no connection to device)
-                                        "erraut",  // error authorization (command recognized but client is not auth. )
-                                        "errval",  // error value (command recognized but incorrect parameter)
-                                        "errxml",  // error xml (used xml file was incorrect)
-                                        "errmmem", // error mass memory
-                                        "errpath", // error path
-                                        "errexec", // error execution
-                                        "errtimo" }; // error timeout
+const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command recognized and executed)
+                                        "nak",     ///< not acknowledge (kommando not recognized)
+                                        "busy",    ///< device busy
+                                        "errcon",  ///< error connection (command recognized but no connection to device)
+                                        "erraut",  ///< error authorization (command recognized but client is not auth. )
+                                        "errval",  ///< error value (command recognized but incorrect parameter)
+                                        "errxml",  ///< error xml (used xml file was incorrect)
+                                        "errmmem", ///< error mass memory
+                                        "errpath", ///< error path
+                                        "errexec", ///< error execution
+                                        "errtimo" ///< error timeout
+                                      };
 
 enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8};
 
@@ -116,7 +117,7 @@ public:
     /**
       @b Decodes commands from input, returns null for invalid commands.
       @param input [in] the received command input
-      @param pPar position where to get parameters.
+      @param Param [out] position where to get parameters.
       */
     cSCPIObject* getSCPIObject(const QString& input, QString& Param);
     /**
@@ -130,7 +131,7 @@ public:
     void exportSCPIModelXML(QString &sxml);
     /**
       @b Generates a model form a xml representation.
-      @param sxml [in] the xml representation is read from QString.
+      @param ioDevice [in] the xml representation is read from QString.
       */
     bool importSCPIModelXML(QIODevice *ioDevice);
 

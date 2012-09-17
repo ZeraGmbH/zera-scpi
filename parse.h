@@ -30,6 +30,7 @@ public:
     const QString& GetKeyword(QChar** s);
     /**
       @b Returns the next character starting from s ignoring whitespace.
+      @param s [in] the characters to read from
       */
     QChar GetChar(QChar** s); // read next character string
     /**

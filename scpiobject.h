@@ -23,6 +23,7 @@ public:
     const QString& getName();
     /**
       @b Sets the object's name to name.
+      @param name [in]
       */
     void setName(const QString& name);
     /**

@@ -19,6 +19,7 @@ public:
     cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
     /**
       @b Returns the node's type
+      @relates SCPI
       */
     quint8 getType();
     /**
