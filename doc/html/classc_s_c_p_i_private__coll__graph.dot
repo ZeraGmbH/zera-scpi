@@ -1,0 +1,15 @@
+digraph G
+{
+  edge [fontname="Helvetica",fontsize="10",labelfontname="Helvetica",labelfontsize="10"];
+  node [fontname="Helvetica",fontsize="10",shape=record];
+  Node1 [label="cSCPIPrivate",height=0.2,width=0.4,color="black", fillcolor="grey75", style="filled" fontcolor="black"];
+  Node2 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_Parser" ,fontname="Helvetica"];
+  Node2 [label="cParse",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classc_parse.html",tooltip="cParse offers an parser for analysing command input lines, especially for SCPI commands."];
+  Node3 -> Node2 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" d_ptr" ,fontname="Helvetica"];
+  Node3 [label="cParsePrivate",height=0.2,width=0.4,color="black", fillcolor="white", style="filled",URL="$classc_parse_private.html",tooltip="The implemention for cParse."];
+  Node4 -> Node3 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" delimiter\nwhitespace\nkeyw" ,fontname="Helvetica"];
+  Node4 [label="QString",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+  Node4 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_sDeviceName" ,fontname="Helvetica"];
+  Node5 -> Node1 [dir="back",color="darkorchid3",fontsize="10",style="dashed",label=" m_SCPIModel" ,fontname="Helvetica"];
+  Node5 [label="QStandardItemModel",height=0.2,width=0.4,color="grey75", fillcolor="white", style="filled"];
+}

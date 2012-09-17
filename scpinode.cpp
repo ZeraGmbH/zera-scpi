@@ -1,0 +1,58 @@
+#include "scpinode.h"
+#include "scpi.h"
+
+cSCPINode::cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject)
+    :m_pSCPIObject(pSCPIObject), m_sNodeName(sNodeName), m_nType(t)
+{
+}
+
+
+quint8 cSCPINode::getType()
+{
+    return m_nType;
+}
+
+
+int cSCPINode::type()
+{
+    return QStandardItem::UserType;
+}
+
+
+QVariant cSCPINode::data(int role) const
+{
+    QString ttip;
+
+    switch (role)
+    {
+    case Qt::DisplayRole:
+        return m_sNodeName;
+    case Qt::ToolTipRole:
+        ttip = "";
+
+        if (m_nType & SCPI::isQuery)
+            ttip = SCPI::scpiNodeType[SCPI::Query];
+
+        if (m_nType & SCPI::isCmd)
+        {
+            if (ttip.length() > 0)
+                ttip += ",";
+            ttip += SCPI::scpiNodeType[SCPI::Cmd];
+        }
+
+        if (m_nType & SCPI::isCmdwP)
+        {
+            if (ttip.length() > 0)
+                ttip += ",";
+            ttip += SCPI::scpiNodeType[SCPI::CmdwP];
+        }
+
+        if (ttip.length() == 0)
+            ttip = SCPI::scpiNodeType[SCPI::Node]; // at least it's a node
+
+
+        return ttip;
+    }
+    return QVariant();
+}
+
