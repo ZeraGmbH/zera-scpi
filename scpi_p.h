@@ -21,8 +21,8 @@ const QString scpinodeAttributeName = "Type";
 
 /**
   @brief
-   The implemention for cSCPI.
-*/
+  The implemention for cSCPI.
+  */
 class cSCPIPrivate {
 public:
     /**

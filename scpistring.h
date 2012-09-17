@@ -5,8 +5,8 @@
 
 /**
   @brief
-   cSCPIString is a class to provide support for scpi conform command abreviations
-   */
+  cSCPIString is a class to provide support for scpi conform command abreviations
+  */
 class cSCPIString : public QString
 {
 
@@ -41,7 +41,7 @@ public:
     /**
       @b Assigns s to this scpistring and returns a reference to this scpistring.
       @param s [in]
-       */
+      */
     cSCPIString& operator = (const QString& s);
     /**
       @b Assigns s to this scpistring and returns a reference to this scpistring.

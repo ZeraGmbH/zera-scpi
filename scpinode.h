@@ -5,8 +5,8 @@
 #include "scpiobject.h"
 
 /**
-    @brief base class to provide scpi nodes for objects
-*/
+  @brief base class to provide scpi nodes for objects
+  */
 class cSCPINode: public QStandardItem {
 public:
     cSCPIObject* m_pSCPIObject;
@@ -19,7 +19,7 @@ public:
     cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
     /**
       @b Returns the node's type
-      @relates SCPI
+      @relates SCPI::scpiNodeType
       */
     quint8 getType();
     /**

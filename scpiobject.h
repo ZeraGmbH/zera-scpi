@@ -5,8 +5,8 @@
 #include "scpiobject_p.h"
 
 /**
-    @brief pure virtual base class to derive classes for command handling objects
-*/
+  @brief pure virtual base class to derive classes for command handling objects
+  */
 class SCPISHARED_EXPORT cSCPIObject {
 public:
     cSCPIObject();

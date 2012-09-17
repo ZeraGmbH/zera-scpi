@@ -5,8 +5,8 @@
 
 /**
   @brief
-   Holds the data for cSCPIObject.
-*/
+  Holds the data for cSCPIObject.
+  */
 class cSCPIObjectPrivate {
 public:
     QString m_sName;

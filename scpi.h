@@ -65,15 +65,15 @@ class cSCPIPrivate; // forward
 
 /**
   @brief
-   cSCPI is a class to support servers and modules to generate their SCPI interface.
+  cSCPI is a class to support servers and modules to generate their SCPI interface.
 
-   To keep cSCPI clean, it only decodes the commands from input and returns a pointer to cSCPIObject, which must then
-   decide what to do, whether is it a query or a command and if necessary return an answer.
+  To keep cSCPI clean, it only decodes the commands from input and returns a pointer to cSCPIObject, which must then
+  decide what to do, whether is it a query or a command and if necessary return an answer.
 
-   It holds all scpi commands in a qstandarditemmodel.
+  It holds all scpi commands in a qstandarditemmodel.
 
-   The commandlist can be exported in xml and imported with xml.
-*/
+  The commandlist can be exported in xml and imported with xml.
+  */
 class SCPISHARED_EXPORT cSCPI {
 public:
     /**
@@ -107,7 +107,7 @@ public:
       */
     void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > SCPIObjectMap);
     /**
-      @b Generates 1 x 1 x 1 x 1 x 1 .. n x m x l x k xj scpi commands with 5 parent nodenames.
+      @b Generates 1 x 1 x 1 x 1 x 1 .. n x m x l x k x j scpi commands with 5 parent nodenames.
       */
     void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > > SCPIObjectMap);
     /**
