@@ -17,12 +17,12 @@ public:
     cSCPIString();
     /**
       @b Constructs a scpistring from s.
-      @param s [in]
+      @param[in] s
       */
     cSCPIString(const QString& s);
     /**
       @b Constructs a scpistring initialized with the 8-bit string s. The given const char pointer is converted to Unicode.
-      @param s [in]
+      @param[in] s
       */
     cSCPIString(const char* s);
     /**
@@ -35,24 +35,24 @@ public:
       @b Returns true if string s is not equal to this string; otherwise returns false.
 
       The comparison also includes the comparison with the SCPI abreviation.
-      @param s [in]
+      @param[in] s
       */
     bool operator != (const QString& s) { return ( !(*this == s)); } // what ?
     /**
       @b Assigns s to this scpistring and returns a reference to this scpistring.
-      @param s [in]
+      @param[in] s
       */
     cSCPIString& operator = (const QString& s);
     /**
       @b Assigns s to this scpistring and returns a reference to this scpistring.
-      @param s [in]
+      @param[in] s
       */
     cSCPIString& operator = (const char* s);
 
 private:
     /**
       @b Generates the scpi abreviation of s and returns a reference to it.
-      @param s [in]
+      @param[in] s
       */
     QString& m_ScpiAbreviation(const QString& s);
     QString m_SAbreviation;

@@ -12,9 +12,9 @@ public:
     cSCPIObject* m_pSCPIObject;
     /**
       @b Initialise the const variables
-      @param sNodeName name of the node
+      @param[in] sNodeName name of the node
       @param t type of the node
-      @param pSCPIObject object that handles the command
+      @param[in] pSCPIObject object that handles the command
       */
     cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
     /**

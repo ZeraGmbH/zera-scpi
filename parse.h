@@ -26,11 +26,12 @@ public:
     ~cParse();
     /**
       @b Searches for the next keyword starting from s.
+      @param[in] s the string to search from
       */
     const QString& GetKeyword(QChar** s);
     /**
       @b Returns the next character starting from s ignoring whitespace.
-      @param s [in] the characters to read from
+      @param[in] s the characters to read from
       */
     QChar GetChar(QChar** s); // read next character string
     /**

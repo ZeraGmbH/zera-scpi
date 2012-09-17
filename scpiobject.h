@@ -13,8 +13,8 @@ public:
     cSCPIObject(QString& name, quint8 type);
     /**
       @b The command execution, returns false if invalid.
-      @param sInput the received command.
-      @param sOutput generated output, may be empty ... see main description
+      @param[in] sInput  the received command.
+      @param[out] sOutput generated output, may be empty ... see main description
       */
     virtual bool executeSCPI(const QString& sInput, QString& sOutput) = 0;
     /**
@@ -23,7 +23,7 @@ public:
     const QString& getName();
     /**
       @b Sets the object's name to name.
-      @param name [in]
+      @param[in] name
       */
     void setName(const QString& name);
     /**

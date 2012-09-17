@@ -85,8 +85,8 @@ public:
 
     /**
       @b Generates 1 scpi command with several parent node names.
-      @param nodeNames all parent node names.
-      @param pSCPIObject the node that holds the object to handle the command.
+      @param[in] nodeNames all parent node names.
+      @param[in] pSCPIObject the node that holds the object to handle the command.
       */
     void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
 
@@ -116,8 +116,8 @@ public:
     void clearSCPICmdList();
     /**
       @b Decodes commands from input, returns null for invalid commands.
-      @param input [in] the received command input
-      @param Param [out] position where to get parameters.
+      @param[in] input the received command input
+      @param[out] Param position where to get parameters.
       */
     cSCPIObject* getSCPIObject(const QString& input, QString& Param);
     /**
@@ -126,12 +126,12 @@ public:
     QStandardItemModel* getSCPIModel();
     /**
       @b Generates a xml representation of the model.
-      @param sxml [out] the xml representation as QString
+      @param[out] sxml the xml representation as QString
       */
     void exportSCPIModelXML(QString &sxml);
     /**
       @b Generates a model form a xml representation.
-      @param ioDevice [in] the xml representation is read from QString.
+      @param[in] ioDevice the xml representation is read from QString.
       */
     bool importSCPIModelXML(QIODevice *ioDevice);
 
