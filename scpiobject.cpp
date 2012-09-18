@@ -1,4 +1,5 @@
 #include "scpiobject.h"
+#include "scpiobject_p.h"
 
 cSCPIObject::cSCPIObject()
     :d_ptr( new cSCPIObjectPrivate)

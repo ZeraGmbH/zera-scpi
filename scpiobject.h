@@ -2,7 +2,8 @@
 #define SCPIOBJECT_H
 
 #include "SCPI_global.h"
-#include "scpiobject_p.h"
+
+class cSCPIObjectPrivate;
 
 /**
   @brief pure virtual base class to derive classes for command handling objects
