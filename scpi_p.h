@@ -27,9 +27,9 @@ class cSCPIPrivate {
 public:
     /**
       @b Initialise the const variables
-      @param sDevice name of the device that holds the scpi interface
+      @param interfaceName the name of the implementation that holds the scpi interface
       */
-    cSCPIPrivate(QString sDevice);
+    cSCPIPrivate(QString interfaceName);
     virtual ~cSCPIPrivate();
 
     /**
@@ -96,7 +96,7 @@ private:
     /**
       @b Name of the device that holds the scpi interface
       */
-    QString m_sDeviceName;
+    QString m_interfaceName;
     /**
       @b Holds the parser used for decoding.
       */

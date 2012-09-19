@@ -9,8 +9,8 @@
 #include "scpi.h"
 
 
-cSCPIPrivate::cSCPIPrivate(QString sDevice)
-    :m_sDeviceName(sDevice)
+cSCPIPrivate::cSCPIPrivate(QString interfaceName)
+    :m_interfaceName(interfaceName)
 {
     m_SCPIModel.clear();
 }
@@ -333,7 +333,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 
     QDomElement deviceTag = modelDoc.createElement( scpimodeldeviceTag );
     rootTag.appendChild( deviceTag );
-    QDomText t = modelDoc.createTextNode(m_sDeviceName);
+    QDomText t = modelDoc.createTextNode(m_interfaceName);
     deviceTag.appendChild( t );
 
     QDomElement modelsTag = modelDoc.createElement(scpimodelsTag);
@@ -422,7 +422,7 @@ bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
         QDomElement e=n.toElement();
 
         if (e.tagName() == scpimodeldeviceTag)
-            m_sDeviceName = e.text();
+            m_interfaceName = e.text();
 
         if (e.tagName() == scpimodelsTag) // here the scpi models start
         {

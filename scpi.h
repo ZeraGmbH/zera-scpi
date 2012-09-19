@@ -78,9 +78,9 @@ class SCPISHARED_EXPORT cSCPI {
 public:
     /**
       @b Initialise the const variables
-      @param sDevice name of the device that holds the scpi interface
+      @param interfaceName the name of the implementation that holds the scpi interface
       */
-    cSCPI(QString sDevice);
+    cSCPI(QString interfaceName);
     virtual ~cSCPI();
 
     /**

@@ -9,8 +9,8 @@
 
 
 
-cSCPI::cSCPI(QString sDevice)
-    :d_ptr(new cSCPIPrivate(sDevice))
+cSCPI::cSCPI(QString interfaceName)
+    :d_ptr(new cSCPIPrivate(interfaceName))
 {
 }
 
