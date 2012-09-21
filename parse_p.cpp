@@ -3,7 +3,7 @@
 cParsePrivate::cParsePrivate()
 {
     delimiter = " :?;";
-    whitespace = " :";
+    whitespace = " :;";
 }
 
 

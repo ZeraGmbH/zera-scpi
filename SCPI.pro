@@ -16,7 +16,9 @@ SOURCES += scpi.cpp \
     scpistring.cpp \
     scpiobject.cpp \
     scpinode.cpp \
-    parse_p.cpp
+    parse_p.cpp \
+    scpicommand.cpp \
+    scpicommand_p.cpp
 
 HEADERS += scpi.h\
         SCPI_global.h \
@@ -26,7 +28,9 @@ HEADERS += scpi.h\
     scpiobject.h \
     scpiobject_p.h \
     scpinode.h \
-    parse_p.h
+    parse_p.h \
+    scpicommand.h \
+    scpicommand_p.h
 
 symbian {
     MMP_RULES += EXPORTUNFROZEN

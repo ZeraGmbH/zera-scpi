@@ -13,7 +13,7 @@
    The behaviour of scpi for servers or modules(devices) is different. scpi devices only answer on queries.
    after execution of commands they only set status information, which can (must, should?) be queried afterwards.
    For our internal client(modules) and server(pcb, dsp) connection i wanted to save additional traffic and decided
-   to send an answer also for executed commands. For invalid commands servers send nak, modules only affect the status
+   to send an answer also for executed commands. For invalid commands servers send nak, modules only affect the status.
 */
 
 #ifndef SCPI_H
@@ -29,6 +29,7 @@
 #include <QIODevice>
 #include "SCPI_global.h"
 #include "scpiobject.h"
+#include "scpicommand.h"
 
 
 namespace SCPI
@@ -120,6 +121,9 @@ public:
       @param[out] Param position where to get parameters.
       */
     cSCPIObject* getSCPIObject(const QString& input, QString& Param);
+    cSCPIObject* getSCPIObject(cSCPICommand &input);
+
+
     /**
       @b Returns the constructed model.
       */

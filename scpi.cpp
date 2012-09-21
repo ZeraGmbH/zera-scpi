@@ -16,6 +16,7 @@ cSCPI::cSCPI(QString interfaceName)
 
 cSCPI::~cSCPI()
 {
+    delete d_ptr;
 }
 
 
@@ -61,9 +62,16 @@ void cSCPI::clearSCPICmdList()
 }
 
 
-cSCPIObject* cSCPI::getSCPIObject(const QString& input, QString &Param)
+cSCPIObject* cSCPI::getSCPIObject(const QString &input, QString &Param)
 {
     return d_ptr->getSCPIObject( input, Param);
+}
+
+
+cSCPIObject* cSCPI::getSCPIObject(cSCPICommand &input)
+{
+    QString dummy;
+    return this->getSCPIObject(input.getCommand(), dummy);
 }
 
 

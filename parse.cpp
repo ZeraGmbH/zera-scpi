@@ -12,6 +12,7 @@ cParse::cParse()
 
 cParse::~cParse()
 {
+    delete d_ptr;
 }
 
 
