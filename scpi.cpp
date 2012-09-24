@@ -81,7 +81,7 @@ QStandardItemModel* cSCPI::getSCPIModel()
 }
 
 
-void cSCPI::exportSCPIModelXML(QString& sxml)
+void cSCPI::exportSCPIModelXML(QString &sxml)
 {
     d_ptr->exportSCPIModelXML(sxml);
 }

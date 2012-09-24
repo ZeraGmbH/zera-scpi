@@ -37,6 +37,9 @@ namespace SCPI
 enum eSCPICmdResult { ack, nak, busy, errcon, erraut, errval, errxml, errmmem,
                       errpath, errexec, errtimo, last };
 
+/**
+  @b possible scpi answers
+  */
 const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command recognized and executed)
                                         "nak",     ///< not acknowledge (kommando not recognized)
                                         "busy",    ///< device busy
@@ -49,7 +52,9 @@ const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command rec
                                         "errexec", ///< error execution
                                         "errtimo" ///< error timeout
                                       };
-
+/**
+  @b possible scpi types
+  */
 enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8};
 
 enum eSCPINode { Node, Query, Cmd, CmdwP };

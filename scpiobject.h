@@ -11,7 +11,7 @@ class cSCPIObjectPrivate;
 class SCPISHARED_EXPORT cSCPIObject {
 public:
     cSCPIObject();
-    cSCPIObject(QString& name, quint8 type);
+    cSCPIObject(const QString &name, quint8 type);
     /**
       @b The command execution, returns false if invalid.
       @param[in] sInput  the received command.

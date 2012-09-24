@@ -9,7 +9,7 @@
 #include "scpi.h"
 
 
-cSCPIPrivate::cSCPIPrivate(QString interfaceName)
+cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
     :m_interfaceName(interfaceName)
 {
     m_SCPIModel.clear();

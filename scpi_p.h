@@ -29,7 +29,7 @@ public:
       @b Initialise the const variables
       @param interfaceName the name of the implementation that holds the scpi interface
       */
-    cSCPIPrivate(QString interfaceName);
+    cSCPIPrivate(const QString& interfaceName);
     virtual ~cSCPIPrivate();
 
     /**

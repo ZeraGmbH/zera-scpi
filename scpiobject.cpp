@@ -6,7 +6,7 @@ cSCPIObject::cSCPIObject()
 {
 }
 
-cSCPIObject::cSCPIObject(QString &name, quint8 type)
+cSCPIObject::cSCPIObject(const QString &name, quint8 type)
     :d_ptr(new cSCPIObjectPrivate)
 {
     d_ptr->m_sName = name;
