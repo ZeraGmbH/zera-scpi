@@ -31,7 +31,14 @@ public:
       */
     friend QTextStream& operator >> (QTextStream& ts, cSCPICommandPrivate& cmd);
 
+    /**
+      @b The full command with all parameters
+      */
     QString m_sCommand;
+    /**
+      @b All parameters of the command
+      @note Empty parameter are not omitted
+      */
     QStringList m_sParamList;
 private:
     /**

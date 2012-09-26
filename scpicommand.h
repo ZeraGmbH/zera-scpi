@@ -47,6 +47,11 @@ public:
       */
     QString& getParam(quint32 pos);
 private:
+    /**
+      @b D'pointer to the private library internal structure
+
+      this is used to hide the internal structure, and thus make the library ABI safe
+      */
     cSCPICommandPrivate *d_ptr;
 };
 

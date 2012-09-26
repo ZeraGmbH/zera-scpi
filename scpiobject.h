@@ -11,6 +11,9 @@ class cSCPIObjectPrivate;
 class SCPISHARED_EXPORT cSCPIObject {
 public:
     cSCPIObject();
+    /**
+      @b alternative constructor that sets the relevant values
+      */
     cSCPIObject(const QString &name, quint8 type);
     /**
       @b The command execution, returns false if invalid.
@@ -37,6 +40,11 @@ public:
     void setType(const quint8 type);
 
 private:
+    /**
+      @b D'pointer to the private library internal structure
+
+      this is used to hide the internal structure, and thus make the library ABI safe
+      */
     cSCPIObjectPrivate *d_ptr;
 };
 

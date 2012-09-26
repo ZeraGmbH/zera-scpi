@@ -34,7 +34,7 @@ public:
 
     /**
       @b Generates 1 scpi command with several parent node names.
-      @param[in] nodeNames all parent node names.
+      @param[in] parentnodeNames all parent node names.
       @param[in] pSCPIObject the node that holds the object to handle the command.
       */
     void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
@@ -88,9 +88,23 @@ public:
     QStandardItemModel m_SCPIModel;
 
 private:
+    /**
+      @b Generates 1 scpi command with several parent node names.
+      @param[in] parentnodeNames all parent node names.
+      @param[in] pSCPINode the node that holds the object to handle the command.
+      */
     void genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode);
+    /**
+      @b used in the XML parser
+      */
     void appendSCPIRows(QStandardItem* rootItem, QDomDocument &doc, QDomElement &rootElement, quint32 nlevel);
+    /**
+      @b Returns the readable node type
+      */
     quint8 getNodeType(const QString& sAttr);
+    /**
+      @b used in the XML parser
+      */
     bool getcommandInfo( QDomNode rootNode, quint32 nlevel );
 
     /**

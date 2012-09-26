@@ -55,6 +55,9 @@ private:
       @param[in] s
       */
     QString& m_ScpiAbreviation(const QString& s);
+    /**
+      @b the SCPI abbreviation example (RES)ource
+      */
     QString m_SAbreviation;
 
 };

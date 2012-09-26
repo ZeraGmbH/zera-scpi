@@ -43,6 +43,11 @@ public:
       */
     const QString SetWhiteSpace(const QString s);
 private:
+    /**
+      @b D'pointer to the private library internal structure
+
+      this is used to hide the internal structure, and thus make the library ABI safe
+      */
     cParsePrivate *d_ptr;
 };
 

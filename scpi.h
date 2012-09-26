@@ -34,6 +34,10 @@
 
 namespace SCPI
 {
+  /**
+    @b enum for possible answers
+    @see SCPI::scpiAnswer
+    */
 enum eSCPICmdResult { ack, nak, busy, errcon, erraut, errval, errxml, errmmem,
                       errpath, errexec, errtimo, last };
 
@@ -53,12 +57,18 @@ const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command rec
                                         "errtimo" ///< error timeout
                                       };
 /**
-  @b possible scpi types
+  @b possible scpi types, this one should be used when defining the type
   */
 enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8};
-
+/**
+  @b enum for possible scpi nodes
+  @see SCPI::scpiNodeType
+  */
 enum eSCPINode { Node, Query, Cmd, CmdwP };
 
+/**
+  @b possible scpi node types as String
+  */
 const QString scpiNodeType[CmdwP+1] = { "Node",
                                   "Query",
                                   "Command",
@@ -91,7 +101,7 @@ public:
 
     /**
       @b Generates 1 scpi command with several parent node names.
-      @param[in] nodeNames all parent node names.
+      @param[in] parentnodeNames all parent node names.
       @param[in] pSCPIObject the node that holds the object to handle the command.
       */
     void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
@@ -126,6 +136,10 @@ public:
       @param[out] Param position where to get parameters.
       */
     cSCPIObject* getSCPIObject(const QString& input, QString& Param);
+    /**
+      @b Decodes commands from input, returns null for invalid commands.
+      @param[in] input the cSCPICommand to execute
+      */
     cSCPIObject* getSCPIObject(cSCPICommand &input);
 
 
@@ -145,6 +159,11 @@ public:
     bool importSCPIModelXML(QIODevice *ioDevice);
 
 private:
+    /**
+      @b D'pointer to the private library internal structure
+
+      this is used to hide the internal structure, and thus make the library ABI safe
+      */
     cSCPIPrivate *d_ptr;
 };
 

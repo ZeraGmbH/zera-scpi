@@ -9,6 +9,9 @@
   */
 class cSCPINode: public QStandardItem {
 public:
+    /**
+      @b pointer to the real object that this node represents
+      */
     cSCPIObject* m_pSCPIObject;
     /**
       @b Initialise the const variables
@@ -32,7 +35,14 @@ public:
     //virtual QVariant data(int role = Qt::UserRole + 1 );
     virtual QVariant data ( int role = Qt::UserRole + 1 ) const;
 private:
+    /**
+      @b Readable name of the node used in the model as displayRole
+      */
     QString m_sNodeName;
+    /**
+      @b node type
+      @see SCPI::eSCPINodeType
+      */
     quint8 m_nType;
 
 };
