@@ -33,7 +33,7 @@ QTextStream& operator >> (QTextStream& ts, cSCPICommandPrivate& cmd)
     {
         QString s;
         ts >> s;
-        s += " ";
+        s += " "; // we append blank character because stream removes them
         cmd.m_sCommand += s;
     }
     cmd.setParamList();
@@ -47,7 +47,6 @@ void cSCPICommandPrivate::setParamList()
     QChar* pInput;
     pInput = (QChar*) m_sCommand.data();
     QString keyw;
-    bool more;
 
     do
     {
@@ -57,12 +56,17 @@ void cSCPICommandPrivate::setParamList()
     // the command is finished
 
     Parser.SetDelimiter(";"); // we start with fetching parameters
+    Parser.SetWhiteSpace(" ");
     m_sParamList.clear();
 
     do
     {
         keyw = Parser.GetKeyword(&pInput);
-        if ((more = (keyw != "")) == true)
+        if (*pInput == ';')
+        {
             m_sParamList.append(keyw);
-    } while (more);
+            pInput++;
+        }
+    } while (*pInput != 0);
+
 }

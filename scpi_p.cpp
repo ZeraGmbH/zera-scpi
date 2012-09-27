@@ -23,6 +23,7 @@ cSCPIPrivate::~cSCPIPrivate()
 
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
+    QStringList localnodeNames;
     QStringList::const_iterator it;
     QStandardItem *parentItem;
     QStandardItem *childItem;
@@ -31,8 +32,11 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     parentItem = m_SCPIModel.invisibleRootItem();
 
     if (parentnodeNames.count() > 0 )
-    for (it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it)
     {
+        for (it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it)
+            localnodeNames.append((*it).toUpper());
+        for (it = localnodeNames.begin(); it != localnodeNames.end(); ++it)
+        {
             childItem = 0;
             quint32 nrows = parentItem->rowCount();
 
@@ -55,8 +59,8 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
             }
 
             parentItem = childItem;
+        }
     }
-
     cSCPINode *c = new cSCPINode(pSCPIObject->getName(),pSCPIObject->getType(), pSCPIObject);
     // childItem = new cSCPINode(pSCPIObject->getName(),pSCPIObject->getType(), pSCPIObject);
     childItem = c;

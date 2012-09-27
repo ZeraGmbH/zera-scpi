@@ -41,6 +41,7 @@ private:
       @b the whitespace for the parser
       */
     QString whitespace;
+    void ignoreWhitespace(QChar **s);
 };
 
 #endif // PARSE_P_H
