@@ -63,6 +63,10 @@ public:
       */
     void clearSCPICmdList();
     /**
+      @b deletes command(s) from the command list
+      */
+    void delSCPICmds(const QString& cmd);
+    /**
       @b Decodes commands from input, returns null for invalid commands.
       @param[in] input the received command input
       @param[out] Param position where to get parameters.
@@ -94,6 +98,15 @@ private:
       @param[in] pSCPINode the node that holds the object to handle the command.
       */
     void genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode);
+
+    /**
+      @b deletes all child items
+      */
+    void delChildItems(QStandardItem* Item);
+    /**
+      @b deletes itself and all parent items if necessary
+      */
+    void delItemAndParents(QStandardItem* Item);
     /**
       @b used in the XML parser
       */

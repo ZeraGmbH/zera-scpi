@@ -106,6 +106,45 @@ void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pS
 }
 
 
+void cSCPIPrivate::delChildItems(QStandardItem *Item)
+{
+    while ( Item->rowCount() > 0 ) // as long as we have child item rows
+    {
+        delChildItems(Item->child(0)); // we delete all entries behind item recursively
+        Item->removeRow(0);
+    }
+}
+
+
+void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
+{
+    QString s;
+    int n;
+
+    s = Item->data(Qt::DisplayRole).toString();
+    QStandardItem *parentItem = Item->parent();
+
+    if (parentItem) // do we have a parent ?
+    {
+
+        s = parentItem->data(Qt::DisplayRole).toString();
+        if (parentItem->rowCount() == 1) // if this item is the ony child of parent
+        {
+            parentItem->removeRow(0); // we delete it
+            delItemAndParents(parentItem); // and test if the parent has to be deleted too
+        }
+        else
+            parentItem->removeRow(Item->row());
+
+    }
+    else
+    {
+        QStandardItemModel *mdl = Item->model();
+        mdl->removeRow(Item->row());
+    }
+}
+
+
 void cSCPIPrivate::genSCPICmd(QMap<QString, QList<cSCPIObject*> > SCPIObjectMap)
 {
     QMap<QString, QList<cSCPIObject*> >::const_iterator it1;
@@ -253,6 +292,59 @@ void cSCPIPrivate::clearSCPICmdList()
     itemList = m_SCPIModel.takeColumn (0);
     for (qint32 i = 0; i < itemList.size(); ++i)
         delete itemList.value(i);
+}
+
+
+void cSCPIPrivate::delSCPICmds(const QString &cmd)
+{
+    cParse Parser;
+    QChar* pInput;
+    pInput = (QChar*) cmd.data();
+    QString keyw;
+    QStringList slNodeNames;
+
+    do
+    {
+        keyw = Parser.GetKeyword(&pInput); // we fetch all keywords from command
+        slNodeNames.append(keyw); // and put them into the string list
+    } while (*pInput  == ':');
+
+    if (slNodeNames.count() > 0 )
+    {
+        QStringList::const_iterator it;
+        QStandardItem *parentItem;
+        QStandardItem *childItem;
+
+        parentItem = m_SCPIModel.invisibleRootItem();
+
+        for (it = slNodeNames.begin(); it != slNodeNames.end(); ++it)
+        {
+
+            childItem = 0; // we use childitem = 0 as information that no matching node was found
+
+            quint32 nrows = parentItem->rowCount();
+
+            if (nrows > 0)
+                for (quint32 j = 0; j < nrows; j++)
+                {
+                    childItem = parentItem->child(j);
+                    if (childItem->data(Qt::DisplayRole) == *it)
+                        break; //
+                    else
+                        childItem = 0;
+                }
+
+            if ( !(parentItem = childItem)) // from here we will continue if possible
+                break;
+
+        }
+
+        if (parentItem) // we found the whole keyword list in the model
+        {
+            delChildItems(parentItem); // so lets delete what's necessary
+            delItemAndParents(parentItem);
+        }
+    }
 }
 
 

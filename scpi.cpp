@@ -62,6 +62,18 @@ void cSCPI::clearSCPICmdList()
 }
 
 
+void cSCPI::delSCPICmds(const QString &cmd)
+{
+    d_ptr->delSCPICmds(cmd);
+}
+
+
+void cSCPI::delSCPICmds(cSCPICommand &cmd)
+{
+   delSCPICmds(cmd.getCommand());
+}
+
+
 cSCPIObject* cSCPI::getSCPIObject(const QString &input, QString &Param)
 {
     return d_ptr->getSCPIObject( input, Param);

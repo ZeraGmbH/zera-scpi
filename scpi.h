@@ -131,6 +131,14 @@ public:
       */
     void clearSCPICmdList();
     /**
+      @b deletes command(s) from the command list
+      */
+    void delSCPICmds(const QString& cmd);
+    /**
+      @b deletes 1 command from the command list
+      */
+    void delSCPICmds(cSCPICommand &cmd);
+    /**
       @b Decodes commands from input, returns null for invalid commands.
       @param[in] input the received command input
       @param[out] Param position where to get parameters.
