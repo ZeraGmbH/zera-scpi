@@ -119,7 +119,6 @@ void cSCPIPrivate::delChildItems(QStandardItem *Item)
 void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 {
     QString s;
-    int n;
 
     s = Item->data(Qt::DisplayRole).toString();
     QStandardItem *parentItem = Item->parent();
