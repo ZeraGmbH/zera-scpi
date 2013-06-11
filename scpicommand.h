@@ -46,10 +46,6 @@ public:
       @b Returns the parameter from pos.
       */
     QString& getParam(quint32 pos);
-    /**
-      @b Returns true if the command is a valid query, means only ? and no additional parameters
-      */
-    bool isQuery();
 private:
     /**
       @b D'pointer to the private library internal structure

@@ -49,9 +49,3 @@ QString& cSCPICommand::getParam(quint32 pos)
 {
     return d_ptr->m_sParamList[pos];
 }
-
-
-bool cSCPICommand::isQuery()
-{
-    return (getParamCount() == 1) && (getParam(1) == "?");
-}
