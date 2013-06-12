@@ -39,6 +39,12 @@ const QString& cSCPICommand::getCommand()
 }
 
 
+const QString &cSCPICommand::getCommandStr()
+{
+    return d_ptr->m_sCommandStr;
+}
+
+
 quint32 cSCPICommand::getParamCount()
 {
     return d_ptr->m_sParamList.count();
@@ -48,4 +54,14 @@ quint32 cSCPICommand::getParamCount()
 QString& cSCPICommand::getParam(quint32 pos)
 {
     return d_ptr->m_sParamList[pos];
+}
+
+bool cSCPICommand::isQuery()
+{
+    return d_ptr->isQuery();
+}
+
+bool cSCPICommand::isCommand(quint8 anzParameter)
+{
+    return d_ptr->isCommand(anzParameter);
 }

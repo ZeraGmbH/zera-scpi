@@ -10,7 +10,7 @@ cSCPICommandPrivate::cSCPICommandPrivate()
 cSCPICommandPrivate::cSCPICommandPrivate(const QString& str)
 {
     m_sCommand = str;
-    setParamList();
+    setCmdParamList();
 }
 
 
@@ -22,7 +22,7 @@ cSCPICommandPrivate::~cSCPICommandPrivate()
 void cSCPICommandPrivate::operator = (const QString& str)
 {
     m_sCommand = str;
-    setParamList();
+    setCmdParamList();
 }
 
 
@@ -36,21 +36,27 @@ QTextStream& operator >> (QTextStream& ts, cSCPICommandPrivate& cmd)
         s += " "; // we append blank character because stream removes them
         cmd.m_sCommand += s;
     }
-    cmd.setParamList();
+    cmd.setCmdParamList();
     return ts;
 }
 
 
-void cSCPICommandPrivate::setParamList()
+void cSCPICommandPrivate::setCmdParamList()
 {
     cParse Parser;
     QChar* pInput;
     pInput = (QChar*) m_sCommand.data();
+    m_sCommandStr = "";
     QString keyw;
+
+    Parser.SetDelimiter(" :;"); // we leave a ? on the command
 
     do
     {
         keyw = Parser.GetKeyword(&pInput); // we fetch all keywords from command
+        m_sCommandStr += keyw;
+        if (*pInput  == ':')
+            m_sCommandStr += ":";
     } while (*pInput  == ':');
 
     // the command is finished
@@ -69,4 +75,16 @@ void cSCPICommandPrivate::setParamList()
         }
     } while (*pInput != 0);
 
+}
+
+
+bool cSCPICommandPrivate::isQuery()
+{
+    return ( (m_sCommandStr.contains("?")) && (m_sParamList.count() == 0));
+}
+
+
+bool cSCPICommandPrivate::isCommand(quint8 anzParameter)
+{
+    return ( (!m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
 }

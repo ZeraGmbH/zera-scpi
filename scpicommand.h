@@ -35,9 +35,13 @@ public:
       */
     friend QTextStream& operator >> (QTextStream& ts, cSCPICommand& cmd);
     /**
-      @b Returns the scpicommand.
+      @b Returns the whole scpicommand.
       */
     const QString& getCommand();
+    /**
+      @b Only returns the command part of the scpicommand.
+      */
+    const QString& getCommandStr();
     /**
       @b Returns the number of parameters in the command.
       */
@@ -46,6 +50,15 @@ public:
       @b Returns the parameter from pos.
       */
     QString& getParam(quint32 pos);
+    /**
+      @b Returns true if command is a pure query without additional parameter.
+      */
+    bool isQuery();
+    /**
+      @b Returns true if command is a command with (anzParameter) parameter.
+      */
+    bool isCommand(quint8 anzParameter);
+
 private:
     /**
       @b D'pointer to the private library internal structure

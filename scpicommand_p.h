@@ -30,11 +30,23 @@ public:
       @b Sets the scpicommand from a QTextStream.
       */
     friend QTextStream& operator >> (QTextStream& ts, cSCPICommandPrivate& cmd);
+    /**
+      @b Returns true if command is a pure query without additional parameter.
+      */
+    bool isQuery();
+    /**
+      @b Returns true if command is a command with (anzParameter) parameter.
+      */
+    bool isCommand(quint8 anzParameter);
 
     /**
       @b The full command with all parameters
       */
     QString m_sCommand;
+    /**
+      @b Only the command part itself
+      */
+    QString m_sCommandStr;
     /**
       @b All parameters of the command
       @note Empty parameter are not omitted
@@ -44,7 +56,7 @@ private:
     /**
       @b Private memberfunction to parse the command and separate the parameters.
       */
-    void setParamList();
+    void setCmdParamList();
 };
 
 #endif // SCPICOMMAND_P_H
