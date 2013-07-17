@@ -49,7 +49,7 @@ public:
     /**
       @b Returns the parameter from pos.
       */
-    QString& getParam(quint32 pos);
+    QString& getParam(qint32 pos);
     /**
       @b Returns true if command is a pure query without additional parameter.
       */
@@ -66,6 +66,7 @@ private:
       this is used to hide the internal structure, and thus make the library ABI safe
       */
     cSCPICommandPrivate *d_ptr;
+    QString sReturn;
 };
 
 #endif // SCPICOMMAND_H

@@ -51,9 +51,12 @@ quint32 cSCPICommand::getParamCount()
 }
 
 
-QString& cSCPICommand::getParam(quint32 pos)
+QString& cSCPICommand::getParam(qint32 pos)
 {
-    return d_ptr->m_sParamList[pos];
+    if (pos < d_ptr->m_sParamList.count())
+        return d_ptr->m_sParamList[pos];
+    else
+        return sReturn = "";
 }
 
 bool cSCPICommand::isQuery()
