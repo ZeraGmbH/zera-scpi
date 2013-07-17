@@ -24,7 +24,7 @@ public:
     /**
       @b Returns the object's name as const reference.
       */
-    const QString& getName();
+    const QString getName();
     /**
       @b Sets the object's name to name.
       @param[in] name

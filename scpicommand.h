@@ -37,11 +37,11 @@ public:
     /**
       @b Returns the whole scpicommand.
       */
-    const QString& getCommand();
+    const QString getCommand();
     /**
       @b Only returns the command part of the scpicommand.
       */
-    const QString& getCommandStr();
+    const QString getCommandStr();
     /**
       @b Returns the number of parameters in the command.
       */
@@ -49,7 +49,7 @@ public:
     /**
       @b Returns the parameter from pos.
       */
-    QString& getParam(qint32 pos);
+    QString getParam(qint32 pos);
     /**
       @b Returns true if command is a pure query without additional parameter.
       */
@@ -66,7 +66,6 @@ private:
       this is used to hide the internal structure, and thus make the library ABI safe
       */
     cSCPICommandPrivate *d_ptr;
-    QString sReturn;
 };
 
 #endif // SCPICOMMAND_H

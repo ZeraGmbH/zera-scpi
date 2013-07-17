@@ -14,7 +14,7 @@ cSCPIObject::cSCPIObject(const QString &name, quint8 type)
 }
 
 
-const QString& cSCPIObject::getName()
+const QString cSCPIObject::getName()
 {
     return d_ptr->m_sName;
 }

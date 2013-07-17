@@ -8,6 +8,8 @@ TARGET = SCPI
 TEMPLATE = lib
 QT           += xml
 
+VERSION = 2.0.0
+
 DEFINES += SCPI_LIBRARY
 
 SOURCES += scpi.cpp \
