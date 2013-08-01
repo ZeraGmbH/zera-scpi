@@ -84,6 +84,12 @@ bool cSCPICommandPrivate::isQuery()
 }
 
 
+bool cSCPICommandPrivate::isQuery(quint8 anzParameter)
+{
+    return ( (m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
+}
+
+
 bool cSCPICommandPrivate::isCommand(quint8 anzParameter)
 {
     return ( (!m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));

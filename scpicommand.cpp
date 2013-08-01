@@ -65,6 +65,13 @@ bool cSCPICommand::isQuery()
     return d_ptr->isQuery();
 }
 
+
+bool cSCPICommand::isQuery(quint8 anzParameter)
+{
+    return d_ptr->isQuery(anzParameter);
+}
+
+
 bool cSCPICommand::isCommand(quint8 anzParameter)
 {
     return d_ptr->isCommand(anzParameter);

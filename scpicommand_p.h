@@ -35,6 +35,10 @@ public:
       */
     bool isQuery();
     /**
+      @b Returns true if command is a query with (anzParameter) parameter.
+      */
+    bool isQuery(quint8 anzParameter);
+    /**
       @b Returns true if command is a command with (anzParameter) parameter.
       */
     bool isCommand(quint8 anzParameter);
