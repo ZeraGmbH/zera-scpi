@@ -143,12 +143,12 @@ public:
       @param[in] input the received command input
       @param[out] Param position where to get parameters.
       */
-    cSCPIObject* getSCPIObject(const QString& input, QString& Param);
+    cSCPIObject* getSCPIObject(const QString& input, QString& Param, bool caseSensitive = false);
     /**
       @b Decodes commands from input, returns null for invalid commands.
       @param[in] input the cSCPICommand to execute
       */
-    cSCPIObject* getSCPIObject(cSCPICommand &input);
+    cSCPIObject* getSCPIObject(cSCPICommand &input, bool caseSensitive = false);
 
 
     /**

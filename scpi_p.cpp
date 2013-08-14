@@ -34,7 +34,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     if (parentnodeNames.count() > 0 )
     {
         for (it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it)
-            localnodeNames.append((*it).toUpper());
+            localnodeNames.append((*it));
         for (it = localnodeNames.begin(); it != localnodeNames.end(); ++it)
         {
             childItem = 0;
@@ -347,7 +347,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 }
 
 
-cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param)
+cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, bool caseSensitive)
 {
     bool found;
     QChar* pInput;
@@ -361,10 +361,12 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param)
     while ( (nrows = parentItem->rowCount()) > 0) // keywords in next command level available
     {
         cSCPIString keyw(m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
+        if (!caseSensitive) keyw = keyw.toUpper();
         for (quint32 i = 0; i < nrows; i++)
         {
             childItem = (cSCPINode*) parentItem->child(i);
             QString s = childItem->data(Qt::DisplayRole).toString();
+            if (!caseSensitive) s = s.toUpper();
             if ((found = (keyw == s)))
             {
                 parentItem = childItem;

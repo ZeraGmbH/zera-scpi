@@ -74,16 +74,16 @@ void cSCPI::delSCPICmds(cSCPICommand &cmd)
 }
 
 
-cSCPIObject* cSCPI::getSCPIObject(const QString &input, QString &Param)
+cSCPIObject* cSCPI::getSCPIObject(const QString &input, QString &Param, bool caseSensitive)
 {
-    return d_ptr->getSCPIObject( input, Param);
+    return d_ptr->getSCPIObject( input, Param, caseSensitive);
 }
 
 
-cSCPIObject* cSCPI::getSCPIObject(cSCPICommand &input)
+cSCPIObject* cSCPI::getSCPIObject(cSCPICommand &input, bool caseSensitive)
 {
     QString dummy;
-    return this->getSCPIObject(input.getCommand(), dummy);
+    return this->getSCPIObject(input.getCommand(), dummy, caseSensitive);
 }
 
 

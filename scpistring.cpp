@@ -7,13 +7,13 @@ cSCPIString::cSCPIString()
 
 
 cSCPIString::cSCPIString(const QString& s)
-    :QString(s.toUpper())
+    :QString(s)
 {
 }
 
 
 cSCPIString::cSCPIString(const char* s)
-    :QString( QString(s).toUpper())
+    :QString(s)
 {
 }
 
@@ -21,11 +21,10 @@ cSCPIString::cSCPIString(const char* s)
 bool cSCPIString::operator == (const QString& toCompare)
 {
     QString keyw = *this; // we create qstring from cSCPIString
-    QString keywUpper = keyw.toUpper();
 
     QString toCompareAbreviation = m_ScpiAbreviation(toCompare);
 
-    bool b = ( (keyw == toCompare) || (keyw == toCompareAbreviation) || (keywUpper == toCompare) || (keywUpper == toCompareAbreviation) );
+    bool b = ( (keyw == toCompare) || (keyw == toCompareAbreviation) );
     return (b);
 }
 

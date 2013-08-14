@@ -71,7 +71,7 @@ public:
       @param[in] input the received command input
       @param[out] Param position where to get parameters.
       */
-    cSCPIObject* getSCPIObject(const QString& input, QString& Param);
+    cSCPIObject* getSCPIObject(const QString& input, QString& Param, bool caseSensitive = false);
     /**
       @b Returns the constructed model.
       */
