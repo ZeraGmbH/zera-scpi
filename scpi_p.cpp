@@ -31,7 +31,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
 
     parentItem = m_SCPIModel.invisibleRootItem();
 
-    if (parentnodeNames.count() > 0 )
+    if ((parentnodeNames.count() > 0) && (parentnodeNames.at(0) != "") )
     {
         for (it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it)
             localnodeNames.append((*it));
