@@ -120,6 +120,8 @@ private:
       */
     bool getcommandInfo( QDomNode rootNode, quint32 nlevel );
 
+    bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
+
     /**
       @b Name of the device that holds the scpi interface
       */

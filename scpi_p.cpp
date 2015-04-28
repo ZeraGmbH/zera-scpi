@@ -349,38 +349,15 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, bool caseSensitive)
 {
-    bool found;
+    cSCPINode *childItem = 0;
     QChar* pInput;
-    QStandardItem *parentItem;
-    cSCPINode *childItem;
-    found = false;
-    pInput = (QChar*) input.data();
-    parentItem = m_SCPIModel.invisibleRootItem();
 
-    quint32 nrows;
-    while ( (nrows = parentItem->rowCount()) > 0) // keywords in next command level available
+
+    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive))
     {
-        cSCPIString keyw(m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
-        if (!caseSensitive) keyw = keyw.toUpper();
-        for (quint32 i = 0; i < nrows; i++)
-        {
-            childItem = (cSCPINode*) parentItem->child(i);
-            QString s = childItem->data(Qt::DisplayRole).toString();
-            if (!caseSensitive) s = s.toUpper();
-            if ((found = (keyw == s)))
-            {
-                parentItem = childItem;
-                break;
-            }
-        }
-        if ( (*pInput != ':') || !found) // the command sent is finished ... found or not found
-            break;
-    }
-
-    Param = QString(pInput);
-
-    if (found)
+        Param = QString(pInput);
         return childItem->m_pSCPIObject;
+    }
     else
         return NULL;
 }
@@ -495,6 +472,55 @@ bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
 }
 
 
+bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
+{
+    bool found;
+    quint32 i, nrows;
+    QStandardItem *childItem;
+    cSCPINode* saveNode;
+    QChar* saveInput;
+    cSCPIString keyw;
+
+    found = false;
+
+    if ( (nrows = parentItem->rowCount()) > 0) // keywords in next command level available
+    {
+        keyw = (m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
+        if (!caseSensitive) keyw = keyw.toUpper();
+
+        for (i = 0; i < nrows; i++)
+        {
+
+            childItem = parentItem->child(i);
+            *scpiChildItem = (cSCPINode*) childItem;
+            QString s = (*scpiChildItem)->data(Qt::DisplayRole).toString();
+            if (!caseSensitive) s = s.toUpper(); // (s) is a node name from command tree
+
+            if ((found = (keyw == s)))
+            {
+                if (*pInput == ':') // in case input is not parsed completely
+                {
+                    saveNode = *scpiChildItem;
+                    saveInput = pInput;
+
+                    found = found && foundItem(childItem, scpiChildItem, pInput, caseSensitive);
+                    if (!found)
+                    {
+                        *scpiChildItem = saveNode; // if not found we reset the childnode
+                        pInput = saveInput; // and input pointer
+                    }
+                }
+            }
+
+            if (found)
+                break;
+        }
+    }
+
+    return found;
+}
+
+
 bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
 {
     clearSCPICmdList();
@@ -513,7 +539,7 @@ bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
 
     QDomNodeList nl=rootElem.childNodes();
 
-    for (quint32 i=0; i<nl.length() ; i++)
+    for (int i=0; i<nl.length() ; i++)
     {
         QDomNode n = nl.item(i);
         QDomElement e=n.toElement();
