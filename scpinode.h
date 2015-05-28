@@ -26,6 +26,10 @@ public:
       */
     quint8 getType();
     /**
+      @b Sets the node's type
+      */
+    quint8 setType(quint8 type);
+    /**
       @b Returns the node's QStandardItem type (UserType)
       */
     virtual int type();

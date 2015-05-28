@@ -13,6 +13,12 @@ quint8 cSCPINode::getType()
 }
 
 
+quint8 cSCPINode::setType(quint8 type)
+{
+    m_nType = type;
+}
+
+
 int cSCPINode::type()
 {
     return QStandardItem::UserType;
@@ -30,8 +36,15 @@ QVariant cSCPINode::data(int role) const
     case Qt::ToolTipRole:
         ttip = "";
 
+        if (m_nType & SCPI::isNode)
+            ttip = SCPI::scpiNodeType[SCPI::Node];
+
         if (m_nType & SCPI::isQuery)
-            ttip = SCPI::scpiNodeType[SCPI::Query];
+        {
+            if (ttip.length() > 0)
+                ttip += ",";
+            ttip += SCPI::scpiNodeType[SCPI::Query];
+        }
 
         if (m_nType & SCPI::isCmd)
         {
@@ -46,10 +59,6 @@ QVariant cSCPINode::data(int role) const
                 ttip += ",";
             ttip += SCPI::scpiNodeType[SCPI::CmdwP];
         }
-
-        if (ttip.length() == 0)
-            ttip = SCPI::scpiNodeType[SCPI::Node]; // at least it's a node
-
 
         return ttip;
     }
