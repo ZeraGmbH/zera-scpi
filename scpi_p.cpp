@@ -23,7 +23,6 @@ cSCPIPrivate::~cSCPIPrivate()
 
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
-    QStringList localnodeNames;
     QStringList::const_iterator it;
     QStandardItem *parentItem;
     QStandardItem *childItem;
@@ -35,8 +34,6 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     if ((parentnodeNames.count() > 0) && (parentnodeNames.at(0) != "") )
     {
         for (it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it)
-            localnodeNames.append((*it));
-        for (it = localnodeNames.begin(); it != localnodeNames.end(); ++it)
         {
             childItem = 0;
             nrows = parentItem->rowCount();
