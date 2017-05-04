@@ -13,7 +13,7 @@ quint8 cSCPINode::getType()
 }
 
 
-quint8 cSCPINode::setType(quint8 type)
+void cSCPINode::setType(quint8 type)
 {
     m_nType = type;
 }

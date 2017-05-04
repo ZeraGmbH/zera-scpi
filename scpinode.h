@@ -28,7 +28,7 @@ public:
     /**
       @b Sets the node's type
       */
-    quint8 setType(quint8 type);
+    void setType(quint8 type);
     /**
       @b Returns the node's QStandardItem type (UserType)
       */
