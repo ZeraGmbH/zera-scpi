@@ -33,15 +33,15 @@ public:
     /**
       @b Returns true if command is a pure query without additional parameter.
       */
-    bool isQuery();
+    bool isQuery() const;
     /**
       @b Returns true if command is a query with (anzParameter) parameter.
       */
-    bool isQuery(quint8 anzParameter);
+    bool isQuery(quint8 anzParameter) const;
     /**
       @b Returns true if command is a command with (anzParameter) parameter.
       */
-    bool isCommand(quint8 anzParameter);
+    bool isCommand(quint8 anzParameter) const;
 
     /**
       @b The full command with all parameters

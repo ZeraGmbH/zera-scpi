@@ -78,19 +78,19 @@ void cSCPICommandPrivate::setCmdParamList()
 }
 
 
-bool cSCPICommandPrivate::isQuery()
+bool cSCPICommandPrivate::isQuery() const
 {
     return ( (m_sCommandStr.contains("?")) && (m_sParamList.count() == 0));
 }
 
 
-bool cSCPICommandPrivate::isQuery(quint8 anzParameter)
+bool cSCPICommandPrivate::isQuery(quint8 anzParameter) const
 {
     return ( (m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
 }
 
 
-bool cSCPICommandPrivate::isCommand(quint8 anzParameter)
+bool cSCPICommandPrivate::isCommand(quint8 anzParameter) const
 {
     return ( (!m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
 }

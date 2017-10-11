@@ -33,25 +33,25 @@ QTextStream& operator >> (QTextStream& ts, cSCPICommand& cmd)
 }
 
 
-const QString cSCPICommand::getCommand()
+const QString cSCPICommand::getCommand() const
 {
     return d_ptr->m_sCommand;
 }
 
 
-const QString cSCPICommand::getCommandStr()
+const QString cSCPICommand::getCommandStr() const
 {
     return d_ptr->m_sCommandStr;
 }
 
 
-quint32 cSCPICommand::getParamCount()
+quint32 cSCPICommand::getParamCount() const
 {
     return d_ptr->m_sParamList.count();
 }
 
 
-QString cSCPICommand::getParam(qint32 pos)
+QString cSCPICommand::getParam(qint32 pos) const
 {
     QString s;
     if (pos < d_ptr->m_sParamList.count())
@@ -65,19 +65,19 @@ const QStringList &cSCPICommand::getParamList() const
   return d_ptr->m_sParamList;
 }
 
-bool cSCPICommand::isQuery()
+bool cSCPICommand::isQuery() const
 {
     return d_ptr->isQuery();
 }
 
 
-bool cSCPICommand::isQuery(quint8 anzParameter)
+bool cSCPICommand::isQuery(quint8 anzParameter) const
 {
     return d_ptr->isQuery(anzParameter);
 }
 
 
-bool cSCPICommand::isCommand(quint8 anzParameter)
+bool cSCPICommand::isCommand(quint8 anzParameter) const
 {
     return d_ptr->isCommand(anzParameter);
 }

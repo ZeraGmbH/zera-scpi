@@ -37,33 +37,33 @@ public:
     /**
       @b Returns the whole scpicommand.
       */
-    const QString getCommand();
+    const QString getCommand() const;
     /**
       @b Only returns the command part of the scpicommand.
       */
-    const QString getCommandStr();
+    const QString getCommandStr() const;
     /**
       @b Returns the number of parameters in the command.
       */
-    quint32 getParamCount();
+    quint32 getParamCount() const;
     /**
       @b Returns the parameter from pos.
       */
-    QString getParam(qint32 pos);
+    QString getParam(qint32 pos) const;
 
     const QStringList &getParamList() const;
     /**
       @b Returns true if command is a pure query without additional parameter.
       */
-    bool isQuery();
+    bool isQuery() const;
     /**
       @b Returns true if command is a query with (anzParameter) parameter.
       */
-    bool isQuery(quint8 anzParameter);
+    bool isQuery(quint8 anzParameter) const;
     /**
       @b Returns true if command is a command with (anzParameter) parameter.
       */
-    bool isCommand(quint8 anzParameter);
+    bool isCommand(quint8 anzParameter) const;
 
 private:
     /**
