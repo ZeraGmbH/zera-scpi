@@ -50,6 +50,8 @@ public:
       @b Returns the parameter from pos.
       */
     QString getParam(qint32 pos);
+
+    const QStringList &getParamList() const;
     /**
       @b Returns true if command is a pure query without additional parameter.
       */

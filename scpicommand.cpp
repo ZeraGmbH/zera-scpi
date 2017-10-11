@@ -60,6 +60,11 @@ QString cSCPICommand::getParam(qint32 pos)
         return s;
 }
 
+const QStringList &cSCPICommand::getParamList() const
+{
+  return d_ptr->m_sParamList;
+}
+
 bool cSCPICommand::isQuery()
 {
     return d_ptr->isQuery();
