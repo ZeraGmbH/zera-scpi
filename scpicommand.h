@@ -25,6 +25,12 @@ public:
       @b Generates a scpicommand from str.
       */
     cSCPICommand(const QString& str);
+    /**
+     * @brief cSCPICommand copy constructor
+     * @param other instance to copy from
+     */
+    cSCPICommand(const cSCPICommand &other);
+
     ~cSCPICommand();
     /**
       @b Sets the scpicommand with str and return a reference to *this.

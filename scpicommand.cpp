@@ -13,6 +13,11 @@ cSCPICommand::cSCPICommand(const QString& str)
 {
 }
 
+cSCPICommand::cSCPICommand(const cSCPICommand &other)
+  :d_ptr(new cSCPICommandPrivate(other.getCommand()))
+{
+}
+
 
 cSCPICommand::~cSCPICommand()
 {
