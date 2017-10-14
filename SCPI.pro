@@ -8,7 +8,7 @@ TARGET = SCPI
 TEMPLATE = lib
 QT           += xml
 
-VERSION = 2.0.1
+VERSION = 2.0.2
 
 DEFINES += SCPI_LIBRARY
 
