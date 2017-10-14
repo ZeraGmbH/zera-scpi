@@ -15,7 +15,7 @@ public:
       @b alternative constructor that sets the relevant values
       */
     cSCPIObject(const QString &name, quint8 type);
-    virtual ~cSCPIObject(){}
+    virtual ~cSCPIObject();
     /**
       @b The command execution, returns false if invalid.
       @param[in] sInput  the received command.

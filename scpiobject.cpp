@@ -13,6 +13,11 @@ cSCPIObject::cSCPIObject(const QString &name, quint8 type)
     d_ptr->m_nType = type;
 }
 
+cSCPIObject::~cSCPIObject()
+{
+    delete d_ptr;
+}
+
 
 const QString cSCPIObject::getName()
 {
