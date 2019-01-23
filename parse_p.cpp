@@ -14,7 +14,9 @@ cParsePrivate::~cParsePrivate()
 
 const QString& cParsePrivate::GetKeyword(QChar** s) {
     QChar tc;
+    bool escape;
 
+    escape = false;
     keyw ="";
     ignoreWhitespace(s);
 
@@ -22,8 +24,21 @@ const QString& cParsePrivate::GetKeyword(QChar** s) {
     {
        tc = **s;
        if (tc.isNull()) break; // we are at end of string
-       if ( delimiter.contains(tc,Qt::CaseInsensitive) ) break; // if next char is delimiter, we are ready
-       keyw += tc;
+       if (!escape && tc == QChar('\\'))
+           escape = true;
+       else
+       {
+           if (escape)
+           {
+               escape = false;
+               keyw += tc;
+           }
+           else
+           {
+               if ( delimiter.contains(tc,Qt::CaseInsensitive) ) break; // if next char is delimiter, we are ready
+           }
+       }
+
        (*s)++;
     }
 
