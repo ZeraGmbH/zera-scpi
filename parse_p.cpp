@@ -29,14 +29,11 @@ const QString& cParsePrivate::GetKeyword(QChar** s) {
        else
        {
            if (escape)
-           {
                escape = false;
-               keyw += tc;
-           }
            else
-           {
                if ( delimiter.contains(tc,Qt::CaseInsensitive) ) break; // if next char is delimiter, we are ready
-           }
+
+           keyw += tc;
        }
 
        (*s)++;
