@@ -65,6 +65,19 @@ QString cSCPICommand::getParam(qint32 pos) const
         return s;
 }
 
+
+QString cSCPICommand::getParam() const
+{
+    QString s, cmd;
+
+    s = d_ptr->m_sCommand;
+    cmd = d_ptr->m_sCommandStr;
+
+    s = s.right(s.length() - cmd.length());
+
+    return s;
+}
+
 const QStringList &cSCPICommand::getParamList() const
 {
   return d_ptr->m_sParamList;

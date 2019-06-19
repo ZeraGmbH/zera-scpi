@@ -56,6 +56,10 @@ public:
       @b Returns the parameter from pos.
       */
     QString getParam(qint32 pos) const;
+    /**
+      @b Returns the whole parameter text after the command without last ;
+      */
+    QString getParam() const;
 
     const QStringList &getParamList() const;
     /**
