@@ -59,7 +59,7 @@ const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command rec
 /**
   @b possible scpi types, this one should be used when defining the type
   */
-enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8};
+enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8, isXMLCmd = 16};
 /**
   @b enum for possible scpi nodes
   @see SCPI::scpiNodeType
