@@ -14,7 +14,7 @@ class cSCPICommandPrivate;
 
   An entered command is parsed and parameters behind the command are stored in a qstringlist and can be read.
   */
-class SCPISHARED_EXPORT cSCPICommand
+class SCPI_EXPORT cSCPICommand
 {
 public:
     /**

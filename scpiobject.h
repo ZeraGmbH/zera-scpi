@@ -8,7 +8,7 @@ class cSCPIObjectPrivate;
 /**
   @brief pure virtual base class to derive classes for command handling objects
   */
-class SCPISHARED_EXPORT cSCPIObject {
+class SCPI_EXPORT cSCPIObject {
 public:
     cSCPIObject();
     /**

@@ -17,7 +17,7 @@ class cParsePrivate;
   It searches for whole words using free selectable delimiters and whitespaces.
   Default whitespace characters are " ", ":" .
   */
-class SCPISHARED_EXPORT cParse { // searches for whole words using free selectable delimiters and whitespaces
+class SCPI_EXPORT cParse { // searches for whole words using free selectable delimiters and whitespaces
 public:
     /**
       @b contruct a default configured parser.

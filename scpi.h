@@ -90,7 +90,7 @@ class cSCPIPrivate; // forward
 
   The commandlist can be exported in xml and imported with xml.
   */
-class SCPISHARED_EXPORT cSCPI {
+class SCPI_EXPORT cSCPI {
 public:
     /**
       @b Initialise the const variables
