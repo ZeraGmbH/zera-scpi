@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.1)
 
 #set project name and language
-project(vf-helpers LANGUAGES CXX)
+project(zera-scpi LANGUAGES CXX)
 
 #Automoc and RCC ON. Needed in QT projects
 set(CMAKE_AUTOMOC ON)
