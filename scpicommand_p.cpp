@@ -73,6 +73,9 @@ void cSCPICommandPrivate::setCmdParamList()
             m_sParamList.append(keyw);
             pInput++;
         }
+        else if(*pInput == 0) {
+            m_sParamList.append(keyw);
+        }
     } while (*pInput != 0);
 
 }
