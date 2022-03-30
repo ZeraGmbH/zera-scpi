@@ -1,0 +1,15 @@
+This document defines the Standard-Commands-for-Programmable-Instruments (SCPI) Consortium’s SCPI
+standard. Although the Consortium hereby expressly disclaims any and all warranties whatsoever regarding
+the SCPI standard, the Consortium has published this document with the intent that the SCPI standard will be
+seriously considered and adopted, in whole, by the test and measurement marketplace. Consistent with that
+intent, permission is hereby granted by the Consortium to make copies of this entire document as a whole,
+PROVIDED THAT this NOTICE, STATEMENT of INTENT and AUTHORIZATION TO COPY shall
+prominently appear on each such whole copy. Further consistent with that intent, permission is hereby granted
+by the consortium to make copies of portions of this document, absent this NOTICE, STATEMENT of
+INTENT and AUTHORIZATION TO COPY, PROVIDED THAT each such portion-copies shall only be
+used in a manner which is consistent with the purposes of implementing, promoting, disseminating, or
+enhancing (as opposed to deviating from) the SCPI standard as herein defined, such as the inclusion of such a
+portion-copy in an instrument (or instrument-related) product manual which implements SCPI (as defined
+herein) or in use for design of such an instrument (or instrument related) product. However, under no
+circumstances may copies of this document, or any portion of this document, be made solely for purposes of
+sale of the copy or copies.
