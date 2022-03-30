@@ -30,7 +30,3 @@ Thumbs.db
 *.pro.user*
 *.qmlproject.user*
 *.pluginspec
-
-#ignore the doc directory
-doc/*
-doc/
