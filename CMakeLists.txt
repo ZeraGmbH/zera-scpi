@@ -92,7 +92,7 @@ include(CMakePackageConfigHelpers)
 write_basic_package_version_file(
     SCPIConfigVersion.cmake
     VERSION ${PACKAGE_VERSION}
-    COMPATIBILITY SameMinorVersion
+    COMPATIBILITY SameMajorVersion
     )
 
 # configure *Config.cmake
