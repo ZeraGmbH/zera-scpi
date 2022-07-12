@@ -1,0 +1,63 @@
+14.04.2021, PE/ZERYCON Know-How, SCPI
+
+1 Hintergrund
+Busfähig, Layer 1 nicht vorgegeben
+Ab 1990 in IEEE 488.2 beschrieben
+durchgängig ASCII codiert
+
+2 Befehle
+2.1 Befehlsarten
+	Funktion: <Parameter>
+	Setzen	: <Parameter> <Wert>
+	Abfrage	: <Parameter>?
+Hinweis: nur die Abfrage gibt eine Antwort
+
+2.2 Parameter Hierarchie
+<Ebene1>:<Ebene2>:...
+Die Abkürzung sind erlaubt, wird durch gross / klein Buchstaben angedeutet
+
+
+2.1 immer vorhanden
+*CLS	Clear Status Command
+*ESE	Standard Event Status Enable Command 
+*ESE?	Standard Event Status Enable Query 
+*ESR?	Standard Event Status Register Query 
+*IDN?	Identification Query 
+*OPC	Operation Complete Command 
+*OPC?	Operation Complete Query 
+*RST	Reset Command 
+*SRE	Service Request Enable Command 
+*SRE?	Service Request Enable Query 
+*STB?	Read Status Byte Query 
+*TST?	Self-Test Query
+*WAI	Wait-to-Continue Command
+
+
+2.2 ZERA spezifisch
+- Liste per "dev:iface?" abfragbar -> XML ähnliche Antwort
+- Parameter Hierarchie im Tag <MODELS>
+
+2.3 Ablauf beim Setzen
+- setzbefehl
+- mit "*opc?" pollen bis zur Antwort "+1"
+- Erfolg mit <setzbefehl>? erfragen
+
+
+3 Beispiele
+sense:rng1:ul1:range?
+sense:rng1:ul1:range 8V
+sense:rng1:il1:range?
+sense:rng1:ul1:range:catalog?
+configuration:pow4:mmode 4LW
+sense:rng1:il1:range 5A
+measure:rng1:ul1?
+
+4 Unterlagen
+Beschreibung von SCPI
+https://www.ivifoundation.org/scpi/default.aspx
+
+Nutzung im WinSAM
+M:\Zusammenarbeit\VT\VT-ZY-PE\Doku_SCPI\SCPI_mit_WinSAM_MAN_EXT_DE_V101.pdf
+
+MT310s2 Beispiele
+M:\Abteilungen\Entwicklung\Projektentwicklung\Abteilungsbesprechung\KnowHow\20210414_SCPI
