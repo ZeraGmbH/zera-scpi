@@ -18,8 +18,8 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
 find_package(Qt5 COMPONENTS Core Xml Gui CONFIG REQUIRED)
+find_package(xiqnet REQUIRED)
 
 add_subdirectory(src)
-
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
