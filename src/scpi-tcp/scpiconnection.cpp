@@ -1,14 +1,11 @@
 #include <scpi.h>
-
 #include "scpiconnection.h"
 #include <scpidelegate.h>
-
 
 cSCPIConnection::cSCPIConnection(QObject *parent)
     : QObject(parent)
 {
 }
-
 
 cSCPIConnection::~cSCPIConnection()
 {
@@ -22,7 +19,6 @@ cSCPIConnection::~cSCPIConnection()
     }
 }
 
-
 void cSCPIConnection::removeSCPIConnections()
 {
     cSCPIDelegate* ptr;
@@ -31,14 +27,8 @@ void cSCPIConnection::removeSCPIConnections()
         ptr = m_DelegateList.at(i);
         m_pSCPIInterface->delSCPICmds(ptr->getCommand());
     }
-
 }
-
 
 void cSCPIConnection::executeCommand(int, QString&, QString&)
 {
 }
-
-
-
-
