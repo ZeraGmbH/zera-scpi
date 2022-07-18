@@ -13,12 +13,12 @@ public:
     cSCPIConnection(QObject* parent=0);
     virtual ~cSCPIConnection();
     virtual void initSCPIConnection(QString leadingNodes) = 0;
-    virtual void removeSCPIConnections();
 signals:
     void strNotifier(cNotificationString* notifier);
     void valNotifier(cNotificationValue* notifier);
     void cmdExecutionDone(cProtonetCommand* protoCmd);
 protected:
+    void removeSCPIConnections();
     cSCPI* m_pSCPIInterface;
     QList<cSCPIDelegate*> m_DelegateList;
 protected slots:
