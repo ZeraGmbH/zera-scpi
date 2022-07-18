@@ -12,8 +12,9 @@ add_library(scpi-tcp SHARED
     )
 
 target_link_libraries(scpi-tcp
-    PRIVATE
+    PUBLIC
     Qt5::Core
+    SCPI
     VeinMeta::xiqnet 
     )
 
