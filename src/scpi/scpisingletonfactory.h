@@ -9,9 +9,9 @@
 class ScpiSingletonFactory
 {
 public:
-    typedef QSharedPointer<cSCPI> scpiPtr;
-    static scpiPtr getScpiObj(QString name);
+    static cSCPI* getScpiObj(QString name);
 private:
+    typedef QSharedPointer<cSCPI> scpiPtr;
     static QHash<QString, scpiPtr> m_scpiHash;
 };
 
