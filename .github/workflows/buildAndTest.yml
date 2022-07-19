@@ -47,3 +47,7 @@ jobs:
            -DCMAKE_INSTALL_SYSCONFDIR="$HOME/install/etc"
           # compile / install
            make -j $(getconf _NPROCESSORS_ONLN)
+      - name: unittest
+        run: |
+          cd "$HOME/targetbuild"
+          ctest -V
