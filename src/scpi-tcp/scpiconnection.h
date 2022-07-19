@@ -10,7 +10,7 @@ class cSCPIConnection: public QObject // pure virtual base class for scpi model 
 {
     Q_OBJECT
 public:
-    cSCPIConnection(QObject* parent=0);
+    cSCPIConnection(cSCPI* scpiInterface);
     virtual ~cSCPIConnection();
     virtual void initSCPIConnection(QString leadingNodes) = 0;
 signals:
