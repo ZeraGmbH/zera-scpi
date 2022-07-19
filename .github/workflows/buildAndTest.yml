@@ -29,9 +29,6 @@ jobs:
       - uses: actions/checkout@master
         with:
           submodules: recursive
-      - name: install deps
-        run: |
-          sudo dnf -y install xorg-x11-server-Xvfb
       - name: Build
         run: |
           echo $HOME
@@ -49,7 +46,6 @@ jobs:
            -DCMAKE_PREFIX_PATH="$HOME/install/usr;/usr" \
            -DCMAKE_INSTALL_PREFIX:PATH="$HOME/install/usr" \
            -DCMAKE_INSTALL_SYSCONFDIR="$HOME/install/etc"
-          # compile / install
            make -j $(getconf _NPROCESSORS_ONLN)
       - name: unittest
         run: |
