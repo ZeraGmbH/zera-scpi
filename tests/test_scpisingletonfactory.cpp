@@ -10,15 +10,15 @@ void test_scpisingletonfactory::askOneOnce()
 
 void test_scpisingletonfactory::askOneTwice()
 {
-    ScpiSingletonFactory::scpiPtr ptr1 = ScpiSingletonFactory::getScpiObj("foo");
-    ScpiSingletonFactory::scpiPtr ptr2 = ScpiSingletonFactory::getScpiObj("foo");
+    cSCPI* ptr1 = ScpiSingletonFactory::getScpiObj("foo");
+    cSCPI* ptr2 = ScpiSingletonFactory::getScpiObj("foo");
     QCOMPARE(ptr1, ptr2);
 }
 
 void test_scpisingletonfactory::askTwoOnce()
 {
-    ScpiSingletonFactory::scpiPtr foo = ScpiSingletonFactory::getScpiObj("foo");
-    ScpiSingletonFactory::scpiPtr bar = ScpiSingletonFactory::getScpiObj("bar");
+    cSCPI* foo = ScpiSingletonFactory::getScpiObj("foo");
+    cSCPI* bar = ScpiSingletonFactory::getScpiObj("bar");
     QVERIFY(foo);
     QVERIFY(bar);
     QVERIFY(foo != bar);
@@ -26,10 +26,10 @@ void test_scpisingletonfactory::askTwoOnce()
 
 void test_scpisingletonfactory::askTwoTwice()
 {
-    ScpiSingletonFactory::scpiPtr foo1 = ScpiSingletonFactory::getScpiObj("foo");
-    ScpiSingletonFactory::scpiPtr foo2 = ScpiSingletonFactory::getScpiObj("foo");
-    ScpiSingletonFactory::scpiPtr bar1 = ScpiSingletonFactory::getScpiObj("bar");
-    ScpiSingletonFactory::scpiPtr bar2 = ScpiSingletonFactory::getScpiObj("bar");
+    cSCPI* foo1 = ScpiSingletonFactory::getScpiObj("foo");
+    cSCPI* foo2 = ScpiSingletonFactory::getScpiObj("foo");
+    cSCPI* bar1 = ScpiSingletonFactory::getScpiObj("bar");
+    cSCPI* bar2 = ScpiSingletonFactory::getScpiObj("bar");
     QVERIFY(foo1);
     QCOMPARE(foo1, foo2);
     QVERIFY(bar1);
