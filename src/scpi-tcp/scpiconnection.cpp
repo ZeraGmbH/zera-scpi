@@ -18,9 +18,11 @@ cSCPIConnection::~cSCPIConnection()
 
 void cSCPIConnection::removeSCPIConnections()
 {
-    for (int i = 0; i < m_DelegateList.count(); i++) {
-        cSCPIDelegate* ptr = m_DelegateList.at(i);
-        m_pSCPIInterface->delSCPICmds(ptr->getCommand());
+    if(m_pSCPIInterface) {
+        for (int i = 0; i < m_DelegateList.count(); i++) {
+            cSCPIDelegate* ptr = m_DelegateList.at(i);
+            m_pSCPIInterface->delSCPICmds(ptr->getCommand());
+        }
     }
 }
 
