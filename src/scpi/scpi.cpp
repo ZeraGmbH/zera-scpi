@@ -25,37 +25,6 @@ void cSCPI::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObj
     d_ptr->genSCPICmd( parentnodeNames, pSCPIObject);
 }
 
-
-void cSCPI::genSCPICmd(QMap<QString, QList<cSCPIObject *> > SCPIObjectMap)
-{
-    d_ptr->genSCPICmd(SCPIObjectMap);
-}
-
-
-void cSCPI::genSCPICmd(QMap<QString, QMap<QString, QList<cSCPIObject *> > > SCPIObjectMap)
-{
-    d_ptr->genSCPICmd(SCPIObjectMap);
-}
-
-
-void cSCPI::genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > >SCPIObjectMap)
-{
-    d_ptr->genSCPICmd(SCPIObjectMap);
-}
-
-
-void cSCPI::genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > SCPIObjectMap)
-{
-    d_ptr->genSCPICmd(SCPIObjectMap);
-}
-
-
-void cSCPI::genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > > SCPIObjectMap)
-{
-    d_ptr->genSCPICmd(SCPIObjectMap);
-}
-
-
 void cSCPI::clearSCPICmdList()
 {
     d_ptr->clearSCPICmdList();
