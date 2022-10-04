@@ -143,15 +143,10 @@ void cSCPIPrivate::delChildItems(QStandardItem *Item)
 
 void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 {
-    QString s;
-
-    s = Item->data(Qt::DisplayRole).toString();
     QStandardItem *parentItem = Item->parent();
 
     if (parentItem) // do we have a parent ?
     {
-
-        s = parentItem->data(Qt::DisplayRole).toString();
         if (parentItem->rowCount() == 1) // if this item is the ony child of parent
         {
             parentItem->removeRow(0); // we delete it
