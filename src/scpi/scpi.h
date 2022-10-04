@@ -107,26 +107,6 @@ public:
     void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
 
     /**
-      @b Generates 1..n scpi commands with 1 parent nodename.
-      */
-    void genSCPICmd(QMap<QString, QList<cSCPIObject*> > SCPIObjectMap);
-    /**
-      @b Generates 1 x 1 .. n x m scpi commands with 2 parent nodenames.
-      */
-    void genSCPICmd(QMap<QString, QMap<QString, QList<cSCPIObject*> > > SCPIObjectMap);
-    /**
-      @b Generates 1 x 1x 1 .. n x m x l scpi commands with 3 parent nodenames.
-      */
-    void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > SCPIObjectMap);
-    /**
-      @b Generates 1 x 1 x 1 x 1 .. n x m x l x k scpi commands with 4 parent nodenames.
-      */
-    void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > SCPIObjectMap);
-    /**
-      @b Generates 1 x 1 x 1 x 1 x 1 .. n x m x l x k x j scpi commands with 5 parent nodenames.
-      */
-    void genSCPICmd(QMap<QString, QMap<QString, QMap<QString, QMap<QString, QMap<QString, QList<cSCPIObject*> > > > > > SCPIObjectMap);
-    /**
       @b Clears the whole command list.
       */
     void clearSCPICmdList();
