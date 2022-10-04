@@ -37,7 +37,7 @@ public:
       @b Returns the node's name if role = Qt::DisplayRole, and a description of node's type if role = Qt::ToolTipRole
       */
     //virtual QVariant data(int role = Qt::UserRole + 1 );
-    virtual QVariant data ( int role = Qt::UserRole + 1 ) const;
+    virtual QVariant data ( int role = Qt::UserRole + 1 ) const override;
 private:
     /**
       @b Readable name of the node used in the model as displayRole
