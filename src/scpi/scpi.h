@@ -25,7 +25,6 @@
 #include <QMap>
 #include <QMapIterator>
 #include <QStandardItem>
-#include <QStandardItemModel>
 #include <QIODevice>
 #include "SCPI_global.h"
 #include "scpiobject.h"
@@ -131,10 +130,6 @@ public:
     cSCPIObject* getSCPIObject(const cSCPICommand &input, bool caseSensitive = false) const;
 
 
-    /**
-      @b Returns the constructed model.
-      */
-    QStandardItemModel* getSCPIModel();
     /**
       @b Generates a xml representation of the model.
       @param[out] sxml the xml representation as QString

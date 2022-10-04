@@ -56,12 +56,6 @@ cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input, bool caseSensitive)
 }
 
 
-QStandardItemModel* cSCPI::getSCPIModel()
-{
-    return &(d_ptr->m_SCPIModel);
-}
-
-
 void cSCPI::exportSCPIModelXML(QString &sxml)
 {
     d_ptr->exportSCPIModelXML(sxml);
