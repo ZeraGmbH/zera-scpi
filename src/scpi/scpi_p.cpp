@@ -20,13 +20,6 @@ cSCPIPrivate::~cSCPIPrivate()
 {
 }
 
-void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode)
-{
-    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
-    parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
-    parentItem->appendRow(pSCPINode);
-}
-
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
@@ -54,6 +47,13 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
         childItem = c;
         parentItem->appendRow(childItem);
     }
+}
+
+void cSCPIPrivate::insertNode(const QStringList &parentnodeNames, cSCPINode *pSCPINode)
+{
+    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
+    parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
+    parentItem->appendRow(pSCPINode);
 }
 
 void cSCPIPrivate::delChildItems(QStandardItem *Item)
@@ -259,7 +259,7 @@ bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
             {
                 quint8 t = getNodeType(e.attribute(scpinodeAttributeName));
                 cSCPINode *pSCPINode = new cSCPINode (s , t, NULL); // we have no corresponding cSCPIObject -> NULL
-                genSCPICmd(nodeNames, pSCPINode);
+                insertNode(nodeNames, pSCPINode);
             }
             else
             {
@@ -383,6 +383,4 @@ bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
 
     return true;
 }
-
-
 
