@@ -155,13 +155,12 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, b
     QChar* pInput;
 
 
-    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive))
-    {
+    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive)) {
         Param = QString(pInput);
         return childItem->m_pSCPIObject;
     }
     else
-        return NULL;
+        return nullptr;
 }
 
 
@@ -296,49 +295,33 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
 
 bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
 {
-    bool found;
-    quint32 i, nrows;
-    QStandardItem *childItem;
-    cSCPINode* saveNode;
-    QChar* saveInput;
-    cSCPIString keyw;
-
-    found = false;
-
-    if ( (nrows = parentItem->rowCount()) > 0) // keywords in next command level available
-    {
-        keyw = (m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
-        if (!caseSensitive) keyw = keyw.toUpper();
-
-        for (i = 0; i < nrows; i++)
-        {
-
-            childItem = parentItem->child(i);
+    bool found = false;
+    quint32 nrows = parentItem->rowCount();
+    if ( nrows > 0) { // keywords in next command level available
+        cSCPIString keyw = (m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
+        if (!caseSensitive)
+            keyw = keyw.toUpper();
+        for (quint32 i = 0; i < nrows; i++) {
+            QStandardItem *childItem = parentItem->child(i);
             *scpiChildItem = (cSCPINode*) childItem;
             QString s = (*scpiChildItem)->data(Qt::DisplayRole).toString();
-            if (!caseSensitive) s = s.toUpper(); // (s) is a node name from command tree
-
-            if ((found = (keyw == s)))
-            {
-                if (*pInput == ':') // in case input is not parsed completely
-                {
-                    saveNode = *scpiChildItem;
-                    saveInput = pInput;
-
+            if (!caseSensitive)
+                s = s.toUpper(); // (s) is a node name from command tree
+            if ((found = (keyw == s))) {
+                if (*pInput == ':') { // in case input is not parsed completely
+                    cSCPINode* saveNode = *scpiChildItem;
+                    QChar* saveInput = pInput;
                     found = found && foundItem(childItem, scpiChildItem, pInput, caseSensitive);
-                    if (!found)
-                    {
+                    if (!found) {
                         *scpiChildItem = saveNode; // if not found we reset the childnode
                         pInput = saveInput; // and input pointer
                     }
                 }
             }
-
             if (found)
                 break;
         }
     }
-
     return found;
 }
 
