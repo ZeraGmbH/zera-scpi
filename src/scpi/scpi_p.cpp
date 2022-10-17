@@ -155,28 +155,21 @@ QStandardItemModel* cSCPIPrivate::getSCPIModel()
 
 void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
-    quint32 nrows;
     cSCPINode *childItem;
-    QString s;
-    nrows = rootItem->rowCount();
-    if (nrows > 0)
+    for (quint32 row = 0; row < rootItem->rowCount(); row++)
     {
-        quint32 i;
-        for (i = 0; i < nrows; i++)
-        {
-            childItem = (cSCPINode*) rootItem->child(i);
-            s = childItem->data(Qt::DisplayRole).toString();
-            QDomElement cmdTag = doc.createElement(s);
-            if (nlevel == 0)
-                s = "Model,";
-            else
-                s = "";
-            s += childItem->data(Qt::ToolTipRole).toString();
-            cmdTag.setAttribute(scpinodeAttributeName, s);
-            rootElement.appendChild(cmdTag);
-            appendSCPIRows(childItem, doc, cmdTag, ++nlevel);
-            --nlevel;
-        }
+        childItem = (cSCPINode*) rootItem->child(row);
+        QString nodeName = childItem->data(Qt::DisplayRole).toString();
+        QDomElement cmdTag = doc.createElement(nodeName);
+        if (nlevel == 0)
+            nodeName = "Model,";
+        else
+            nodeName = "";
+        nodeName += childItem->data(Qt::ToolTipRole).toString();
+        cmdTag.setAttribute(scpinodeAttributeName, nodeName);
+        rootElement.appendChild(cmdTag);
+        appendSCPIRows(childItem, doc, cmdTag, ++nlevel);
+        --nlevel;
     }
 }
 
