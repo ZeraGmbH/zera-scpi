@@ -8,13 +8,11 @@
 #include "scpinode.h"
 #include "scpi.h"
 
-
 cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
     :m_interfaceName(interfaceName)
 {
     m_SCPIModel.clear();
 }
-
 
 cSCPIPrivate::~cSCPIPrivate()
 {
@@ -62,7 +60,6 @@ void cSCPIPrivate::delChildItems(QStandardItem *Item)
     }
 }
 
-
 void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 {
     QStandardItem *parentItem = Item->parent();
@@ -84,7 +81,6 @@ void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
         mdl->removeRow(Item->row());
     }
 }
-
 
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
 {
@@ -138,7 +134,6 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     }
 }
 
-
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, bool caseSensitive)
 {
     cSCPINode *childItem = 0;
@@ -153,12 +148,10 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, b
         return nullptr;
 }
 
-
 QStandardItemModel* cSCPIPrivate::getSCPIModel()
 {
     return &m_SCPIModel;
 }
-
 
 void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
@@ -186,7 +179,6 @@ void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  Q
         }
     }
 }
-
 
 void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 {
@@ -281,7 +273,6 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
     }
     return parentItem;
 }
-
 
 bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
 {
