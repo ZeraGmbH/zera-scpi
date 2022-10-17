@@ -27,8 +27,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSC
     parentItem = m_SCPIModel.invisibleRootItem();
     for(const QString &nodeName : parentnodeNames) {
         childItem = nullptr;
-        quint32 nrows = parentItem->rowCount();
-        for (quint32 row = 0; row < nrows; row++) {
+        for (quint32 row = 0; row < parentItem->rowCount(); row++) {
             childItem = parentItem->child(row);
             if (childItem->data(Qt::DisplayRole) == nodeName)
                 break;
@@ -48,13 +47,11 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
 {
     QStandardItem *parentItem;
     QStandardItem *childItem;
-    quint32 nrows;
     parentItem = m_SCPIModel.invisibleRootItem();
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         for(const QString &nodeName : parentnodeNames) {
             childItem = nullptr;
-            nrows = parentItem->rowCount();
-            for (quint32 row = 0; row < nrows; row++) {
+            for (quint32 row = 0; row < parentItem->rowCount(); row++) {
                 childItem = parentItem->child(row);
                 if (childItem->data(Qt::DisplayRole) == nodeName)
                     break;
@@ -71,8 +68,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     // maybe that that our new command name already exits as node or even as command/query
     bool cmdFound = false;
     QString sName = pSCPIObject->getName();
-    nrows = parentItem->rowCount();
-    for (quint32 i = 0; i < nrows; i++) {
+    for (quint32 i = 0; i < parentItem->rowCount(); i++) {
         childItem = parentItem->child(i);
         if (childItem->data(Qt::DisplayRole).toString() == sName)
             cmdFound = true;
