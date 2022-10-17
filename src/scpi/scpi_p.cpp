@@ -24,7 +24,6 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSC
 {
     QStandardItem *parentItem;
     QStandardItem *childItem;
-    QModelIndex childModelIndex;
     parentItem = m_SCPIModel.invisibleRootItem();
     for(const QString &nodeName : parentnodeNames) {
         childItem = nullptr;
