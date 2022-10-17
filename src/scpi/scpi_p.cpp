@@ -39,7 +39,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pS
             }
         }
         if (!childItem) {
-            childItem  = new cSCPINode(*it, SCPI::isNode, 0);
+            childItem  = new cSCPINode(*it, SCPI::isNode, nullptr);
             parentItem->appendRow(childItem);
         }
         parentItem = childItem;
@@ -60,16 +60,14 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
             if (nrows > 0) {
                 for (quint32 i = 0; i < nrows; i++) {
                     childItem = parentItem->child(i);
-                    if (childItem->data(Qt::DisplayRole).toString() == *it)
+                    if (childItem->data(Qt::DisplayRole) == *it)
                         break;
                     else
                         childItem = nullptr;
                 }
             }
             if (!childItem) {
-                cSCPINode *c = new cSCPINode(*it, SCPI::isNode, 0);
-                // childItem  = new cSCPINode(*it, SCPI::isNode, 0);
-                childItem = c;
+                childItem  = new cSCPINode(*it, SCPI::isNode, nullptr);
                 parentItem->appendRow(childItem);
             }
             parentItem = childItem;
