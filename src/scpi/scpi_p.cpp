@@ -23,21 +23,7 @@ cSCPIPrivate::~cSCPIPrivate()
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode)
 {
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
-    for(const QString &nodeName : parentnodeNames) {
-        QStandardItem *childItem = nullptr;
-        for (quint32 row = 0; row < parentItem->rowCount(); row++) {
-            childItem = parentItem->child(row);
-            if (childItem->data(Qt::DisplayRole) == nodeName)
-                break;
-            else
-                childItem = nullptr;
-        }
-        if (!childItem) {
-            childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
-            parentItem->appendRow(childItem);
-        }
-        parentItem = childItem;
-    }
+    parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
     parentItem->appendRow(pSCPINode);
 }
 
@@ -46,21 +32,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
     QStandardItem *childItem;
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
-        for(const QString &nodeName : parentnodeNames) {
-            childItem = nullptr;
-            for (quint32 row = 0; row < parentItem->rowCount(); row++) {
-                childItem = parentItem->child(row);
-                if (childItem->data(Qt::DisplayRole) == nodeName)
-                    break;
-                else
-                    childItem = nullptr;
-            }
-            if (!childItem) {
-                childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
-                parentItem->appendRow(childItem);
-            }
-            parentItem = childItem;
-        }
+        parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
     }
     // maybe that that our new command name already exits as node or even as command/query
     bool cmdFound = false;
@@ -302,6 +274,26 @@ bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
         nodeNames.pop_back();
 
     return true;
+}
+
+QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList &parentnodeNames)
+{
+    for(const QString &nodeName : parentnodeNames) {
+        QStandardItem *childItem = nullptr;
+        for (quint32 row = 0; row < parentItem->rowCount(); row++) {
+            childItem = parentItem->child(row);
+            if (childItem->data(Qt::DisplayRole) == nodeName)
+                break;
+            else
+                childItem = nullptr;
+        }
+        if (!childItem) {
+            childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
+            parentItem->appendRow(childItem);
+        }
+        parentItem = childItem;
+    }
+    return parentItem;
 }
 
 
