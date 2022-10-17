@@ -20,6 +20,33 @@ cSCPIPrivate::~cSCPIPrivate()
 {
 }
 
+void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pSCPINode)
+{
+    QStandardItem *parentItem;
+    QStandardItem *childItem;
+    QModelIndex childModelIndex;
+    parentItem = m_SCPIModel.invisibleRootItem();
+    for (QStringList::const_iterator it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it) {
+        childItem = nullptr;
+        quint32 nrows = parentItem->rowCount();
+        if (nrows > 0) {
+            for (quint32 i = 0; i < nrows; i++) {
+                childItem = parentItem->child(i);
+                if (childItem->data(Qt::DisplayRole) == *it)
+                    break;
+                else
+                    childItem = nullptr;
+            }
+        }
+        if (!childItem) {
+            childItem  = new cSCPINode(*it, SCPI::isNode, 0);
+            parentItem->appendRow(childItem);
+        }
+        parentItem = childItem;
+    }
+    parentItem->appendRow(pSCPINode);
+}
+
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
     QStandardItem *parentItem;
@@ -72,34 +99,6 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
         parentItem->appendRow(childItem);
     }
 }
-
-void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pSCPINode)
-{
-    QStandardItem *parentItem;
-    QStandardItem *childItem;
-    QModelIndex childModelIndex;
-    parentItem = m_SCPIModel.invisibleRootItem();
-    for (QStringList::const_iterator it = parentnodeNames.begin(); it != parentnodeNames.end(); ++it) {
-        childItem = nullptr;
-        quint32 nrows = parentItem->rowCount();
-        if (nrows > 0) {
-            for (quint32 i = 0; i < nrows; i++) {
-                childItem = parentItem->child(i);
-                if (childItem->data(Qt::DisplayRole) == *it)
-                    break;
-                else
-                    childItem = nullptr;
-            }
-        }
-        if (!childItem) {
-            childItem  = new cSCPINode(*it, SCPI::isNode, 0);
-            parentItem->appendRow(childItem);
-        }
-        parentItem = childItem;
-    }
-    parentItem->appendRow(pSCPINode);
-}
-
 
 void cSCPIPrivate::delChildItems(QStandardItem *Item)
 {
