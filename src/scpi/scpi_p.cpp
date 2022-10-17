@@ -22,11 +22,9 @@ cSCPIPrivate::~cSCPIPrivate()
 
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode)
 {
-    QStandardItem *parentItem;
-    QStandardItem *childItem;
-    parentItem = m_SCPIModel.invisibleRootItem();
+    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
     for(const QString &nodeName : parentnodeNames) {
-        childItem = nullptr;
+        QStandardItem *childItem = nullptr;
         for (quint32 row = 0; row < parentItem->rowCount(); row++) {
             childItem = parentItem->child(row);
             if (childItem->data(Qt::DisplayRole) == nodeName)
@@ -45,9 +43,8 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSC
 
 void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
-    QStandardItem *parentItem;
+    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
     QStandardItem *childItem;
-    parentItem = m_SCPIModel.invisibleRootItem();
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         for(const QString &nodeName : parentnodeNames) {
             childItem = nullptr;
