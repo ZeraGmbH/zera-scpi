@@ -20,7 +20,7 @@ cSCPIPrivate::~cSCPIPrivate()
 {
 }
 
-void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pSCPINode)
+void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode)
 {
     QStandardItem *parentItem;
     QStandardItem *childItem;
@@ -29,14 +29,12 @@ void cSCPIPrivate::genSCPICmd(const QStringList&  parentnodeNames, cSCPINode* pS
     for(const QString &nodeName : parentnodeNames) {
         childItem = nullptr;
         quint32 nrows = parentItem->rowCount();
-        if (nrows > 0) {
-            for (quint32 row = 0; row < nrows; row++) {
-                childItem = parentItem->child(row);
-                if (childItem->data(Qt::DisplayRole) == nodeName)
-                    break;
-                else
-                    childItem = nullptr;
-            }
+        for (quint32 row = 0; row < nrows; row++) {
+            childItem = parentItem->child(row);
+            if (childItem->data(Qt::DisplayRole) == nodeName)
+                break;
+            else
+                childItem = nullptr;
         }
         if (!childItem) {
             childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
@@ -57,14 +55,12 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
         for(const QString &nodeName : parentnodeNames) {
             childItem = nullptr;
             nrows = parentItem->rowCount();
-            if (nrows > 0) {
-                for (quint32 i = 0; i < nrows; i++) {
-                    childItem = parentItem->child(i);
-                    if (childItem->data(Qt::DisplayRole) == nodeName)
-                        break;
-                    else
-                        childItem = nullptr;
-                }
+            for (quint32 row = 0; row < nrows; row++) {
+                childItem = parentItem->child(row);
+                if (childItem->data(Qt::DisplayRole) == nodeName)
+                    break;
+                else
+                    childItem = nullptr;
             }
             if (!childItem) {
                 childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
@@ -77,14 +73,12 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     bool cmdFound = false;
     QString sName = pSCPIObject->getName();
     nrows = parentItem->rowCount();
-    if (nrows > 0) {
-        for (quint32 i = 0; i < nrows; i++) {
-            childItem = parentItem->child(i);
-            if (childItem->data(Qt::DisplayRole).toString() == sName)
-                cmdFound = true;
-            if (cmdFound)
-                break;
-        }
+    for (quint32 i = 0; i < nrows; i++) {
+        childItem = parentItem->child(i);
+        if (childItem->data(Qt::DisplayRole).toString() == sName)
+            cmdFound = true;
+        if (cmdFound)
+            break;
     }
     if (cmdFound) {
         cSCPINode *c = (cSCPINode*) childItem;
