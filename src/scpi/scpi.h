@@ -106,10 +106,6 @@ public:
     void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
 
     /**
-      @b Clears the whole command list.
-      */
-    void clearSCPICmdList();
-    /**
       @b deletes command(s) from the command list
       */
     void delSCPICmds(const QString& cmd);

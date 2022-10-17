@@ -25,12 +25,6 @@ void cSCPI::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObj
     d_ptr->genSCPICmd( parentnodeNames, pSCPIObject);
 }
 
-void cSCPI::clearSCPICmdList()
-{
-    d_ptr->clearSCPICmdList();
-}
-
-
 void cSCPI::delSCPICmds(const QString &cmd)
 {
     d_ptr->delSCPICmds(cmd);

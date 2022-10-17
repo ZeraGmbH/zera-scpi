@@ -86,16 +86,6 @@ void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 }
 
 
-void cSCPIPrivate::clearSCPICmdList()
-{
-    QList<QStandardItem *> itemList;
-
-    itemList = m_SCPIModel.takeColumn (0);
-    for (qint32 i = 0; i < itemList.size(); ++i)
-        delete itemList.value(i);
-}
-
-
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
 {
     cParse Parser;
