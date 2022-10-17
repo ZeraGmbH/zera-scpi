@@ -72,12 +72,7 @@ public:
     QStandardItemModel m_SCPIModel;
 
 private:
-    /**
-      @b Generates 1 scpi command with several parent node names.
-      @param[in] parentnodeNames all parent node names.
-      @param[in] pSCPINode the node that holds the object to handle the command.
-      */
-    void genSCPICmd(const QStringList& parentnodeNames, cSCPINode* pSCPINode);
+    void insertNode(const QStringList& parentnodeNames, cSCPINode* pSCPINode);
 
     /**
       @b deletes all child items
