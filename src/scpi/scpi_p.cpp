@@ -139,7 +139,6 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, b
     cSCPINode *childItem = 0;
     QChar* pInput;
 
-
     if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive)) {
         Param = QString(pInput);
         return childItem->m_pSCPIObject;
@@ -155,10 +154,8 @@ QStandardItemModel* cSCPIPrivate::getSCPIModel()
 
 void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
-    cSCPINode *childItem;
-    for (quint32 row = 0; row < rootItem->rowCount(); row++)
-    {
-        childItem = (cSCPINode*) rootItem->child(row);
+    for (quint32 row = 0; row < rootItem->rowCount(); row++) {
+        cSCPINode *childItem = (cSCPINode*) rootItem->child(row);
         QString nodeName = childItem->data(Qt::DisplayRole).toString();
         QDomElement cmdTag = doc.createElement(nodeName);
         if (nlevel == 0)
@@ -177,8 +174,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 {
     QDomDocument modelDoc(scpimodelDocName);
 
-    QDomElement rootTag;
-    rootTag = modelDoc.createElement( scpimodelrootName );
+    QDomElement rootTag = modelDoc.createElement( scpimodelrootName );
     modelDoc.appendChild( rootTag );
 
     QDomElement deviceTag = modelDoc.createElement( scpimodeldeviceTag );
@@ -193,7 +189,6 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 
     sxml = modelDoc.toString();
 }
-
 
 quint8 cSCPIPrivate::getNodeType(const QString& sAttr)
 {
