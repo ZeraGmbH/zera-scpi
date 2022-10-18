@@ -27,17 +27,16 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
     }
-    // maybe that that our new command name already exits as node or even as command/query
-    bool cmdFound = false;
+    bool overwriteExisting = false;
     QString sName = pSCPIObject->getName();
     for (quint32 i = 0; i < parentItem->rowCount(); i++) {
         childItem = parentItem->child(i);
         if (childItem->data(Qt::DisplayRole).toString() == sName) {
-            cmdFound = true;
+            overwriteExisting = true;
             break;
         }
     }
-    if (cmdFound) {
+    if (overwriteExisting) {
         cSCPINode *c = (cSCPINode*) childItem;
         c->m_pSCPIObject = pSCPIObject;
         c->setType(SCPI::isNode | pSCPIObject->getType());
