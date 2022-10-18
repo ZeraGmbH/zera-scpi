@@ -61,14 +61,7 @@ public:
       @param[out] sxml the xml representation as QString
       */
     void exportSCPIModelXML(QString &sxml);
-    /**
-      @b Generates a model form a xml representation.
-      @param[in] ioDevice the xml representation is read from QString.
-      */
-    bool importSCPIModelXML(QIODevice *ioDevice);
-    /**
-      @b Holds the model.
-      */
+
     QStandardItemModel m_SCPIModel;
 
 private:
