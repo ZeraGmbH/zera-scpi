@@ -42,7 +42,7 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
         c->setType(SCPI::isNode | pSCPIObject->getType());
     }
     else {
-        parentItem->appendRow(new cSCPINode(pSCPIObject->getName(),pSCPIObject->getType(), pSCPIObject));
+        parentItem->appendRow(createNode(pSCPIObject->getName(),pSCPIObject->getType(), pSCPIObject));
     }
 }
 
@@ -255,7 +255,7 @@ bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
             if (!node2.hasChildNodes())
             {
                 quint8 t = getNodeType(e.attribute(scpinodeAttributeName));
-                cSCPINode *pSCPINode = new cSCPINode (s , t, NULL); // we have no corresponding cSCPIObject -> NULL
+                cSCPINode *pSCPINode = createNode (s , t, NULL); // we have no corresponding cSCPIObject -> NULL
                 insertNode(nodeNames, pSCPINode);
             }
             else
@@ -285,7 +285,7 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
                 childItem = nullptr;
         }
         if (!childItem) {
-            childItem  = new cSCPINode(nodeName, SCPI::isNode, nullptr);
+            childItem  = createNode(nodeName, SCPI::isNode, nullptr);
             parentItem->appendRow(childItem);
         }
         parentItem = childItem;
@@ -379,5 +379,10 @@ bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
     }
 
     return true;
+}
+
+cSCPINode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
+{
+    return new cSCPINode(name, type, scpiObject);
 }
 
