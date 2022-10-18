@@ -27,8 +27,8 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     }
     bool overwriteExisting = false;
     QString sName = pSCPIObject->getName();
-    for (quint32 i = 0; i < parentItem->rowCount(); i++) {
-        childItem = parentItem->child(i);
+    for (int row = 0; row < parentItem->rowCount(); row++) {
+        childItem = parentItem->child(row);
         if (childItem->data(Qt::DisplayRole).toString() == sName) {
             overwriteExisting = true;
             break;
@@ -53,8 +53,7 @@ void cSCPIPrivate::insertNode(const QStringList &parentnodeNames, cSCPINode *pSC
 
 void cSCPIPrivate::delChildItems(QStandardItem *Item)
 {
-    while ( Item->rowCount() > 0 ) // as long as we have child item rows
-    {
+    while ( Item->rowCount() > 0 ) { // as long as we have child item rows
         delChildItems(Item->child(0)); // we delete all entries behind item recursively
         Item->removeRow(0);
     }
@@ -63,20 +62,15 @@ void cSCPIPrivate::delChildItems(QStandardItem *Item)
 void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 {
     QStandardItem *parentItem = Item->parent();
-
-    if (parentItem) // do we have a parent ?
-    {
-        if (parentItem->rowCount() == 1) // if this item is the ony child of parent
-        {
+    if (parentItem) { // do we have a parent ?
+        if (parentItem->rowCount() == 1) { // if this item is the ony child of parent
             parentItem->removeRow(0); // we delete it
             delItemAndParents(parentItem); // and test if the parent has to be deleted too
         }
         else
             parentItem->removeRow(Item->row());
-
     }
-    else
-    {
+    else {
         QStandardItemModel *mdl = Item->model();
         mdl->removeRow(Item->row());
     }
@@ -84,50 +78,32 @@ void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
 
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
 {
-    cParse Parser;
-    QChar* pInput;
-    pInput = (QChar*) cmd.data();
-    QString keyw;
     QStringList slNodeNames;
-
-    do
-    {
-        keyw = Parser.GetKeyword(&pInput); // we fetch all keywords from command
+    cParse Parser;
+    QChar* pInput = (QChar*) cmd.data();
+    do {
+        QString keyw = Parser.GetKeyword(&pInput); // we fetch all keywords from command
         slNodeNames.append(keyw); // and put them into the string list
     } while (*pInput  == ':');
 
-    if (slNodeNames.count() > 0 )
-    {
-        QStringList::const_iterator it;
-        QStandardItem *parentItem;
-        QStandardItem *childItem;
-
-        parentItem = m_SCPIModel.invisibleRootItem();
-
-        for (it = slNodeNames.begin(); it != slNodeNames.end(); ++it)
-        {
-
-            childItem = 0; // we use childitem = 0 as information that no matching node was found
-
-            quint32 nrows = parentItem->rowCount();
-
-            if (nrows > 0)
-                for (quint32 j = 0; j < nrows; j++)
-                {
+    if (slNodeNames.count() > 0 ) {
+        QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
+        for(const auto &nodeName: slNodeNames) {
+            QStandardItem *childItem = nullptr; // we use childitem = 0 as information that no matching node was found
+            int nrows = parentItem->rowCount();
+            if (nrows > 0) {
+                for (int j = 0; j < nrows; j++) {
                     childItem = parentItem->child(j);
-                    if (childItem->data(Qt::DisplayRole) == *it)
+                    if (childItem->data(Qt::DisplayRole) == nodeName)
                         break; //
                     else
                         childItem = 0;
                 }
-
+            }
             if ( !(parentItem = childItem)) // from here we will continue if possible
                 break;
-
         }
-
-        if (parentItem) // we found the whole keyword list in the model
-        {
+        if (parentItem) { // we found the whole keyword list in the model
             delChildItems(parentItem); // so lets delete what's necessary
             delItemAndParents(parentItem);
         }
@@ -136,9 +112,8 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, bool caseSensitive)
 {
-    cSCPINode *childItem = 0;
+    cSCPINode *childItem = nullptr;
     QChar* pInput;
-
     if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive)) {
         Param = QString(pInput);
         return childItem->m_pSCPIObject;
@@ -154,7 +129,7 @@ QStandardItemModel* cSCPIPrivate::getSCPIModel()
 
 void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
-    for (quint32 row = 0; row < rootItem->rowCount(); row++) {
+    for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = (cSCPINode*) rootItem->child(row);
         QString nodeName = childItem->data(Qt::DisplayRole).toString();
         QDomElement cmdTag = doc.createElement(nodeName);
@@ -209,36 +184,28 @@ bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
 {
     static QStringList nodeNames;
     QDomNodeList nl = rootNode.childNodes();
-
-    quint32 n = nl.length();
-    if ( n > 0)
-    {
-        quint32 i;
-        for (i=0; i<n ; i++)
-        {
+    int n = nl.length();
+    if ( n > 0) {
+        for (int i=0; i<n ; i++) {
             if (nlevel == 0)
                 nodeNames.clear(); // for each root cmd we clear the local node name list
             QDomNode node2 = nl.item(i);
             QDomElement e = node2.toElement();
             QString s = e.tagName();
-            if (!node2.hasChildNodes())
-            {
+            if (!node2.hasChildNodes()) {
                 quint8 t = getNodeType(e.attribute(scpinodeAttributeName));
                 cSCPINode *pSCPINode = createNode (s , t, NULL); // we have no corresponding cSCPIObject -> NULL
                 insertNode(nodeNames, pSCPINode);
             }
-            else
-            {
+            else {
                 nodeNames.append(s); // we add each node name to the list
                 getcommandInfo(node2, ++nlevel); // we look for further levels
                 --nlevel;
             }
         }
     }
-
     if (nlevel > 0)
         nodeNames.pop_back();
-
     return true;
 }
 
@@ -246,7 +213,7 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
 {
     for(const QString &nodeName : parentnodeNames) {
         QStandardItem *childItem = nullptr;
-        for (quint32 row = 0; row < parentItem->rowCount(); row++) {
+        for (int row = 0; row < parentItem->rowCount(); row++) {
             childItem = parentItem->child(row);
             if (childItem->data(Qt::DisplayRole) == nodeName)
                 break;
@@ -265,13 +232,13 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
 bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
 {
     bool found = false;
-    quint32 nrows = parentItem->rowCount();
+    int nrows = parentItem->rowCount();
     if ( nrows > 0) { // keywords in next command level available
         cSCPIString keyw = (m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
         if (!caseSensitive)
             keyw = keyw.toUpper();
-        for (quint32 i = 0; i < nrows; i++) {
-            QStandardItem *childItem = parentItem->child(i);
+        for (int row = 0; row < nrows; row++) {
+            QStandardItem *childItem = parentItem->child(row);
             *scpiChildItem = (cSCPINode*) childItem;
             QString s = (*scpiChildItem)->data(Qt::DisplayRole).toString();
             if (!caseSensitive)
