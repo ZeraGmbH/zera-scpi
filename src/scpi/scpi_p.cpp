@@ -342,45 +342,6 @@ bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildIte
     return found;
 }
 
-
-bool cSCPIPrivate::importSCPIModelXML(QIODevice *ioDevice)
-{
-    clearSCPICmdList();
-
-    QDomDocument modelDoc;
-    if ( !modelDoc.setContent(ioDevice) )
-        return false;
-
-    QDomDocumentType TheDocType = modelDoc.doctype ();
-    if (TheDocType.name() != scpimodelDocName)
-        return false;
-
-    QDomElement rootElem = modelDoc.documentElement();
-    if (rootElem.tagName() != scpimodelrootName)
-        return false;
-
-    QDomNodeList nl=rootElem.childNodes();
-
-    for (int i=0; i<nl.length() ; i++)
-    {
-        QDomNode n = nl.item(i);
-        QDomElement e=n.toElement();
-
-        if (e.tagName() == scpimodeldeviceTag)
-            m_interfaceName = e.text();
-
-        if (e.tagName() == scpimodelsTag) // here the scpi models start
-        {
-            m_SCPIModel.clear(); // we clear the existing command list
-            if (!getcommandInfo( n, 0))
-                return false;
-        }
-
-    }
-
-    return true;
-}
-
 cSCPINode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
 {
     return new cSCPINode(name, type, scpiObject);

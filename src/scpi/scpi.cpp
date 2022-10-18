@@ -60,9 +60,3 @@ void cSCPI::exportSCPIModelXML(QString &sxml)
 {
     d_ptr->exportSCPIModelXML(sxml);
 }
-
-
-bool cSCPI::importSCPIModelXML(QIODevice *ioDevice)
-{
-    return d_ptr->importSCPIModelXML(ioDevice);
-}
