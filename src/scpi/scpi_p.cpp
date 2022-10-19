@@ -112,11 +112,6 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, b
         return nullptr;
 }
 
-QStandardItemModel* cSCPIPrivate::getSCPIModel()
-{
-    return &m_SCPIModel;
-}
-
 void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
