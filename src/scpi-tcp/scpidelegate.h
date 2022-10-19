@@ -15,7 +15,7 @@ class cSCPIDelegate: public QObject, public cSCPIObject
 
 public:
     cSCPIDelegate(QString cmdParent, QString cmd, quint8 type, cSCPI *scpiInterface, quint16 cmdCode);
-    virtual bool executeSCPI(const QString& sInput, QString& sOutput);
+    virtual bool executeSCPI(const QString& sInput, QString& sOutput) override;
     virtual bool executeSCPI(cProtonetCommand* protoCmd);
     QString getCommand();
 
