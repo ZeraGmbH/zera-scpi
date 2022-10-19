@@ -18,50 +18,33 @@ void cSCPINode::setType(quint8 type)
     m_nType = type;
 }
 
-
-int cSCPINode::type()
+const QString &cSCPINode::getName()
 {
-    return QStandardItem::UserType;
+    return m_sNodeName;
 }
 
-
-QVariant cSCPINode::data(int role) const
+QString cSCPINode::getTypeInfo()
 {
-    QString ttip;
+    QString typeInfo;
+    if (m_nType & SCPI::isNode)
+        typeInfo = SCPI::scpiNodeType[SCPI::Node];
 
-    switch (role)
-    {
-    case Qt::DisplayRole:
-        return m_sNodeName;
-    case Qt::ToolTipRole:
-        ttip = "";
-
-        if (m_nType & SCPI::isNode)
-            ttip = SCPI::scpiNodeType[SCPI::Node];
-
-        if (m_nType & SCPI::isQuery)
-        {
-            if (ttip.length() > 0)
-                ttip += ",";
-            ttip += SCPI::scpiNodeType[SCPI::Query];
-        }
-
-        if (m_nType & SCPI::isCmd)
-        {
-            if (ttip.length() > 0)
-                ttip += ",";
-            ttip += SCPI::scpiNodeType[SCPI::Cmd];
-        }
-
-        if (m_nType & SCPI::isCmdwP)
-        {
-            if (ttip.length() > 0)
-                ttip += ",";
-            ttip += SCPI::scpiNodeType[SCPI::CmdwP];
-        }
-
-        return ttip;
+    if (m_nType & SCPI::isQuery) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::Query];
     }
-    return QVariant();
-}
 
+    if (m_nType & SCPI::isCmd) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::Cmd];
+    }
+
+    if (m_nType & SCPI::isCmdwP) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::CmdwP];
+    }
+    return typeInfo;
+}
