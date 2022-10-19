@@ -18,7 +18,7 @@ cSCPIPrivate::~cSCPIPrivate()
 {
 }
 
-void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
+void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
     QStandardItem *childItem;

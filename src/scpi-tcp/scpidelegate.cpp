@@ -10,7 +10,7 @@ cSCPIDelegate::cSCPIDelegate(QString cmdParent, QString cmd, quint8 type, cSCPI 
     :cSCPIObject(cmd, type), m_nCmdCode(cmdCode)
 {
     m_sCommand = QString("%1:%2").arg(cmdParent).arg(cmd);
-    scpiInterface->genSCPICmd(cmdParent.split(":"), this);
+    scpiInterface->insertScpiCmd(cmdParent.split(":"), this);
 }
 
 

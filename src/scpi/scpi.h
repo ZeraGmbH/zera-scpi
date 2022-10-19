@@ -103,7 +103,7 @@ public:
       @param[in] parentnodeNames all parent node names.
       @param[in] pSCPIObject the node that holds the object to handle the command.
       */
-    void genSCPICmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
+    void insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
 
     /**
       @b deletes command(s) from the command list
