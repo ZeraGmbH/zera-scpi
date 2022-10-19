@@ -123,13 +123,11 @@ void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  Q
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
         QDomElement cmdTag = doc.createElement(childItem->getName());
-        QString nodeName;
+        QString typeInfo;
         if (nlevel == 0)
-            nodeName = "Model,";
-        else
-            nodeName = "";
-        nodeName += childItem->getTypeInfo();
-        cmdTag.setAttribute(scpinodeAttributeName, nodeName);
+            typeInfo = "Model,";
+        typeInfo += childItem->getTypeInfo();
+        cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
         rootElement.appendChild(cmdTag);
         appendSCPIRows(childItem, doc, cmdTag, ++nlevel);
         --nlevel;
