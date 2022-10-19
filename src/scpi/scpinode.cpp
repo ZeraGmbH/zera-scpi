@@ -22,29 +22,3 @@ const QString &cSCPINode::getName()
 {
     return m_sNodeName;
 }
-
-QString cSCPINode::getTypeInfo()
-{
-    QString typeInfo;
-    if (m_nType & SCPI::isNode)
-        typeInfo = SCPI::scpiNodeType[SCPI::Node];
-
-    if (m_nType & SCPI::isQuery) {
-        if (typeInfo.length() > 0)
-            typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::Query];
-    }
-
-    if (m_nType & SCPI::isCmd) {
-        if (typeInfo.length() > 0)
-            typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::Cmd];
-    }
-
-    if (m_nType & SCPI::isCmdwP) {
-        if (typeInfo.length() > 0)
-            typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::CmdwP];
-    }
-    return typeInfo;
-}

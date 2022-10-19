@@ -12,7 +12,6 @@ public:
     quint8 getType();
     void setType(quint8 type);
     const QString &getName();
-    QString getTypeInfo();
 
 private:
     QString m_sNodeName;
