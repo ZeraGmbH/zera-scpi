@@ -75,13 +75,6 @@ private:
       @b used in the XML parser
       */
     void appendSCPIRows(QStandardItem* rootItem, QDomDocument &doc, QDomElement &rootElement, quint32 nlevel);
-    /**
-      @b Returns the readable node type
-      */
-    quint8 getNodeType(const QString& sAttr);
-    /**
-      @b used in the XML parser
-      */
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
 

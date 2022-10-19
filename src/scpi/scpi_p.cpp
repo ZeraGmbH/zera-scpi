@@ -158,21 +158,6 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     sxml = modelDoc.toString();
 }
 
-quint8 cSCPIPrivate::getNodeType(const QString& sAttr)
-{
-    int t = SCPI::isNode;
-    if ( sAttr.contains(SCPI::scpiNodeType[SCPI::Query]) )
-        t += SCPI::isQuery;
-    if ( sAttr.contains(SCPI::scpiNodeType[SCPI::CmdwP]) )
-        t += SCPI::isCmdwP;
-    else
-    if ( sAttr.contains(SCPI::scpiNodeType[SCPI::Cmd]) )
-        t += SCPI::isCmd;
-
-    return t;
-}
-
-
 QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList &parentnodeNames)
 {
     for(const QString &nodeName : parentnodeNames) {
