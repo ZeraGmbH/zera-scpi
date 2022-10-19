@@ -26,20 +26,7 @@ public:
       @b Returns the object's name as const reference.
       */
     const QString getName();
-    /**
-      @b Sets the object's name to name.
-      @param[in] name
-      */
-    void setName(const QString& name);
-    /**
-      @b Return the object's type.
-      */
     quint8 getType();
-    /**
-      @b Sets the object's type to type.
-      */
-    void setType(const quint8 type);
-
 private:
     /**
       @b D'pointer to the private library internal structure

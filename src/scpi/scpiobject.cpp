@@ -25,19 +25,7 @@ const QString cSCPIObject::getName()
 }
 
 
-void cSCPIObject::setName(const QString& name)
-{
-    d_ptr->m_sName = name;
-}
-
-
 quint8 cSCPIObject::getType()
 {
     return d_ptr->m_nType;
-}
-
-
-void cSCPIObject::setType(const quint8 type)
-{
-    d_ptr->m_nType = type;
 }
