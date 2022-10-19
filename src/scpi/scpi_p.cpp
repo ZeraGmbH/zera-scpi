@@ -82,18 +82,16 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     if (slNodeNames.count() > 0 ) {
         QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
         for(const auto &nodeName: slNodeNames) {
-            QStandardItem *childItem = nullptr; // we use childitem = 0 as information that no matching node was found
-            int nrows = parentItem->rowCount();
-            if (nrows > 0) {
-                for (int j = 0; j < nrows; j++) {
-                    childItem = parentItem->child(j);
-                    if (childItem->data(Qt::DisplayRole) == nodeName)
-                        break; //
-                    else
-                        childItem = 0;
-                }
+            QStandardItem *childItem = nullptr;
+            for (int row = 0; row < parentItem->rowCount(); row++) {
+                childItem = parentItem->child(row);
+                if (childItem->data(Qt::DisplayRole) == nodeName)
+                    break;
+                else
+                    childItem = nullptr;
             }
-            if ( !(parentItem = childItem)) // from here we will continue if possible
+            parentItem = childItem;
+            if (!parentItem)
                 break;
         }
         if (parentItem) { // we found the whole keyword list in the model
