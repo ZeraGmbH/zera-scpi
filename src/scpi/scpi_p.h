@@ -42,8 +42,6 @@ public:
       */
     void exportSCPIModelXML(QString &sxml);
 
-    QStandardItemModel m_SCPIModel;
-
 private:
     cSCPINode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
     void delChildItems(QStandardItem* Item);
@@ -53,6 +51,7 @@ private:
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
 
+    QStandardItemModel m_SCPIModel;
     QString m_interfaceName;
     cParse m_Parser;
 };
