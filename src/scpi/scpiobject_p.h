@@ -3,20 +3,9 @@
 
 #include <QString>
 
-/**
-  @brief
-  Holds the data for cSCPIObject.
-  */
 class cSCPIObjectPrivate {
 public:
-    /**
-      @b name of the object
-      */
     QString m_sName;
-    /**
-      @b type of the object
-      @see SCPI::eSCPINodeType
-      */
     quint8 m_nType;
 };
 
