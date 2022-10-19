@@ -180,35 +180,6 @@ quint8 cSCPIPrivate::getNodeType(const QString& sAttr)
 }
 
 
-bool cSCPIPrivate::getcommandInfo( QDomNode rootNode, quint32 nlevel )
-{
-    static QStringList nodeNames;
-    QDomNodeList nl = rootNode.childNodes();
-    int n = nl.length();
-    if ( n > 0) {
-        for (int i=0; i<n ; i++) {
-            if (nlevel == 0)
-                nodeNames.clear(); // for each root cmd we clear the local node name list
-            QDomNode node2 = nl.item(i);
-            QDomElement e = node2.toElement();
-            QString s = e.tagName();
-            if (!node2.hasChildNodes()) {
-                quint8 t = getNodeType(e.attribute(scpinodeAttributeName));
-                cSCPINode *pSCPINode = createNode (s , t, NULL); // we have no corresponding cSCPIObject -> NULL
-                insertNode(nodeNames, pSCPINode);
-            }
-            else {
-                nodeNames.append(s); // we add each node name to the list
-                getcommandInfo(node2, ++nlevel); // we look for further levels
-                --nlevel;
-            }
-        }
-    }
-    if (nlevel > 0)
-        nodeNames.pop_back();
-    return true;
-}
-
 QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList &parentnodeNames)
 {
     for(const QString &nodeName : parentnodeNames) {
