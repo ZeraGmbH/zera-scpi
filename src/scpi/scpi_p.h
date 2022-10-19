@@ -1,16 +1,13 @@
 #ifndef SCPI_P_H
 #define SCPI_P_H
 
-#include <QStandardItemModel>
-#include <QIODevice>
-#include <qstring.h>
 #include "scpistring.h"
 #include "parse.h"
-
-
-class cSCPIObject;
-class cSCPINode;
-
+#include "scpiobject.h"
+#include "scpinode.h"
+#include <QStandardItemModel>
+#include <QString>
+#include <QDomDocument>
 
 const QString scpimodelDocName = "SCPIModel";
 const QString scpimodelrootName = "MODELLIST";
@@ -54,7 +51,6 @@ private:
     void appendSCPIRows(QStandardItem* rootItem, QDomDocument &doc, QDomElement &rootElement, quint32 nlevel);
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
-
 
     QString m_interfaceName;
     cParse m_Parser;
