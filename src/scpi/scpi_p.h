@@ -83,7 +83,6 @@ private:
     /**
       @b used in the XML parser
       */
-    bool getcommandInfo( QDomNode rootNode, quint32 nlevel );
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
 
