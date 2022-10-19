@@ -44,13 +44,6 @@ void cSCPIPrivate::genSCPICmd(const QStringList& parentnodeNames, cSCPIObject *p
     }
 }
 
-void cSCPIPrivate::insertNode(const QStringList &parentnodeNames, cSCPINode *pSCPINode)
-{
-    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
-    parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
-    parentItem->appendRow(pSCPINode);
-}
-
 void cSCPIPrivate::delChildItems(QStandardItem *Item)
 {
     while ( Item->rowCount() > 0 ) { // as long as we have child item rows

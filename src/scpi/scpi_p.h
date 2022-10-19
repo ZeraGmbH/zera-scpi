@@ -62,7 +62,6 @@ public:
 
 private:
     cSCPINode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
-    void insertNode(const QStringList& parentnodeNames, cSCPINode* pSCPINode);
 
     /**
       @b deletes all child items
