@@ -18,7 +18,6 @@ const QString scpinodeAttributeName = "Type";
 class cSCPIPrivate {
 public:
     cSCPIPrivate(const QString& interfaceName);
-    virtual ~cSCPIPrivate();
     void insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
     void delSCPICmds(const QString& cmd);
     cSCPIObject* getSCPIObject(const QString& input, QString& Param, bool caseSensitive = false);

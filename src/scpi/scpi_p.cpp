@@ -13,10 +13,6 @@ cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
 {
 }
 
-cSCPIPrivate::~cSCPIPrivate()
-{
-}
-
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
