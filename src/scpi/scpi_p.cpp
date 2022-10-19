@@ -126,12 +126,38 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         QString typeInfo;
         if (nlevel == 0)
             typeInfo = "Model,";
-        typeInfo += childItem->getTypeInfo();
+        typeInfo += scpiTypeToString(childItem->getType());
         cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
         rootElement.appendChild(cmdTag);
         appendScpiNodeXmlInfo(childItem, doc, cmdTag, ++nlevel);
         --nlevel;
     }
+}
+
+QString cSCPIPrivate::scpiTypeToString(quint8 scpiType)
+{
+    QString typeInfo;
+    if (scpiType & SCPI::isNode)
+        typeInfo = SCPI::scpiNodeType[SCPI::Node];
+
+    if (scpiType & SCPI::isQuery) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::Query];
+    }
+
+    if (scpiType & SCPI::isCmd) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::Cmd];
+    }
+
+    if (scpiType & SCPI::isCmdwP) {
+        if (typeInfo.length() > 0)
+            typeInfo += ",";
+        typeInfo += SCPI::scpiNodeType[SCPI::CmdwP];
+    }
+    return typeInfo;
 }
 
 void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
