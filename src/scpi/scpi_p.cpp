@@ -11,7 +11,6 @@
 cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
     :m_interfaceName(interfaceName)
 {
-    m_SCPIModel.clear();
 }
 
 cSCPIPrivate::~cSCPIPrivate()
