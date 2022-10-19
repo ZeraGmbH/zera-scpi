@@ -118,7 +118,7 @@ QStandardItemModel* cSCPIPrivate::getSCPIModel()
     return &m_SCPIModel;
 }
 
-void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
+void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
@@ -129,7 +129,7 @@ void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  Q
         typeInfo += childItem->getTypeInfo();
         cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
         rootElement.appendChild(cmdTag);
-        appendSCPIRows(childItem, doc, cmdTag, ++nlevel);
+        appendScpiNodeXmlInfo(childItem, doc, cmdTag, ++nlevel);
         --nlevel;
     }
 }
@@ -149,7 +149,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     QDomElement modelsTag = modelDoc.createElement(scpimodelsTag);
     rootTag.appendChild( modelsTag );
 
-    appendSCPIRows(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, 0);
+    appendScpiNodeXmlInfo(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, 0);
 
     sxml = modelDoc.toString();
 }
