@@ -46,19 +46,12 @@ const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command rec
                                       };
 enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8, isXMLCmd = 16};
 enum eSCPINode { Node, Query, Cmd, CmdwP };
-
-const QString scpiNodeType[CmdwP+1] = { "Node",
-                                  "Query",
-                                  "Command",
-                                  "Command+Par" };
-
 }
-
 
 class cSCPIPrivate;
 
-
-class SCPI_EXPORT cSCPI {
+class SCPI_EXPORT cSCPI
+{
 public:
     cSCPI(QString interfaceName);
     virtual ~cSCPI();

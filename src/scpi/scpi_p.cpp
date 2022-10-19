@@ -124,28 +124,36 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
     }
 }
 
+static const QString scpiNodeType[SCPI::CmdwP+1] =
+{
+    "Node",
+    "Query",
+    "Command",
+    "Command+Par"
+};
+
 QString cSCPIPrivate::scpiTypeToString(quint8 scpiType)
 {
     QString typeInfo;
     if (scpiType & SCPI::isNode)
-        typeInfo = SCPI::scpiNodeType[SCPI::Node];
+        typeInfo = scpiNodeType[SCPI::Node];
 
     if (scpiType & SCPI::isQuery) {
         if (typeInfo.length() > 0)
             typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::Query];
+        typeInfo += scpiNodeType[SCPI::Query];
     }
 
     if (scpiType & SCPI::isCmd) {
         if (typeInfo.length() > 0)
             typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::Cmd];
+        typeInfo += scpiNodeType[SCPI::Cmd];
     }
 
     if (scpiType & SCPI::isCmdwP) {
         if (typeInfo.length() > 0)
             typeInfo += ",";
-        typeInfo += SCPI::scpiNodeType[SCPI::CmdwP];
+        typeInfo += scpiNodeType[SCPI::CmdwP];
     }
     return typeInfo;
 }
