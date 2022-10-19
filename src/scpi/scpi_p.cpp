@@ -122,8 +122,8 @@ void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  Q
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
-        QString nodeName = childItem->getName();
-        QDomElement cmdTag = doc.createElement(nodeName);
+        QDomElement cmdTag = doc.createElement(childItem->getName());
+        QString nodeName;
         if (nlevel == 0)
             nodeName = "Model,";
         else
