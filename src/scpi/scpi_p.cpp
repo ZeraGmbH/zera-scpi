@@ -21,15 +21,15 @@ cSCPIPrivate::~cSCPIPrivate()
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
     QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
-    QStandardItem *childItem;
+    cSCPINode *childItem;
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
     }
     bool overwriteExisting = false;
     QString sName = pSCPIObject->getName();
     for (int row = 0; row < parentItem->rowCount(); row++) {
-        childItem = parentItem->child(row);
-        if (childItem->data(Qt::DisplayRole).toString() == sName) {
+        childItem = static_cast<cSCPINode*>(parentItem->child(row));
+        if (childItem->getName() == sName) {
             overwriteExisting = true;
             break;
         }
@@ -82,10 +82,10 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     if (slNodeNames.count() > 0 ) {
         QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
         for(const auto &nodeName: slNodeNames) {
-            QStandardItem *childItem = nullptr;
+            cSCPINode *childItem = nullptr;
             for (int row = 0; row < parentItem->rowCount(); row++) {
-                childItem = parentItem->child(row);
-                if (childItem->data(Qt::DisplayRole) == nodeName)
+                childItem = static_cast<cSCPINode*>(parentItem->child(row));
+                if (childItem->getName() == nodeName)
                     break;
                 else
                     childItem = nullptr;
@@ -121,14 +121,14 @@ QStandardItemModel* cSCPIPrivate::getSCPIModel()
 void cSCPIPrivate::appendSCPIRows(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
-        cSCPINode *childItem = (cSCPINode*) rootItem->child(row);
-        QString nodeName = childItem->data(Qt::DisplayRole).toString();
+        cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
+        QString nodeName = childItem->getName();
         QDomElement cmdTag = doc.createElement(nodeName);
         if (nlevel == 0)
             nodeName = "Model,";
         else
             nodeName = "";
-        nodeName += childItem->data(Qt::ToolTipRole).toString();
+        nodeName += childItem->getTypeInfo();
         cmdTag.setAttribute(scpinodeAttributeName, nodeName);
         rootElement.appendChild(cmdTag);
         appendSCPIRows(childItem, doc, cmdTag, ++nlevel);
@@ -159,10 +159,10 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList &parentnodeNames)
 {
     for(const QString &nodeName : parentnodeNames) {
-        QStandardItem *childItem = nullptr;
+        cSCPINode *childItem = nullptr;
         for (int row = 0; row < parentItem->rowCount(); row++) {
-            childItem = parentItem->child(row);
-            if (childItem->data(Qt::DisplayRole) == nodeName)
+            childItem = static_cast<cSCPINode*>(parentItem->child(row));
+            if (childItem->getName() == nodeName)
                 break;
             else
                 childItem = nullptr;
@@ -185,9 +185,9 @@ bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildIte
         if (!caseSensitive)
             keyw = keyw.toUpper();
         for (int row = 0; row < nrows; row++) {
-            QStandardItem *childItem = parentItem->child(row);
+            cSCPINode *childItem = static_cast<cSCPINode*>(parentItem->child(row));
             *scpiChildItem = (cSCPINode*) childItem;
-            QString s = (*scpiChildItem)->data(Qt::DisplayRole).toString();
+            QString s = (*scpiChildItem)->getName();
             if (!caseSensitive)
                 s = s.toUpper(); // (s) is a node name from command tree
             if ((found = (keyw == s))) {
