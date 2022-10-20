@@ -13,6 +13,8 @@ public:
     virtual bool executeSCPI(const QString& sInput, QString& sOutput) = 0;
     const QString getName();
     quint8 getType();
+    void setDescription(const QString &desc);
+    const QString &getDescription();
 private:
     cSCPIObjectPrivate *d_ptr;
 };

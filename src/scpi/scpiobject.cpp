@@ -29,3 +29,13 @@ quint8 cSCPIObject::getType()
 {
     return d_ptr->m_nType;
 }
+
+void cSCPIObject::setDescription(const QString &desc)
+{
+    d_ptr->m_description = desc;
+}
+
+const QString &cSCPIObject::getDescription()
+{
+    return d_ptr->m_description;
+}

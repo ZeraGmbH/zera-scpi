@@ -113,11 +113,21 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
         QDomElement cmdTag = doc.createElement(childItem->getName());
+
+        QString desc;
+        if(childItem->m_pSCPIObject) {
+            desc = childItem->m_pSCPIObject->getDescription();
+        }
+        if(!desc.isEmpty()) {
+            cmdTag.setAttribute("Description", desc);
+        }
+
         QString typeInfo;
         if (nlevel == 0)
             typeInfo = "Model,";
         typeInfo += scpiTypeToString(childItem->getType());
         cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
+
         rootElement.appendChild(cmdTag);
         appendScpiNodeXmlInfo(childItem, doc, cmdTag, ++nlevel);
         --nlevel;
