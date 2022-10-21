@@ -6,7 +6,7 @@
 #include "scpiobject.h"
 #include "scpinode.h"
 #include <QStandardItemModel>
-#include <QString>
+#include <QStringList>
 #include <QDomDocument>
 
 const QString scpimodelDocName = "SCPIModel";
@@ -27,7 +27,7 @@ private:
     cSCPINode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
     void delChildItems(QStandardItem* Item);
     void delItemAndParents(QStandardItem* Item);
-    void appendScpiNodeXmlInfo(QStandardItem* rootItem, QDomDocument &doc, QDomElement &rootElement, quint32 nlevel);
+    void appendScpiNodeXmlInfo(QStandardItem* rootItem, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
     static QString scpiTypeToString(quint8 scpiType);
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
