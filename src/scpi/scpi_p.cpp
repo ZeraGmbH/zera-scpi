@@ -114,12 +114,12 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
         QDomElement cmdTag = doc.createElement(childItem->getName());
 
-        QString desc;
+        cSCPIObject::XmlKeyValueMap xmlAtributes;
         if(childItem->m_pSCPIObject) {
-            desc = childItem->m_pSCPIObject->getDescription();
+            xmlAtributes = childItem->m_pSCPIObject->getXmlAttibuteMap();
         }
-        if(!desc.isEmpty()) {
-            cmdTag.setAttribute("Description", desc);
+        for(auto iter=xmlAtributes.constBegin(); iter!=xmlAtributes.constEnd(); ++iter) {
+            cmdTag.setAttribute(iter.key(), iter.value());
         }
 
         QString typeInfo;

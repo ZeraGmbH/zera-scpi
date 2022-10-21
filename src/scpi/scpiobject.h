@@ -2,6 +2,7 @@
 #define SCPIOBJECT_H
 
 #include "SCPI_global.h"
+#include <QMap>
 
 class cSCPIObjectPrivate;
 
@@ -13,8 +14,10 @@ public:
     virtual bool executeSCPI(const QString& sInput, QString& sOutput) = 0;
     const QString getName();
     quint8 getType();
-    void setDescription(const QString &desc);
-    const QString &getDescription();
+
+    void setXmlAttribute(const QString &key, const QString &value);
+    typedef QMap<QString, QString> XmlKeyValueMap;
+    const XmlKeyValueMap &getXmlAttibuteMap();
 private:
     cSCPIObjectPrivate *d_ptr;
 };

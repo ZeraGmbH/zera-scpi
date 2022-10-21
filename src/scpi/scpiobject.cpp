@@ -30,12 +30,12 @@ quint8 cSCPIObject::getType()
     return d_ptr->m_nType;
 }
 
-void cSCPIObject::setDescription(const QString &desc)
+void cSCPIObject::setXmlAttribute(const QString &key, const QString &value)
 {
-    d_ptr->m_description = desc;
+    d_ptr->m_xmlAtttibuteMap[key] = value;
 }
 
-const QString &cSCPIObject::getDescription()
+const cSCPIObject::XmlKeyValueMap &cSCPIObject::getXmlAttibuteMap()
 {
-    return d_ptr->m_description;
+    return d_ptr->m_xmlAtttibuteMap;
 }
