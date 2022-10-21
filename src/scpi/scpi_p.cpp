@@ -108,11 +108,12 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, b
         return nullptr;
 }
 
-void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, quint32 nlevel)
+void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
-        QDomElement cmdTag = doc.createElement(childItem->getName());
+        QString childName = childItem->getName();
+        QDomElement cmdTag = doc.createElement(childName);
 
         cSCPIObject::XmlKeyValueMap xmlAtributes;
         if(childItem->m_pSCPIObject) {
@@ -123,14 +124,13 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         }
 
         QString typeInfo;
-        if (nlevel == 0)
+        if (parentNames.isEmpty())
             typeInfo = "Model,";
         typeInfo += scpiTypeToString(childItem->getType());
         cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
 
         rootElement.appendChild(cmdTag);
-        appendScpiNodeXmlInfo(childItem, doc, cmdTag, ++nlevel);
-        --nlevel;
+        appendScpiNodeXmlInfo(childItem, doc, cmdTag, QStringList() << parentNames << childName);
     }
 }
 
@@ -183,7 +183,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     QDomElement modelsTag = modelDoc.createElement(scpimodelsTag);
     rootTag.appendChild( modelsTag );
 
-    appendScpiNodeXmlInfo(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, 0);
+    appendScpiNodeXmlInfo(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, QStringList());
 
     sxml = modelDoc.toString();
 }
