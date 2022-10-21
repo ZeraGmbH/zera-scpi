@@ -115,6 +115,11 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         QString childName = childItem->getName();
         QDomElement cmdTag = doc.createElement(childName);
 
+        QStringList childNames = parentNames;
+        childNames.append(childName);
+        if(!isNodeTypeOnly(childItem)) {
+            cmdTag.setAttribute("ScpiPath", childNames.join(":"));
+        }
         cSCPIObject::XmlKeyValueMap xmlAtributes;
         if(childItem->m_pSCPIObject) {
             xmlAtributes = childItem->m_pSCPIObject->getXmlAttibuteMap();
@@ -130,7 +135,7 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
 
         rootElement.appendChild(cmdTag);
-        appendScpiNodeXmlInfo(childItem, doc, cmdTag, QStringList() << parentNames << childName);
+        appendScpiNodeXmlInfo(childItem, doc, cmdTag, childNames);
     }
 }
 
@@ -238,6 +243,11 @@ bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildIte
         }
     }
     return found;
+}
+
+bool cSCPIPrivate::isNodeTypeOnly(cSCPINode *item)
+{
+    return item->getType() == SCPI::isNode;
 }
 
 cSCPINode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
