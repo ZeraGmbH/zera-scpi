@@ -1,0 +1,13 @@
+#!/bin/sh
+
+host=$1
+port=6320
+cmd1='dev:iface?'
+
+( echo open ${host} ${port}
+sleep 1
+echo ${cmd1}
+sleep 2
+ ) | telnet | sed -E -e "s@(telnet.*)|(Trying .*)|(Connected.*)|(Escape character.*)@@"  -e '/^$/d' > $2
+
+
