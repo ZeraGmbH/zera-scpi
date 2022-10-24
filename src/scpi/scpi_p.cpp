@@ -113,7 +113,8 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
         QString childName = childItem->getName();
-        QDomElement cmdTag = doc.createElement(childName);
+
+        QDomElement cmdTag = doc.createElement(makeValidXmlTag(childName));
 
         QStringList childNames = parentNames;
         childNames.append(childName);
@@ -248,6 +249,15 @@ bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildIte
 bool cSCPIPrivate::isNodeTypeOnly(cSCPINode *item)
 {
     return item->getType() == SCPI::isNode;
+}
+
+QString cSCPIPrivate::makeValidXmlTag(QString xmlTag)
+{
+    xmlTag.replace("*", "");
+    if(xmlTag.count() > 0 && xmlTag[0].isNumber()) {
+        xmlTag = "N_" + xmlTag;
+    }
+    return xmlTag;
 }
 
 cSCPINode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)

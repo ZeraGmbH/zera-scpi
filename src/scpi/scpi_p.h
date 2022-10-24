@@ -32,6 +32,7 @@ private:
     QStandardItem *findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList& parentnodeNames);
     bool foundItem(QStandardItem *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
     bool isNodeTypeOnly(cSCPINode *item);
+    QString makeValidXmlTag(QString xmlTag);
 
     QStandardItemModel m_SCPIModel;
     QString m_interfaceName;
