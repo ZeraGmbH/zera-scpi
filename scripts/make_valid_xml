@@ -1,6 +1,0 @@
-#!/bin/sh
-
-# make output of 'dev:iface?' valid
-
-sed -i 's:000:No_000:g' $1
-sed -i 's:<\*:<:g' $1
