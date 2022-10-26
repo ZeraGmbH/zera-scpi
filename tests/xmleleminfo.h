@@ -6,17 +6,15 @@
 #include <QDomNode>
 #include <functional>
 
-class XmlComparer
+class XmlElemInfo
 {
 public:
     bool loadXml(const QString &xml);
-    int getNodeCount();
+    int getElemCount();
     bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
     bool traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perNodeAction);
     QDomDocument m_doc;
-
-
 };
 
 #endif // XMLCOMPARER_H
