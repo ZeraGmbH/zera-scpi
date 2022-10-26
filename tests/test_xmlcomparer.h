@@ -21,7 +21,6 @@ private slots:
     void findTwoChildNodes();
     void findTwoChildNodesNested();
     void findTwoChildNodesHasAttributes();
-
 };
 
 #endif // TEST_XMLCOMPARER_H
