@@ -5,17 +5,14 @@
 QTEST_MAIN(test_xmlcomparer)
 
 QString xmlOneNode =
-    "<!DOCTYPE SCPIModel>"
-        "<NODE1/>";
+    "<NODE1/>";
 
 QString xmlOneChildNode =
-    "<!DOCTYPE SCPIModel>"
     "<NODE1>"
         "<NODE2/>"
     "</NODE1>";
 
 QString xmlTwoChildNodes =
-    "<!DOCTYPE SCPIModel>"
     "<NODE1>"
         "<NODE2/>"
         "<NODE3/>"
@@ -23,14 +20,12 @@ QString xmlTwoChildNodes =
 
 // see https://www.w3schools.com/xml/xml_attributes.asp
 QString xmlTwoChildNodesWithAttributes =
-    "<!DOCTYPE SCPIModel>"
     "<NODE1>"
         "<NODE2 a='1' b='2'></NODE2>"
         "<NODE3 c='3' d='4' e='5'></NODE3>"
     "</NODE1>";
 
 QString xmlTwoChildNodesNested =
-    "<!DOCTYPE SCPIModel>"
     "<NODE1>"
         "<NODE2>"
             "<NODE3/>"
