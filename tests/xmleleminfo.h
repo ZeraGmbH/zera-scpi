@@ -2,6 +2,7 @@
 #define XMLCOMPARER_H
 
 #include <QStringList>
+#include <QDomDocument>
 #include <QDomNode>
 #include <QDomElement>
 #include <functional>
