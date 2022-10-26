@@ -48,21 +48,21 @@ void test_xmlcomparer::loadValid()
     QVERIFY(cmp.loadXml(xmlOneNode));
 }
 
-void test_xmlcomparer::checkRootNode()
+void test_xmlcomparer::countRootNode()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneNode));
     QCOMPARE(cmp.getNodeCount(), 1);
 }
 
-void test_xmlcomparer::checkOneChildNode()
+void test_xmlcomparer::countOneChildNode()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneChildNode));
     QCOMPARE(cmp.getNodeCount(), 2);
 }
 
-void test_xmlcomparer::checkTwoChildNodes()
+void test_xmlcomparer::countTwoChildNodes()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodes));
@@ -70,10 +70,17 @@ void test_xmlcomparer::checkTwoChildNodes()
 
 }
 
-void test_xmlcomparer::checkTwoChildNodesNested()
+void test_xmlcomparer::countTwoChildNodesNested()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesNested));
+    QCOMPARE(cmp.getNodeCount(), 3);
+}
+
+void test_xmlcomparer::countTwoChildNodesAttributes()
+{
+    XmlComparer cmp;
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
     QCOMPARE(cmp.getNodeCount(), 3);
 }
 
