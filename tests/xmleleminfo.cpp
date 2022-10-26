@@ -9,8 +9,8 @@ int XmlElemInfo::getElemCount()
 {
     QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
-    traverseElements(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
-    {
+    recursiveElemWalk(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
+    {   // perElemFunction
         Q_UNUSED(childElem)
         Q_UNUSED(parentPath)
         nodeNums++;
@@ -24,8 +24,8 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     bool found = false;
     QDomNode firstNode = m_doc.firstChild();
     if(!nodeSearchPath.isEmpty()) {
-        traverseElements(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
-        {
+        recursiveElemWalk(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
+        {   // perElemFunction
             QStringList childPath = parentPath + QStringList(childElem.tagName());
             found = nodeSearchPath == childPath;
             if(found) {
@@ -37,16 +37,16 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     return found;
 }
 
-bool XmlElemInfo::traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perNodeAction)
+bool XmlElemInfo::recursiveElemWalk(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perElemFunction)
 {
-    bool continueTraverse = true;
+    bool continueWalk = true;
     if (node.isElement()) {
         QDomElement elem = node.toElement();
-        continueTraverse = perNodeAction(elem, parentPath);
+        continueWalk = perElemFunction(elem, parentPath);
         QStringList childrenparentPath = parentPath + QStringList(elem.tagName());
-        for(QDomNode childNode = elem.firstChild(); continueTraverse && !childNode.isNull(); childNode = childNode.nextSibling()) {
-            continueTraverse = traverseElements(childNode, childrenparentPath, perNodeAction);
+        for(QDomNode childNode = elem.firstChild(); continueWalk && !childNode.isNull(); childNode = childNode.nextSibling()) {
+            continueWalk = recursiveElemWalk(childNode, childrenparentPath, perElemFunction);
         }
     }
-    return continueTraverse;
+    return continueWalk;
 }
