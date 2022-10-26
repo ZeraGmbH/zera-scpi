@@ -9,10 +9,11 @@ class test_xmlcomparer : public QObject
 private slots:
     void loadInvalid();
     void loadValid();
-    void checkRootNode();
-    void checkOneChildNode();
-    void checkTwoChildNodes();
-    void checkTwoChildNodesNested();
+    void countRootNode();
+    void countOneChildNode();
+    void countTwoChildNodes();
+    void countTwoChildNodesNested();
+    void countTwoChildNodesAttributes();
 
     void findEmptySearch();
     void findRootNode();
