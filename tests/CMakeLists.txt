@@ -35,6 +35,7 @@ function(SETUP_TESTS)
         target_link_libraries(${_testname}
             PUBLIC
             Qt5::Test
+            testhelpers
             scpi-tcp
             )
     endforeach()
@@ -42,4 +43,5 @@ endfunction()
 
 SETUP_TESTS(
     test_scpisingletonfactory
+    test_xmlcomparer
 )
