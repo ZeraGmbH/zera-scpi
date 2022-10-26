@@ -2,8 +2,8 @@
 # https://github.com/KDAB/kdabtv/blob/master/Qt-Widgets-and-more/UnitTests/Tests/CMakeLists.txt
 
 add_library(testhelpers STATIC
-    xmlcomparer.cpp
-    xmlcomparer.h
+    xmleleminfo.cpp
+    xmleleminfo.h
     )
 
 target_include_directories(testhelpers
@@ -43,5 +43,5 @@ endfunction()
 
 SETUP_TESTS(
     test_scpisingletonfactory
-    test_xmlcomparer
+    test_xmleleminfo
 )

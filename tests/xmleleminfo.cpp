@@ -1,11 +1,11 @@
-#include "xmlcomparer.h"
+#include "xmleleminfo.h"
 
-bool XmlComparer::loadXml(const QString &xml)
+bool XmlElemInfo::loadXml(const QString &xml)
 {
     return m_doc.setContent(xml);
 }
 
-int XmlComparer::getNodeCount()
+int XmlElemInfo::getElemCount()
 {
     QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
@@ -19,7 +19,7 @@ int XmlComparer::getNodeCount()
     return nodeNums;
 }
 
-bool XmlComparer::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
+bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
 {
     bool found = false;
     QDomNode firstNode = m_doc.firstChild();
@@ -37,7 +37,7 @@ bool XmlComparer::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     return found;
 }
 
-bool XmlComparer::traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perNodeAction)
+bool XmlElemInfo::traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perNodeAction)
 {
     bool continueTraverse = true;
     if (node.isElement()) {
