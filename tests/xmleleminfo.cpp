@@ -1,4 +1,5 @@
 #include "xmleleminfo.h"
+#include <QDomDocument>
 
 bool XmlElemInfo::loadXml(const QString &xml)
 {
