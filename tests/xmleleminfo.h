@@ -13,7 +13,7 @@ public:
     int getElemCount();
     bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
-    bool traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perNodeAction);
+    bool recursiveElemWalk(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perElemFunction);
     QDomDocument m_doc;
 };
 
