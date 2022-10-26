@@ -13,6 +13,14 @@ private slots:
     void checkOneChildNode();
     void checkTwoChildNodes();
     void checkTwoChildNodesNested();
+
+    void findEmptySearch();
+    void findRootNode();
+    void noFindRootNode();
+    void findOneChildNode();
+    void findTwoChildNodes();
+    void findTwoChildNodesNested();
+
 };
 
 #endif // TEST_XMLCOMPARER_H

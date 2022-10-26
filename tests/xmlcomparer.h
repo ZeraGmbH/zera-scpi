@@ -1,8 +1,9 @@
 #ifndef XMLCOMPARER_H
 #define XMLCOMPARER_H
 
-#include <QString>
+#include <QStringList>
 #include <QDomDocument>
+#include <QDomNode>
 #include <functional>
 
 class XmlComparer
@@ -10,8 +11,9 @@ class XmlComparer
 public:
     bool loadXml(const QString &xml);
     int getNodeCount();
+    bool findNode(QStringList nodeSearchPath, QDomNode &foundNode);
 private:
-    void traverseElements(QDomNode node, const std::function<void (const QDomNode&)>& perNodeAction);
+    bool traverseElements(QDomNode node, QStringList parentNames, const std::function<bool (const QDomNode &, QStringList)> &perNodeAction);
     QDomDocument m_doc;
 
 
