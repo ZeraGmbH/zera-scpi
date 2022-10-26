@@ -21,11 +21,12 @@ QString xmlTwoChildNodes =
         "<NODE3/>"
     "</NODE1>";
 
+// see https://www.w3schools.com/xml/xml_attributes.asp
 QString xmlTwoChildNodesWithAttributes =
     "<!DOCTYPE SCPIModel>"
     "<NODE1>"
-        "<NODE2>a=1 b=2</NODE2>"
-        "<NODE3>c=\"3\" d=\"4\"</NODE3>"
+        "<NODE2 a='1' b='2'></NODE2>"
+        "<NODE3 c='3' d='4' e='5'></NODE3>"
     "</NODE1>";
 
 QString xmlTwoChildNodesNested =
@@ -164,4 +165,19 @@ void test_xmlcomparer::findTwoChildNodesHasAttributes()
     QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2"  << "NODE2", elem));
 }
 
+void test_xmlcomparer::identFoundElemByAttribCount()
+{
+    XmlComparer cmp;
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
+
+    QDomElement elem;
+    cmp.findElem(QStringList() << "NODE1", elem);
+    QCOMPARE(elem.attributes().count(), 0);
+
+    cmp.findElem(QStringList() << "NODE1" << "NODE2", elem);
+    QCOMPARE(elem.attributes().count(), 2);
+
+    cmp.findElem(QStringList() << "NODE1" << "NODE3", elem);
+    QCOMPARE(elem.attributes().count(), 3);
+}
 

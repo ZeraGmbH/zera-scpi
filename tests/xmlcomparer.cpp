@@ -28,6 +28,9 @@ bool XmlComparer::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
         {
             QStringList childPath = parentPath + QStringList(childElem.tagName());
             found = nodeSearchPath == childPath;
+            if(found) {
+                foundElem = childElem;
+            }
             return !found;
         });
     }
