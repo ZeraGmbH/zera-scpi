@@ -1,5 +1,4 @@
 #include "xmlcomparer.h"
-#include <QDomNode>
 
 bool XmlComparer::loadXml(const QString &xml)
 {
@@ -10,20 +9,41 @@ int XmlComparer::getNodeCount()
 {
     QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
-    traverseElements(firstNode, [&](const QDomNode& node)
+    traverseElements(firstNode, QStringList(), [&](const QDomNode& childNode, QStringList parentPath) -> bool
     {
+        Q_UNUSED(childNode)
+        Q_UNUSED(parentPath)
         nodeNums++;
+        return true;
     });
     return nodeNums;
 }
 
-void XmlComparer::traverseElements(QDomNode node, const std::function<void (const QDomNode&)>& perNodeAction)
+bool XmlComparer::findNode(QStringList nodeSearchPath, QDomNode &foundNode)
 {
-    if (node.isElement()) {
-        perNodeAction(node);
+    bool found = false;
+    QDomNode firstNode = m_doc.firstChild();
+    if(!nodeSearchPath.isEmpty()) {
+        traverseElements(firstNode, QStringList(), [&](const QDomNode& childNode, QStringList parentPath) -> bool
+        {
+            QStringList childPath = parentPath;
+            childPath.append(childNode.toElement().tagName());
+            found = nodeSearchPath == childPath;
+            return !found;
+        });
+    }
+    return found;
+}
+
+bool XmlComparer::traverseElements(QDomNode node, QStringList parentNames, const std::function<bool (const QDomNode&, QStringList)>& perNodeAction)
+{
+    bool continueTraverse = node.isElement() && perNodeAction(node, parentNames);
+    if (continueTraverse) {
         QDomElement elem = node.toElement();
-        for(QDomNode childNode = elem.firstChild(); !childNode.isNull(); childNode = childNode.nextSibling()) {
-            traverseElements(childNode.toElement(), perNodeAction);
+        QStringList childParentNames = parentNames << elem.tagName();
+        for(QDomNode childNode = elem.firstChild(); continueTraverse && !childNode.isNull(); childNode = childNode.nextSibling()) {
+            continueTraverse = traverseElements(childNode, childParentNames, perNodeAction);
         }
     }
+    return continueTraverse;
 }
