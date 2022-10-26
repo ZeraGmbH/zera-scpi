@@ -9,9 +9,9 @@ int XmlComparer::getNodeCount()
 {
     QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
-    traverseElements(firstNode, QStringList(), [&](const QDomNode& childNode, QStringList parentPath) -> bool
+    traverseElements(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
     {
-        Q_UNUSED(childNode)
+        Q_UNUSED(childElem)
         Q_UNUSED(parentPath)
         nodeNums++;
         return true;
@@ -19,14 +19,14 @@ int XmlComparer::getNodeCount()
     return nodeNums;
 }
 
-bool XmlComparer::findNode(QStringList nodeSearchPath, QDomNode &foundNode)
+bool XmlComparer::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
 {
     bool found = false;
     QDomNode firstNode = m_doc.firstChild();
     if(!nodeSearchPath.isEmpty()) {
-        traverseElements(firstNode, QStringList(), [&](const QDomNode& childNode, QStringList parentPath) -> bool
+        traverseElements(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
         {
-            QStringList childPath = parentPath + QStringList(childNode.toElement().tagName());
+            QStringList childPath = parentPath + QStringList(childElem.tagName());
             found = nodeSearchPath == childPath;
             return !found;
         });
@@ -34,12 +34,12 @@ bool XmlComparer::findNode(QStringList nodeSearchPath, QDomNode &foundNode)
     return found;
 }
 
-bool XmlComparer::traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomNode&, QStringList)>& perNodeAction)
+bool XmlComparer::traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perNodeAction)
 {
     bool continueTraverse = true;
     if (node.isElement()) {
-        continueTraverse = perNodeAction(node, parentPath);
         QDomElement elem = node.toElement();
+        continueTraverse = perNodeAction(elem, parentPath);
         QStringList childrenparentPath = parentPath + QStringList(elem.tagName());
         for(QDomNode childNode = elem.firstChild(); continueTraverse && !childNode.isNull(); childNode = childNode.nextSibling()) {
             continueTraverse = traverseElements(childNode, childrenparentPath, perNodeAction);

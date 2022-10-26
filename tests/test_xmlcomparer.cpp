@@ -81,79 +81,80 @@ void test_xmlcomparer::findEmptySearch()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneNode));
-    QDomNode node;
-    QVERIFY(!cmp.findNode(QStringList(), node));
+    QDomElement elem;
+    QVERIFY(!cmp.findElem(QStringList(), elem));
 }
 
 void test_xmlcomparer::findRootNode()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneNode));
-    QDomNode node;
-    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
+    QDomElement elem;
+    QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
 }
 
 void test_xmlcomparer::noFindRootNode()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneNode));
-    QDomNode node;
-    QVERIFY(!cmp.findNode(QStringList() << "foo", node));
+    QDomElement elem;
+    QVERIFY(!cmp.findElem(QStringList() << "foo", elem));
 }
 
 void test_xmlcomparer::findOneChildNode()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlOneChildNode));
-    QDomNode node;
-    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo", node));
+    QDomElement elem;
+    QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE2", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo", elem));
 }
 
 void test_xmlcomparer::findTwoChildNodes()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodes));
-    QDomNode node;
-    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "NODE2"  << "NODE2", node));
+    QDomElement elem;
+    QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE2", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2"  << "NODE2", elem));
 }
 
 void test_xmlcomparer::findTwoChildNodesNested()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesNested));
-    QDomNode node;
-    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2" << "NODE3", node));
+    QDomElement elem;
+    QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2" << "NODE3", elem));
 
-    QVERIFY(!cmp.findNode(QStringList() << "foo", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "NODE2" << "foo", node));
+    QVERIFY(!cmp.findElem(QStringList() << "foo", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE2", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE2" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2" << "foo", elem));
 }
 
 void test_xmlcomparer::findTwoChildNodesHasAttributes()
 {
     XmlComparer cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
-    QDomNode node;
-    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2", node));
-    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2", node));
-    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE3", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo", node));
-    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "NODE2"  << "NODE2", node));
+    QDomElement elem;
+    QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
+    QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE2", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "foo" << "NODE3", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo", elem));
+    QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2"  << "NODE2", elem));
 }
+
 

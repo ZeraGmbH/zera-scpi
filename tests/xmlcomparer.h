@@ -11,9 +11,9 @@ class XmlComparer
 public:
     bool loadXml(const QString &xml);
     int getNodeCount();
-    bool findNode(QStringList nodeSearchPath, QDomNode &foundNode);
+    bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
-    bool traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomNode &, QStringList)> &perNodeAction);
+    bool traverseElements(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perNodeAction);
     QDomDocument m_doc;
 
 
