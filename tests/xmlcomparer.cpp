@@ -35,12 +35,13 @@ bool XmlComparer::findNode(QStringList nodeSearchPath, QDomNode &foundNode)
     return found;
 }
 
-bool XmlComparer::traverseElements(QDomNode node, QStringList parentNames, const std::function<bool (const QDomNode&, QStringList)>& perNodeAction)
+bool XmlComparer::traverseElements(QDomNode node, const QStringList &parentNames, const std::function<bool (const QDomNode&, QStringList)>& perNodeAction)
 {
-    bool continueTraverse = node.isElement() && perNodeAction(node, parentNames);
-    if (continueTraverse) {
+    bool continueTraverse = true;
+    if (node.isElement()) {
+        continueTraverse = perNodeAction(node, parentNames);
         QDomElement elem = node.toElement();
-        QStringList childParentNames = parentNames << elem.tagName();
+        QStringList childParentNames = parentNames + QStringList(elem.tagName());
         for(QDomNode childNode = elem.firstChild(); continueTraverse && !childNode.isNull(); childNode = childNode.nextSibling()) {
             continueTraverse = traverseElements(childNode, childParentNames, perNodeAction);
         }

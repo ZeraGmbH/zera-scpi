@@ -20,6 +20,7 @@ private slots:
     void findOneChildNode();
     void findTwoChildNodes();
     void findTwoChildNodesNested();
+    void findTwoChildNodesHasAttributes();
 
 };
 

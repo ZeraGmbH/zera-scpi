@@ -21,6 +21,13 @@ QString xmlTwoChildNodes =
         "<NODE3/>"
     "</NODE1>";
 
+QString xmlTwoChildNodesWithAttributes =
+    "<!DOCTYPE SCPIModel>"
+    "<NODE1>"
+        "<NODE2>a=1 b=2</NODE2>"
+        "<NODE3>c=\"3\" d=\"4\"</NODE3>"
+    "</NODE1>";
+
 QString xmlTwoChildNodesNested =
     "<!DOCTYPE SCPIModel>"
     "<NODE1>"
@@ -134,5 +141,19 @@ void test_xmlcomparer::findTwoChildNodesNested()
     QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2" << "NODE3", node));
     QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo" << "NODE3", node));
     QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "NODE2" << "foo", node));
+}
+
+void test_xmlcomparer::findTwoChildNodesHasAttributes()
+{
+    XmlComparer cmp;
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
+    QDomNode node;
+    QVERIFY(cmp.findNode(QStringList() << "NODE1", node));
+    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE2", node));
+    QVERIFY(cmp.findNode(QStringList() << "NODE1" << "NODE3", node));
+    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE2", node));
+    QVERIFY(!cmp.findNode(QStringList() << "foo" << "NODE3", node));
+    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "foo", node));
+    QVERIFY(!cmp.findNode(QStringList() << "NODE1" << "NODE2"  << "NODE2", node));
 }
 

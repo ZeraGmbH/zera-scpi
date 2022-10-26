@@ -13,7 +13,7 @@ public:
     int getNodeCount();
     bool findNode(QStringList nodeSearchPath, QDomNode &foundNode);
 private:
-    bool traverseElements(QDomNode node, QStringList parentNames, const std::function<bool (const QDomNode &, QStringList)> &perNodeAction);
+    bool traverseElements(QDomNode node, const QStringList &parentNames, const std::function<bool (const QDomNode &, QStringList)> &perNodeAction);
     QDomDocument m_doc;
 
 
