@@ -6,9 +6,8 @@ bool XmlAttribCompare::compare(const QDomElement &elem, QMap<QString, QString> a
         return true;
     if(attribsEmpty(attribKeyValues) || elemEmpty(elem))
         return false;
-    if(elem.attributes().count() != attribKeyValues.count()) {
+    if(elem.attributes().count() != attribKeyValues.count())
         return false;
-    }
     return compareAll(elem, attribKeyValues);
 }
 
