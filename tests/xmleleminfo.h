@@ -14,7 +14,8 @@ public:
     int getElemCount();
     bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
-    bool recursiveElemWalk(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perElemFunction);
+    void recurseElemsForCount(QDomNode node, const std::function<void ()> &countElemFunction);
+    bool recurseElemsFind(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perElemFindFunction);
     QDomDocument m_doc;
 };
 

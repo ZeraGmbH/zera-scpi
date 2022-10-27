@@ -9,14 +9,22 @@ int XmlElemInfo::getElemCount()
 {
     QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
-    recursiveElemWalk(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
-    {   // perElemFunction
-        Q_UNUSED(childElem)
-        Q_UNUSED(parentPath)
+    recurseElemsForCount(firstNode, [&]()
+    {   // countElemFunction implementation
         nodeNums++;
-        return true;
     });
     return nodeNums;
+}
+
+void XmlElemInfo::recurseElemsForCount(QDomNode node, const std::function<void ()>& countElemFunction)
+{
+    if (node.isElement()) {
+        QDomElement elem = node.toElement();
+        countElemFunction();
+        for(QDomNode childNode = elem.firstChild(); !childNode.isNull(); childNode = childNode.nextSibling()) {
+            recurseElemsForCount(childNode, countElemFunction);
+        }
+    }
 }
 
 bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
@@ -24,8 +32,8 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     bool found = false;
     QDomNode firstNode = m_doc.firstChild();
     if(!nodeSearchPath.isEmpty()) {
-        recursiveElemWalk(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
-        {   // perElemFunction
+        recurseElemsFind(firstNode, QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
+        {   // perElemFindFunction implementation
             QStringList childPath = parentPath + QStringList(childElem.tagName());
             found = nodeSearchPath == childPath;
             if(found) {
@@ -37,15 +45,15 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     return found;
 }
 
-bool XmlElemInfo::recursiveElemWalk(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perElemFunction)
+bool XmlElemInfo::recurseElemsFind(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perElemFindFunction)
 {
     bool continueWalk = true;
     if (node.isElement()) {
         QDomElement elem = node.toElement();
-        continueWalk = perElemFunction(elem, parentPath);
+        continueWalk = perElemFindFunction(elem, parentPath);
         QStringList childrenparentPath = parentPath + QStringList(elem.tagName());
         for(QDomNode childNode = elem.firstChild(); continueWalk && !childNode.isNull(); childNode = childNode.nextSibling()) {
-            continueWalk = recursiveElemWalk(childNode, childrenparentPath, perElemFunction);
+            continueWalk = recurseElemsFind(childNode, childrenparentPath, perElemFindFunction);
         }
     }
     return continueWalk;
