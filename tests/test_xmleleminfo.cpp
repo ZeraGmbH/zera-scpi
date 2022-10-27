@@ -21,7 +21,7 @@ QString xmlTwoChildNodes =
 // see https://www.w3schools.com/xml/xml_attributes.asp
 QString xmlTwoChildNodesWithAttributes =
     "<NODE1>"
-        "<NODE2 a='1' b='2'></NODE2>"
+        "<NODE2 a='1' b='2'/>"
         "<NODE3 c='3' d='4' e='5'></NODE3>"
     "</NODE1>";
 
