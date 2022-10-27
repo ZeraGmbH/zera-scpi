@@ -1,6 +1,6 @@
-#include "xmlattribinfo.h"
+#include "xmlattribcompare.h"
 
-bool XmlAttribInfo::compareElemAttribs(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
+bool XmlAttribCompare::compare(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
 {
     if(bothEmpty(elem, attribKeyValues))
         return true;
@@ -12,22 +12,22 @@ bool XmlAttribInfo::compareElemAttribs(const QDomElement &elem, QMap<QString, QS
     return compareAll(elem, attribKeyValues);
 }
 
-bool XmlAttribInfo::attribsEmpty(QMap<QString, QString> attribKeyValues)
+bool XmlAttribCompare::attribsEmpty(QMap<QString, QString> attribKeyValues)
 {
     return attribKeyValues.isEmpty();
 }
 
-bool XmlAttribInfo::elemEmpty(const QDomElement &elem)
+bool XmlAttribCompare::elemEmpty(const QDomElement &elem)
 {
     return !elem.hasAttributes();
 }
 
-bool XmlAttribInfo::bothEmpty(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
+bool XmlAttribCompare::bothEmpty(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
 {
     return attribsEmpty(attribKeyValues) && elemEmpty(elem);
 }
 
-bool XmlAttribInfo::compareAll(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
+bool XmlAttribCompare::compareAll(const QDomElement &elem, QMap<QString, QString> attribKeyValues)
 {
     auto elemAttribs = elem.attributes();
     for(auto iter=attribKeyValues.cbegin(); iter!=attribKeyValues.cend(); ++iter) {

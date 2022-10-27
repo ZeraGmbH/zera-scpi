@@ -1,9 +1,9 @@
-#ifndef TEST_XMLATTRIBINFO_H
-#define TEST_XMLATTRIBINFO_H
+#ifndef TEST_XMLATTRIBCOMPARE_H
+#define TEST_XMLATTRIBCOMPARE_H
 
 #include <QObject>
 
-class test_xmlattribinfo : public QObject
+class test_xmlattribcompare : public QObject
 {
     Q_OBJECT
 private slots:
@@ -21,4 +21,4 @@ private slots:
     void compareTwo();
 };
 
-#endif // TEST_XMLATTRIBINFO_H
+#endif // TEST_XMLATTRIBCOMPARE_H

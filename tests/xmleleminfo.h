@@ -1,5 +1,5 @@
-#ifndef XMLCOMPARER_H
-#define XMLCOMPARER_H
+#ifndef XMLELEMINFO_H
+#define XMLELEMINFO_H
 
 #include <QStringList>
 #include <QDomDocument>
@@ -18,4 +18,4 @@ private:
     QDomDocument m_doc;
 };
 
-#endif // XMLCOMPARER_H
+#endif // XMLELEMINFO_H

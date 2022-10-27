@@ -1,5 +1,5 @@
-#ifndef TEST_XMLCOMPARER_H
-#define TEST_XMLCOMPARER_H
+#ifndef TEST_XMLELEMINFO_H
+#define TEST_XMLELEMINFO_H
 
 #include <QObject>
 
@@ -26,4 +26,4 @@ private slots:
     void identFoundElemByAttribCount();
 };
 
-#endif // TEST_XMLCOMPARER_H
+#endif // TEST_XMLELEMINFO_H
