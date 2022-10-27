@@ -1,65 +1,65 @@
-#include "test_xmlattribinfo.h"
-#include "xmlattribinfo.h"
+#include "test_xmlattribcompare.h"
+#include "xmlattribcompare.h"
 #include <QTest>
 
-QTEST_MAIN(test_xmlattribinfo)
+QTEST_MAIN(test_xmlattribcompare)
 
-void test_xmlattribinfo::compareBothEmpty()
+void test_xmlattribcompare::compareBothEmpty()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
     QMap<QString, QString> attribKeyValues;
-    QVERIFY(XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareNoDoc()
+void test_xmlattribcompare::compareNoDoc()
 {
     QDomElement elem;
     elem.setAttribute("foo", "fooVal");
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareElemEmpty()
+void test_xmlattribcompare::compareElemEmpty()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareAttribsEmpty()
+void test_xmlattribcompare::compareAttribsEmpty()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
     elem.setAttribute("foo", "fooVal");
     QMap<QString, QString> attribKeyValues;
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareOneUnequal()
+void test_xmlattribcompare::compareOneUnequal()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
     elem.setAttribute("foo", "fooVal");
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooBar";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareOne()
+void test_xmlattribcompare::compareOne()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
     elem.setAttribute("foo", "fooVal");
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
-    QVERIFY(XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwoElemMissing()
+void test_xmlattribcompare::compareTwoElemMissing()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -67,10 +67,10 @@ void test_xmlattribinfo::compareTwoElemMissing()
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
     attribKeyValues["bar"] = "barVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwoAttribMissing()
+void test_xmlattribcompare::compareTwoAttribMissing()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -78,10 +78,10 @@ void test_xmlattribinfo::compareTwoAttribMissing()
     elem.setAttribute("bar", "barVal");
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwoFirstValUnequal()
+void test_xmlattribcompare::compareTwoFirstValUnequal()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -90,10 +90,10 @@ void test_xmlattribinfo::compareTwoFirstValUnequal()
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "";
     attribKeyValues["bar"] = "barVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwoSecondValUnequal()
+void test_xmlattribcompare::compareTwoSecondValUnequal()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -102,10 +102,10 @@ void test_xmlattribinfo::compareTwoSecondValUnequal()
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
     attribKeyValues["bar"] = "";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwoDifferentAttribNames()
+void test_xmlattribcompare::compareTwoDifferentAttribNames()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -114,10 +114,10 @@ void test_xmlattribinfo::compareTwoDifferentAttribNames()
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
     attribKeyValues["honk"] = "barVal";
-    QVERIFY(!XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(!XmlAttribCompare::compare(elem, attribKeyValues));
 }
 
-void test_xmlattribinfo::compareTwo()
+void test_xmlattribcompare::compareTwo()
 {
     QDomDocument doc;
     QDomElement elem = doc.createElement("foo");
@@ -126,6 +126,6 @@ void test_xmlattribinfo::compareTwo()
     QMap<QString, QString> attribKeyValues;
     attribKeyValues["foo"] = "fooVal";
     attribKeyValues["bar"] = "barVal";
-    QVERIFY(XmlAttribInfo::compareElemAttribs(elem, attribKeyValues));
+    QVERIFY(XmlAttribCompare::compare(elem, attribKeyValues));
 }
 

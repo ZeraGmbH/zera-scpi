@@ -4,8 +4,8 @@
 add_library(testhelpers STATIC
     xmleleminfo.cpp
     xmleleminfo.h
-    xmlattribinfo.cpp
-    xmlattribinfo.h
+    xmlattribcompare.cpp
+    xmlattribcompare.h
     )
 
 target_include_directories(testhelpers
@@ -46,5 +46,5 @@ endfunction()
 SETUP_TESTS(
     test_scpisingletonfactory
     test_xmleleminfo
-    test_xmlattribinfo
+    test_xmlattribcompare
 )
