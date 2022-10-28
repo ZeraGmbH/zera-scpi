@@ -8,9 +8,8 @@ bool XmlElemInfo::loadXml(const QString &xml)
 int XmlElemInfo::getElemCount()
 {
     int nodeNums = 0;
-    for(auto iter=begin(); iter!=end(); ++iter) {
+    for(auto iter=begin(); iter!=end(); ++iter)
         nodeNums++;
-    }
     return nodeNums;
 }
 
@@ -29,13 +28,10 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
     if(nodeSearchPath.isEmpty())
         return false;
     QString childName = nodeSearchPath.takeFirst();
-    QDomElement elem = m_doc.firstChildElement(childName);
-    while(!elem.isNull() && !nodeSearchPath.isEmpty()) {
+    foundElem = m_doc.firstChildElement(childName);
+    while(!foundElem.isNull() && !nodeSearchPath.isEmpty()) {
         childName = nodeSearchPath.takeFirst();
-        elem = elem.firstChildElement(childName);
+        foundElem = foundElem.firstChildElement(childName);
     }
-    if(elem.isNull())
-        return false;
-    foundElem = elem;
-    return true;
+    return !foundElem.isNull();
 }

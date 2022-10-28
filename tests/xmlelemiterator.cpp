@@ -21,8 +21,6 @@ QStringList XmlElemIterator::getParentPath()
     return parentPath;
 }
 
-
-
 XmlElemIterator &XmlElemIterator::operator++()
 {
     m_elem = getNextElem();
@@ -36,35 +34,6 @@ XmlElemIterator XmlElemIterator::operator++(int)
     return r;
 }
 
-QDomElement XmlElemIterator::getNextElem()
-{
-    QDomElement neighbor = m_elem.nextSiblingElement();
-    QDomElement child = m_elem.firstChildElement();
-    if(!child.isNull()) {
-        m_parentList.append(m_elem);
-        m_elem = child;
-    }
-    else if(!neighbor.isNull()) {
-        m_elem = neighbor;
-    }
-    else if(!m_parentList.isEmpty()) {
-        findParentsNeighbour();
-    }
-    else {
-        m_elem = QDomElement();
-    }
-    return m_elem;
-}
-
-void XmlElemIterator::findParentsNeighbour()
-{
-    m_elem = QDomElement();
-    while(m_elem.isNull() && !m_parentList.isEmpty()) {
-        QDomElement handledParent = m_parentList.takeLast();
-        m_elem = handledParent.nextSiblingElement();
-    }
-}
-
 bool XmlElemIterator::operator==(const XmlElemIterator &other) const
 {
     return other.m_elem == m_elem;
@@ -75,4 +44,32 @@ bool XmlElemIterator::operator!=(const XmlElemIterator &other) const
     return other.m_elem != m_elem;
 }
 
+QDomElement XmlElemIterator::getNextElem()
+{
+    QDomElement neighbor = m_elem.nextSiblingElement();
+    QDomElement child = m_elem.firstChildElement();
+    if(!child.isNull())
+        makeChildCurrent(child);
+    else if(!neighbor.isNull())
+        m_elem = neighbor;
+    else if(!m_parentList.isEmpty())
+        findParentsNeighbor();
+    else
+        m_elem.clear();
+    return m_elem;
+}
 
+void XmlElemIterator::findParentsNeighbor()
+{
+    m_elem.clear();
+    while(m_elem.isNull() && !m_parentList.isEmpty()) {
+        QDomElement handledParent = m_parentList.takeLast();
+        m_elem = handledParent.nextSiblingElement();
+    }
+}
+
+void XmlElemIterator::makeChildCurrent(QDomElement child)
+{
+    m_parentList.append(m_elem);
+    m_elem = child;
+}

@@ -1,6 +1,6 @@
 #include "xmlcomparer.h"
 
-XmlComparer::XmlComparer(QList<std::function<bool (const QDomElement, const QDomElement)>> elemCompareFunctions) :
+XmlComparer::XmlComparer(XmlElemCompareFuncList elemCompareFunctions) :
     m_elemCompareFunctions(elemCompareFunctions)
 {
 }
@@ -23,9 +23,8 @@ bool XmlComparer::compareXml(QString xml1, QString xml2)
         QDomElement elem2;
         if(elemInfo2.findElem(tagpath1, elem2)) {
             for(const auto &elemCompareFunc : qAsConst(m_elemCompareFunctions)) {
-                if(!elemCompareFunc(elem1, elem2)) {
+                if(!elemCompareFunc(elem1, elem2))
                     return false;
-                }
             }
         }
     }

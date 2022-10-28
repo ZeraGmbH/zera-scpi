@@ -27,9 +27,8 @@ bool XmlAttribCompare::compareAll(const QDomElement &elem1, const QDomElement &e
         QString attrKey = elem1Attribs.item(i).toAttr().name();
         if(!elem2Attribs.contains(attrKey))
             return false;
-        if(elem2.attribute(attrKey) != elem1Attribs.item(i).toAttr().value()) {
+        if(elem2.attribute(attrKey) != elem1Attribs.item(i).toAttr().value())
             return false;
-        }
     }
     return true;
 }
