@@ -19,7 +19,7 @@ int XmlElemInfo::getElemCount()
 
 XmlElemIterator XmlElemInfo::begin()
 {
-    return { m_doc.firstChild().toElement() };
+    return { m_doc.firstChildElement() };
 }
 
 XmlElemIterator XmlElemInfo::end()
