@@ -26,28 +26,16 @@ XmlElemIterator XmlElemInfo::end()
 
 bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
 {
-    bool found = false;
-    if(!nodeSearchPath.isEmpty()) {
-        recurseElemsFind(m_doc.firstChildElement(), QStringList(), [&](const QDomElement& childElem, QStringList parentPath) -> bool
-        {   // perElemFindFunction implementation
-            QStringList childPath = parentPath + QStringList(childElem.tagName());
-            found = nodeSearchPath == childPath;
-            if(found) {
-                foundElem = childElem;
-            }
-            return !found;
-        });
+    if(nodeSearchPath.isEmpty())
+        return false;
+    QString childName = nodeSearchPath.takeFirst();
+    QDomElement elem = m_doc.firstChildElement(childName);
+    while(!elem.isNull() && !nodeSearchPath.isEmpty()) {
+        childName = nodeSearchPath.takeFirst();
+        elem = elem.firstChildElement(childName);
     }
-    return found;
-}
-
-bool XmlElemInfo::recurseElemsFind(QDomElement elem, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perElemFindFunction)
-{
-    bool continueWalk = true;
-    continueWalk = perElemFindFunction(elem, parentPath);
-    QStringList childrenparentPath = parentPath + QStringList(elem.tagName());
-    for(QDomElement childElem = elem.firstChildElement(); continueWalk && !childElem.isNull(); childElem = childElem.nextSiblingElement()) {
-        continueWalk = recurseElemsFind(childElem, childrenparentPath, perElemFindFunction);
-    }
-    return continueWalk;
+    if(elem.isNull())
+        return false;
+    foundElem = elem;
+    return true;
 }
