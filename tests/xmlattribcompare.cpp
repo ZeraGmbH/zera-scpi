@@ -4,8 +4,6 @@ bool XmlAttribCompare::compare(const QDomElement &elem1, const QDomElement &elem
 {
     if(bothEmpty(elem1, elem2))
         return true;
-    if(elemEmpty(elem1) || elemEmpty(elem2))
-        return false;
     if(elem1.attributes().count() != elem2.attributes().count())
         return false;
     return compareAll(elem1, elem2);
