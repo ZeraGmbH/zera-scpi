@@ -16,6 +16,11 @@ private slots:
     void attibsUnequal();
     void attibsEqual();
     void attribsDiffSequence();
+    void textUnequal();
+    void textEqual();
+    void attibsUnequalTextEqual();
+    void attibsEqualTextUnequal();
+    void attibsEqualTextEqual();
 };
 
 #endif // TEST_XMLCOMPARER_H

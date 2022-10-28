@@ -121,4 +121,71 @@ void test_xmlcomparer::attribsDiffSequence()
     QVERIFY(comparer.compareXml(xml1, xml2));
 }
 
+void test_xmlcomparer::textUnequal()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2>bar</NODE2>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(!comparer.compareXml(xml1, xml2));
+}
+
+void test_xmlcomparer::textEqual()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(comparer.compareXml(xml1, xml1));
+}
+
+void test_xmlcomparer::attibsUnequalTextEqual()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+            "<NODE3 c='3' d='4' e='5'></NODE3>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+            "<NODE3 c='3' d='foo' e='5'></NODE3>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(!comparer.compareXml(xml1, xml2));
+}
+
+void test_xmlcomparer::attibsEqualTextUnequal()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+            "<NODE3 c='3' d='4' e='5'></NODE3>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2>bar</NODE2>"
+            "<NODE3 c='3' d='4' e='5'></NODE3>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(!comparer.compareXml(xml1, xml2));
+}
+
+void test_xmlcomparer::attibsEqualTextEqual()
+{
+    QString xml =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+            "<NODE3 c='3' d='4' e='5'></NODE3>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(comparer.compareXml(xml, xml));
+}
+
 QTEST_MAIN(test_xmlcomparer)

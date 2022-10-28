@@ -1,5 +1,6 @@
 #include "xmlcomparer.h"
 #include "xmlattribcompare.h"
+#include "xmltextcompare.h"
 
 XmlComparer::XmlComparer(XmlElemCompareFunc elemCompareFunction) :
     m_elemCompareFunc(elemCompareFunction)
@@ -9,7 +10,9 @@ XmlComparer::XmlComparer(XmlElemCompareFunc elemCompareFunction) :
 XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
 [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
-    return XmlAttribCompare::compare(elem1, elem2);
+    return
+        XmlAttribCompare::compare(elem1, elem2) &&
+        XmlTextCompare::compare(elem1, elem2);
 };
 
 bool XmlComparer::compareXml(QString xml1, QString xml2)
