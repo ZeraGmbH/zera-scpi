@@ -14,6 +14,16 @@ int XmlElemInfo::getElemCount()
     return nodeNums;
 }
 
+XmlElemIterator XmlElemInfo::begin()
+{
+    return { m_doc.firstChild().toElement() };
+}
+
+XmlElemIterator XmlElemInfo::end()
+{
+    return { QDomElement() };
+}
+
 bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
 {
     bool found = false;
@@ -30,16 +40,6 @@ bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
         });
     }
     return found;
-}
-
-XmlElemIterator XmlElemInfo::begin()
-{
-    return { m_doc.firstChild().toElement() };
-}
-
-XmlElemIterator XmlElemInfo::end()
-{
-    return { QDomElement() };
 }
 
 bool XmlElemInfo::recurseElemsFind(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement&, QStringList)>& perElemFindFunction)
