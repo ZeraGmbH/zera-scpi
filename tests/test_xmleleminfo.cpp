@@ -41,27 +41,27 @@ void test_xmleleminfo::loadInvalid()
 void test_xmleleminfo::loadValid()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneNode));
+    QVERIFY(cmp.loadXml(xmlOneNode, true));
 }
 
 void test_xmleleminfo::countRootNode()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneNode));
+    QVERIFY(cmp.loadXml(xmlOneNode, true));
     QCOMPARE(cmp.getElemCount(), 1);
 }
 
 void test_xmleleminfo::countOneChildNode()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneChildNode));
+    QVERIFY(cmp.loadXml(xmlOneChildNode, true));
     QCOMPARE(cmp.getElemCount(), 2);
 }
 
 void test_xmleleminfo::countTwoChildNodes()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodes));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodes, true));
     QCOMPARE(cmp.getElemCount(), 3);
 
 }
@@ -69,21 +69,21 @@ void test_xmleleminfo::countTwoChildNodes()
 void test_xmleleminfo::countTwoChildNodesNested()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodesNested));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesNested, true));
     QCOMPARE(cmp.getElemCount(), 3);
 }
 
 void test_xmleleminfo::countTwoChildNodesAttributes()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
     QCOMPARE(cmp.getElemCount(), 3);
 }
 
 void test_xmleleminfo::findEmptySearch()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneNode));
+    QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(!cmp.findElem(QStringList(), elem));
 }
@@ -91,7 +91,7 @@ void test_xmleleminfo::findEmptySearch()
 void test_xmleleminfo::findRootNode()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneNode));
+    QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
 }
@@ -99,7 +99,7 @@ void test_xmleleminfo::findRootNode()
 void test_xmleleminfo::noFindRootNode()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneNode));
+    QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(!cmp.findElem(QStringList() << "foo", elem));
 }
@@ -107,7 +107,7 @@ void test_xmleleminfo::noFindRootNode()
 void test_xmleleminfo::findOneChildNode()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlOneChildNode));
+    QVERIFY(cmp.loadXml(xmlOneChildNode, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
     QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
@@ -119,7 +119,7 @@ void test_xmleleminfo::findOneChildNode()
 void test_xmleleminfo::findTwoChildNodes()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodes));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodes, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
     QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
@@ -134,7 +134,7 @@ void test_xmleleminfo::findTwoChildNodes()
 void test_xmleleminfo::findTwoChildNodesNested()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodesNested));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesNested, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
     QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
@@ -151,7 +151,7 @@ void test_xmleleminfo::findTwoChildNodesNested()
 void test_xmleleminfo::findTwoChildNodesHasAttributes()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
     QVERIFY(cmp.findElem(QStringList() << "NODE1" << "NODE2", elem));
@@ -166,7 +166,7 @@ void test_xmleleminfo::findTwoChildNodesHasAttributes()
 void test_xmleleminfo::identFoundElemByAttribCount()
 {
     XmlElemInfo cmp;
-    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes));
+    QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
 
     QDomElement elem;
     cmp.findElem(QStringList() << "NODE1", elem);

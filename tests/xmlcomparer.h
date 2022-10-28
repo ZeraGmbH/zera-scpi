@@ -13,7 +13,7 @@ class XmlComparer
 {
 public:
     XmlComparer(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
-    bool compareXml(QString xml1, QString xml2);
+    bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
     bool isXmlEmptyOrInvalid(XmlElemInfo xmlInfo);
     XmlElemCompareFunc m_elemCompareFunc;

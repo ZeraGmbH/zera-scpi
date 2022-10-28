@@ -22,7 +22,7 @@ void test_xmlcomparer::bothSameNoAttribs()
             "<child2/>"
         "</root>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xmlFindUpUpUp, xmlFindUpUpUp));
+    QVERIFY(comparer.compareXml(xmlFindUpUpUp, xmlFindUpUpUp, true));
 }
 
 void test_xmlcomparer::bothDifferentNoAttribs()
@@ -37,7 +37,7 @@ void test_xmlcomparer::bothDifferentNoAttribs()
             "<NODE3/>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(!comparer.compareXml(xml1, xml2));
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::bothSameNoAttribsDiffSequence()
@@ -53,7 +53,7 @@ void test_xmlcomparer::bothSameNoAttribsDiffSequence()
             "<NODE2/>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xml1, xml2));
+    QVERIFY(comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::firstEmptySecondValid()
@@ -91,7 +91,7 @@ void test_xmlcomparer::attibsUnequal()
             "<NODE3 c='3' d='foo' e='5'></NODE3>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(!comparer.compareXml(xml1, xml2));
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::attibsEqual()
@@ -102,7 +102,7 @@ void test_xmlcomparer::attibsEqual()
             "<NODE3 c='3' d='4' e='5'></NODE3>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xml1, xml1));
+    QVERIFY(comparer.compareXml(xml1, xml1, true));
 }
 
 void test_xmlcomparer::attribsDiffSequence()
@@ -118,7 +118,7 @@ void test_xmlcomparer::attribsDiffSequence()
             "<NODE2 a='1' b='2'/>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xml1, xml2));
+    QVERIFY(comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::textUnequal()
@@ -132,7 +132,7 @@ void test_xmlcomparer::textUnequal()
             "<NODE2>bar</NODE2>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(!comparer.compareXml(xml1, xml2));
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::textEqual()
@@ -142,7 +142,7 @@ void test_xmlcomparer::textEqual()
             "<NODE2>foo</NODE2>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xml1, xml1));
+    QVERIFY(comparer.compareXml(xml1, xml1, true));
 }
 
 void test_xmlcomparer::attibsUnequalTextEqual()
@@ -158,7 +158,7 @@ void test_xmlcomparer::attibsUnequalTextEqual()
             "<NODE3 c='3' d='foo' e='5'></NODE3>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(!comparer.compareXml(xml1, xml2));
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::attibsEqualTextUnequal()
@@ -174,7 +174,7 @@ void test_xmlcomparer::attibsEqualTextUnequal()
             "<NODE3 c='3' d='4' e='5'></NODE3>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(!comparer.compareXml(xml1, xml2));
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
 }
 
 void test_xmlcomparer::attibsEqualTextEqual()
@@ -185,7 +185,7 @@ void test_xmlcomparer::attibsEqualTextEqual()
             "<NODE3 c='3' d='4' e='5'></NODE3>"
         "</NODE1>";
     XmlComparer comparer;
-    QVERIFY(comparer.compareXml(xml, xml));
+    QVERIFY(comparer.compareXml(xml, xml, true));
 }
 
 QTEST_MAIN(test_xmlcomparer)
