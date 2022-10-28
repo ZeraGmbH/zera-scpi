@@ -17,7 +17,6 @@ public:
     XmlElemIterator end();
     bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
-    bool recurseElemsFind(QDomElement elem, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perElemFindFunction);
     QDomDocument m_doc;
 };
 
