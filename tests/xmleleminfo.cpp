@@ -7,24 +7,11 @@ bool XmlElemInfo::loadXml(const QString &xml)
 
 int XmlElemInfo::getElemCount()
 {
-    QDomNode firstNode = m_doc.firstChild();
     int nodeNums = 0;
-    recurseElemsForCount(firstNode, [&]()
-    {   // countElemFunction implementation
+    for(auto iter=begin(); iter!=end(); ++iter) {
         nodeNums++;
-    });
-    return nodeNums;
-}
-
-void XmlElemInfo::recurseElemsForCount(QDomNode node, const std::function<void ()>& countElemFunction)
-{
-    if (node.isElement()) {
-        QDomElement elem = node.toElement();
-        countElemFunction();
-        for(QDomNode childNode = elem.firstChild(); !childNode.isNull(); childNode = childNode.nextSibling()) {
-            recurseElemsForCount(childNode, countElemFunction);
-        }
     }
+    return nodeNums;
 }
 
 bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
