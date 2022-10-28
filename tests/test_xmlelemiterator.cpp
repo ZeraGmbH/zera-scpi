@@ -234,7 +234,7 @@ void test_xmlelemiterator::iterateTwoOneGGGrand()
     QCOMPARE(unknownTags, QStringList());
 }
 
-QString xmlFindUpUpUpMultipleNeighbours =
+QString xmlFindUpUpUpMultipleNeighbors =
     "<root>"
         "<child1>"
             "<grandchild1>"
@@ -247,10 +247,10 @@ QString xmlFindUpUpUpMultipleNeighbours =
         "<child3/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoOneGGGrandMulNeighbours()
+void test_xmlelemiterator::iterateTwoOneGGGrandMulNeighbors()
 {
     XmlElemInfo elemInfo;
-    QVERIFY(elemInfo.loadXml(xmlFindUpUpUpMultipleNeighbours));
+    QVERIFY(elemInfo.loadXml(xmlFindUpUpUpMultipleNeighbors));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2" << "child3" << "grandchild1" << "ggrandchild1" << "gggrandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
     QCOMPARE(expectedTags, QStringList());

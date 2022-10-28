@@ -26,7 +26,7 @@ private slots:
     void iterateTwoOneGrand();
     void iterateTwoOneGGrand();
     void iterateTwoOneGGGrand();
-    void iterateTwoOneGGGrandMulNeighbours();
+    void iterateTwoOneGGGrandMulNeighbors();
 
 };
 
