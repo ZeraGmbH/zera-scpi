@@ -23,6 +23,8 @@ private slots:
     void compareTwoSecondValUnequal();
     void compareTwoDifferentAttribNames();
     void compareTwo();
+    void compareSameText();
+    void compareDiffText();
 private:
     QDomDocument *m_doc;
     QDomElement *m_elem1;

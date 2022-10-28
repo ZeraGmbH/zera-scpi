@@ -110,3 +110,25 @@ void test_xmlattribcompare::compareTwo()
     QVERIFY(XmlAttribCompare::compare(*m_elem1, *m_elem2));
 }
 
+void test_xmlattribcompare::compareSameText()
+{
+    QDomDocument doc;
+    QVERIFY(doc.setContent(QString("<root>text</root>")));
+    QDomElement elem = doc.firstChildElement();
+    QCOMPARE(elem.text(), "text");
+    QVERIFY(XmlAttribCompare::compare(elem, elem));
+}
+
+void test_xmlattribcompare::compareDiffText()
+{
+    QDomDocument doc1;
+    QVERIFY(doc1.setContent(QString("<root>text1</root>")));
+    QDomElement elem1 = doc1.firstChildElement();
+    QCOMPARE(elem1.text(), "text1");
+    QDomDocument doc2;
+    QVERIFY(doc2.setContent(QString("<root>text2</root>")));
+    QDomElement elem2 = doc2.firstChildElement();
+    QCOMPARE(elem2.text(), "text2");
+    QVERIFY(XmlAttribCompare::compare(elem1, elem2));
+}
+
