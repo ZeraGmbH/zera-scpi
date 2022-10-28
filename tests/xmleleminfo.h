@@ -13,9 +13,9 @@ class XmlElemInfo
 public:
     bool loadXml(const QString &xml);
     int getElemCount();
-    bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
     XmlElemIterator begin();
     XmlElemIterator end();
+    bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
 private:
     bool recurseElemsFind(QDomNode node, const QStringList &parentPath, const std::function<bool (const QDomElement &, QStringList)> &perElemFindFunction);
     QDomDocument m_doc;
