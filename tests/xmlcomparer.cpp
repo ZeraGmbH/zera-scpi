@@ -14,8 +14,6 @@ bool XmlComparer::compareXml(QString xml1, QString xml2)
 
     if(isXmlEmptyOrInvalid(elemInfo1) && isXmlEmptyOrInvalid(elemInfo2))
         return true;
-    if(isXmlEmptyOrInvalid(elemInfo1) || isXmlEmptyOrInvalid(elemInfo2))
-        return false;
     if(elemInfo1.getElemCount() != elemInfo2.getElemCount())
         return false;
 
