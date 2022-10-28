@@ -3,7 +3,7 @@
 
 #include <QObject>
 
-class test_xmlcomparer : public QObject
+class test_xmleleminfo : public QObject
 {
     Q_OBJECT
 private slots:
