@@ -9,7 +9,7 @@
 class XmlElemInfo
 {
 public:
-    bool loadXml(const QString &xml);
+    bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
     int getElemCount();
     XmlElemIterator begin();
     XmlElemIterator end();

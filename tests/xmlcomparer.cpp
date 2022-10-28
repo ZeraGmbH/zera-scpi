@@ -15,12 +15,12 @@ XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
         XmlTextCompare::compare(elem1, elem2);
 };
 
-bool XmlComparer::compareXml(QString xml1, QString xml2)
+bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
 {
     XmlElemInfo elemInfo1;
-    elemInfo1.loadXml(xml1);
+    elemInfo1.loadXml(xml1, fatalOnInvalidXml);
     XmlElemInfo elemInfo2;
-    elemInfo2.loadXml(xml2);
+    elemInfo2.loadXml(xml2, fatalOnInvalidXml);
 
     if(isXmlEmptyOrInvalid(elemInfo1) && isXmlEmptyOrInvalid(elemInfo2))
         return true;

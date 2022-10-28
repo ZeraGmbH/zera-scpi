@@ -1,8 +1,12 @@
 #include "xmleleminfo.h"
 
-bool XmlElemInfo::loadXml(const QString &xml)
+bool XmlElemInfo::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
-    return m_doc.setContent(xml);
+    bool loaded = m_doc.setContent(xml);
+    if(!loaded && fatalOnInvalidXml) {
+        qFatal("Invalid XML\n%s", qPrintable(xml));
+    }
+    return loaded;
 }
 
 int XmlElemInfo::getElemCount()
