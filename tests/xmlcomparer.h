@@ -8,17 +8,16 @@
 #include <functional>
 
 typedef std::function<bool (const QDomElement, const QDomElement)> XmlElemCompareFunc;
-typedef QList<XmlElemCompareFunc> XmlElemCompareFuncList;
 
 class XmlComparer
 {
 public:
-    XmlComparer(XmlElemCompareFuncList elemCompareFunctions = m_standardElemCompareFunctions);
+    XmlComparer(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
     bool compareXml(QString xml1, QString xml2);
 private:
     bool isXmlEmptyOrInvalid(XmlElemInfo xmlInfo);
-    XmlElemCompareFuncList m_elemCompareFunctions;
-    static XmlElemCompareFuncList m_standardElemCompareFunctions;
+    XmlElemCompareFunc m_elemCompareFunc;
+    static XmlElemCompareFunc m_stdElemCompareFunc;
 };
 
 #endif // XMLCOMPARER_H

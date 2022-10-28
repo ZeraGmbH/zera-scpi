@@ -1,13 +1,12 @@
 #include "xmlcomparer.h"
 #include "xmlattribcompare.h"
 
-XmlComparer::XmlComparer(XmlElemCompareFuncList elemCompareFunctions) :
-    m_elemCompareFunctions(elemCompareFunctions)
+XmlComparer::XmlComparer(XmlElemCompareFunc elemCompareFunction) :
+    m_elemCompareFunc(elemCompareFunction)
 {
 }
 
-XmlElemCompareFuncList XmlComparer::m_standardElemCompareFunctions =
-        XmlElemCompareFuncList() <<
+XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
 [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
     return XmlAttribCompare::compare(elem1, elem2);
@@ -30,10 +29,8 @@ bool XmlComparer::compareXml(QString xml1, QString xml2)
         QStringList tagpath1 = iter.getParentPath() + QStringList(elem1.tagName());
         QDomElement elem2;
         if(elemInfo2.findElem(tagpath1, elem2)) {
-            for(const auto &elemCompareFunc : qAsConst(m_elemCompareFunctions)) {
-                if(!elemCompareFunc(elem1, elem2))
-                    return false;
-            }
+            if(!m_elemCompareFunc(elem1, elem2))
+                return false;
         }
     }
     return true;
