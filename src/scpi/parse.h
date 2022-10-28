@@ -1,14 +1,10 @@
-// header datei für keyword parser
-
 #ifndef PARSE_H
 #define PARSE_H
 
 #include <qstring.h>
 #include "SCPI_global.h"
 
-
 class cParsePrivate;
-
 
 /**
   @brief
@@ -17,11 +13,8 @@ class cParsePrivate;
   It searches for whole words using free selectable delimiters and whitespaces.
   Default whitespace characters are " ", ":" .
   */
-class SCPI_EXPORT cParse { // searches for whole words using free selectable delimiters and whitespaces
+class SCPI_EXPORT cParse {
 public:
-    /**
-      @b contruct a default configured parser.
-      */
     cParse();
     ~cParse();
     /**
@@ -43,11 +36,6 @@ public:
       */
     const QString SetWhiteSpace(const QString s);
 private:
-    /**
-      @b D'pointer to the private library internal structure
-
-      this is used to hide the internal structure, and thus make the library ABI safe
-      */
     cParsePrivate *d_ptr;
 };
 

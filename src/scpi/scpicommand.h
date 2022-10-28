@@ -17,24 +17,10 @@ class cSCPICommandPrivate;
 class SCPI_EXPORT cSCPICommand
 {
 public:
-    /**
-      @b Generates an empty scpicommand.
-      */
     cSCPICommand();
-    /**
-      @b Generates a scpicommand from str.
-      */
     cSCPICommand(const QString& str);
-    /**
-     * @brief cSCPICommand copy constructor
-     * @param other instance to copy from
-     */
     cSCPICommand(const cSCPICommand &other);
-
     ~cSCPICommand();
-    /**
-      @b Sets the scpicommand with str and return a reference to *this.
-      */
     cSCPICommand& operator = (const QString& str);
     /**
       @b Sets the scpicommand from a QTextStream and returns a reference to QTextStream.
