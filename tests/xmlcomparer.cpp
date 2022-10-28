@@ -1,9 +1,17 @@
 #include "xmlcomparer.h"
+#include "xmlattribcompare.h"
 
 XmlComparer::XmlComparer(XmlElemCompareFuncList elemCompareFunctions) :
     m_elemCompareFunctions(elemCompareFunctions)
 {
 }
+
+XmlElemCompareFuncList XmlComparer::m_standardElemCompareFunctions =
+        XmlElemCompareFuncList() <<
+[](const QDomElement& elem1, const QDomElement& elem2) -> bool
+{
+    return XmlAttribCompare::compare(elem1, elem2);
+};
 
 bool XmlComparer::compareXml(QString xml1, QString xml2)
 {
