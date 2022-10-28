@@ -4,9 +4,7 @@
 #include "xmlelemiterator.h"
 #include <QStringList>
 #include <QDomDocument>
-#include <QDomNode>
 #include <QDomElement>
-#include <functional>
 
 class XmlElemInfo
 {
