@@ -3,8 +3,8 @@
 #include "xmlattribcompare.h"
 #include <QTest>
 
-QList<XmlElemCompareFunction> elemAttribCompareList =
-        QList<XmlElemCompareFunction>() << [](const QDomElement& elem1, const QDomElement& elem2) -> bool
+XmlElemCompareFuncList elemAttribCompareList =
+        XmlElemCompareFuncList() << [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
     return XmlAttribCompare::compare(elem1, elem2);
 };
