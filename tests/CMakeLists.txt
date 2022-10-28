@@ -10,6 +10,8 @@ add_library(testhelpers STATIC
     xmleleminfo.h
     xmlelemiterator.cpp
     xmlelemiterator.h
+    xmltextcompare.cpp
+    xmltextcompare.h
     )
 
 target_include_directories(testhelpers
@@ -49,8 +51,9 @@ endfunction()
 
 SETUP_TESTS(
     test_scpisingletonfactory
-    test_xmleleminfo
-    test_xmlelemiterator
     test_xmlattribcompare
     test_xmlcomparer
+    test_xmleleminfo
+    test_xmlelemiterator
+    test_xmltextcompare
 )
