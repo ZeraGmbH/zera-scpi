@@ -8,12 +8,11 @@
 class XmlAttribCompare
 {
 public:
-    static bool compare(const QDomElement &elem, QMap<QString, QString> attribKeyValues);
+    static bool compare(const QDomElement &elem1, const QDomElement &elem2);
 private:
-    static bool attribsEmpty(QMap<QString, QString> attribKeyValues);
     static bool elemEmpty(const QDomElement &elem);
-    static bool bothEmpty(const QDomElement &elem, QMap<QString, QString> attribKeyValues);
-    static bool compareAll(const QDomElement &elem, QMap<QString, QString> attribKeyValues);
+    static bool bothEmpty(const QDomElement &elem1, const QDomElement &elem2);
+    static bool compareAll(const QDomElement &elem1, const QDomElement &elem2);
 };
 
 #endif // XMLATTRIBCOMPARE_H
