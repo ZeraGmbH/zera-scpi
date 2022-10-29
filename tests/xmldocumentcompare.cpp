@@ -34,11 +34,9 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
         QDomElement elem1 = iter.getElem();
         QStringList tagpath1 = iter.getParentPath() + QStringList(elem1.tagName());
         QDomElement elem2;
-        if(doc2.findElem(tagpath1, elem2)) {
-            if(!m_elemCompareFunc(elem1, elem2))
-                return false;
-        }
-        else
+        if(!doc2.findElem(tagpath1, elem2))
+            return false;
+        if(!m_elemCompareFunc(elem1, elem2))
             return false;
     }
     return true;
