@@ -221,4 +221,18 @@ void test_xmldocumentcompare::docTypeEqual()
     QVERIFY(compare.compareXml(xml1, xml2, true));
 }
 
+void test_xmldocumentcompare::sameSizeDifferentElems()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE3>"
+            "<NODE4>foo</NODE4>"
+        "</NODE3>";
+    XmlDocumentCompare compare;
+    QVERIFY(!compare.compareXml(xml1, xml2, true));
+}
+
 QTEST_MAIN(test_xmldocumentcompare)

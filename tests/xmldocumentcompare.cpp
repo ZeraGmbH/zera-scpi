@@ -38,6 +38,8 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
             if(!m_elemCompareFunc(elem1, elem2))
                 return false;
         }
+        else
+            return false;
     }
     return true;
 }
