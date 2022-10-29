@@ -15,6 +15,7 @@ public:
     XmlElemIterator begin();
     XmlElemIterator end();
     bool findElem(QStringList elemSearchPath, QDomElement &foundElem);
+    bool isEmpty();
 private:
     QDomDocument m_doc;
 };
