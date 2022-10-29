@@ -1,6 +1,6 @@
-#include "xmltextcompare.h"
+#include "xmlelemcomparetext.h"
 
-bool XmlTextCompare::compare(const QDomElement &elem1, const QDomElement &elem2)
+bool XmlElemCompareText::compare(const QDomElement &elem1, const QDomElement &elem2)
 {
     if(elem1.hasAttributes() || elem2.hasAttributes())
         return true;

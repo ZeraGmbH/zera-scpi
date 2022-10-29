@@ -1,6 +1,6 @@
-#include "xmlattribcompare.h"
+#include "xmlelemcompareattribs.h"
 
-bool XmlAttribCompare::compare(const QDomElement &elem1, const QDomElement &elem2)
+bool XmlElemCompareAttribs::compare(const QDomElement &elem1, const QDomElement &elem2)
 {
     if(bothEmpty(elem1, elem2))
         return true;
@@ -9,17 +9,17 @@ bool XmlAttribCompare::compare(const QDomElement &elem1, const QDomElement &elem
     return compareAll(elem1, elem2);
 }
 
-bool XmlAttribCompare::elemEmpty(const QDomElement &elem)
+bool XmlElemCompareAttribs::elemEmpty(const QDomElement &elem)
 {
     return !elem.hasAttributes();
 }
 
-bool XmlAttribCompare::bothEmpty(const QDomElement &elem1, const QDomElement &elem2)
+bool XmlElemCompareAttribs::bothEmpty(const QDomElement &elem1, const QDomElement &elem2)
 {
     return elemEmpty(elem1) && elemEmpty(elem2);
 }
 
-bool XmlAttribCompare::compareAll(const QDomElement &elem1, const QDomElement &elem2)
+bool XmlElemCompareAttribs::compareAll(const QDomElement &elem1, const QDomElement &elem2)
 {
     auto elem1Attribs = elem1.attributes();
     auto elem2Attribs = elem2.attributes();

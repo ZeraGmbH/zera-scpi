@@ -1,19 +1,19 @@
-#include "test_xmltextcompare.h"
-#include "xmltextcompare.h"
+#include "test_xmlelemcomparetext.h"
+#include "xmlelemcomparetext.h"
 #include <QTest>
 
-QTEST_MAIN(test_xmltextcompare)
+QTEST_MAIN(test_xmlelemcomparetext)
 
-void test_xmltextcompare::bothEmpty()
+void test_xmlelemcomparetext::bothEmpty()
 {
     QDomDocument doc;
     QVERIFY(doc.setContent(QString("<root></root>")));
     QDomElement elem = doc.firstChildElement();
     QCOMPARE(elem.text(), "");
-    QVERIFY(XmlTextCompare::compare(elem, elem));
+    QVERIFY(XmlElemCompareText::compare(elem, elem));
 }
 
-void test_xmltextcompare::oneEmpty()
+void test_xmlelemcomparetext::oneEmpty()
 {
     QDomDocument doc1;
     QVERIFY(doc1.setContent(QString("<root></root>")));
@@ -23,10 +23,10 @@ void test_xmltextcompare::oneEmpty()
     QVERIFY(doc2.setContent(QString("<root>foo</root>")));
     QDomElement elem2 = doc2.firstChildElement();
     QCOMPARE(elem2.text(), "foo");
-    QVERIFY(!XmlTextCompare::compare(elem1, elem2));
+    QVERIFY(!XmlElemCompareText::compare(elem1, elem2));
 }
 
-void test_xmltextcompare::equal()
+void test_xmlelemcomparetext::equal()
 {
     QDomDocument doc1;
     QVERIFY(doc1.setContent(QString("<root>foo</root>")));
@@ -36,10 +36,10 @@ void test_xmltextcompare::equal()
     QVERIFY(doc2.setContent(QString("<root>foo</root>")));
     QDomElement elem2 = doc2.firstChildElement();
     QCOMPARE(elem2.text(), "foo");
-    QVERIFY(XmlTextCompare::compare(elem1, elem2));
+    QVERIFY(XmlElemCompareText::compare(elem1, elem2));
 }
 
-void test_xmltextcompare::unequal()
+void test_xmlelemcomparetext::unequal()
 {
     QDomDocument doc1;
     QVERIFY(doc1.setContent(QString("<root>foo</root>")));
@@ -49,10 +49,10 @@ void test_xmltextcompare::unequal()
     QVERIFY(doc2.setContent(QString("<root>bar</root>")));
     QDomElement elem2 = doc2.firstChildElement();
     QCOMPARE(elem2.text(), "bar");
-    QVERIFY(!XmlTextCompare::compare(elem1, elem2));
+    QVERIFY(!XmlElemCompareText::compare(elem1, elem2));
 }
 
-void test_xmltextcompare::firstHasAttributes()
+void test_xmlelemcomparetext::firstHasAttributes()
 {
     QDomDocument doc1;
     QVERIFY(doc1.setContent(QString("<root a='1' b='2'/>")));
@@ -62,10 +62,10 @@ void test_xmltextcompare::firstHasAttributes()
     QVERIFY(doc2.setContent(QString("<root>foo</root>")));
     QDomElement elem2 = doc2.firstChildElement();
     QCOMPARE(elem2.text(), "foo");
-    QVERIFY(XmlTextCompare::compare(elem1, elem2));
+    QVERIFY(XmlElemCompareText::compare(elem1, elem2));
 }
 
-void test_xmltextcompare::secondHasAttibutes()
+void test_xmlelemcomparetext::secondHasAttibutes()
 {
     QDomDocument doc1;
     QVERIFY(doc1.setContent(QString("<root>foo</root>")));
@@ -75,5 +75,5 @@ void test_xmltextcompare::secondHasAttibutes()
     QVERIFY(doc2.setContent(QString("<root a='1' b='2'/>")));
     QDomElement elem2 = doc2.firstChildElement();
     QCOMPARE(elem2.text(), "");
-    QVERIFY(XmlTextCompare::compare(elem1, elem2));
+    QVERIFY(XmlElemCompareText::compare(elem1, elem2));
 }
