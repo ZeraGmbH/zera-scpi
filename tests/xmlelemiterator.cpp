@@ -53,18 +53,18 @@ QDomElement XmlElemIterator::getNextElem()
     else if(!neighbor.isNull())
         m_elem = neighbor;
     else if(!m_iteratedParentList.isEmpty())
-        findAlreadyIteratedParentsNeighbor();
+        findIteratedParentsNeighbor();
     else
         m_elem.clear();
     return m_elem;
 }
 
-void XmlElemIterator::findAlreadyIteratedParentsNeighbor()
+void XmlElemIterator::findIteratedParentsNeighbor()
 {
     m_elem.clear();
     while(m_elem.isNull() && !m_iteratedParentList.isEmpty()) {
-        QDomElement handledParent = m_iteratedParentList.takeLast();
-        m_elem = handledParent.nextSiblingElement();
+        QDomElement iteratedParent = m_iteratedParentList.takeLast();
+        m_elem = iteratedParent.nextSiblingElement();
     }
 }
 
