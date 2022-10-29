@@ -9,17 +9,9 @@ bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
     return loaded;
 }
 
-int XmlDocument::getElemCount()
+bool XmlDocument::isEmpty()
 {
-    int nodeNums = 0;
-    for(auto iter=begin(); iter!=end(); ++iter)
-        nodeNums++;
-    return nodeNums;
-}
-
-QString XmlDocument::getDocType()
-{
-    return m_doc.doctype().name();
+    return begin() == end();
 }
 
 XmlElemIterator XmlDocument::begin()
@@ -45,7 +37,15 @@ bool XmlDocument::findElem(QStringList elemSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
-bool XmlDocument::isEmpty()
+int XmlDocument::getElemCount()
 {
-    return begin() == end();
+    int nodeNums = 0;
+    for(auto iter=begin(); iter!=end(); ++iter)
+        nodeNums++;
+    return nodeNums;
+}
+
+QString XmlDocument::getDocType()
+{
+    return m_doc.doctype().name();
 }
