@@ -11,14 +11,14 @@ typedef std::function<bool (const QDomElement, const QDomElement)> XmlElemCompar
 class XmlDocumentCompare
 {
 public:
-    XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
+    XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction = m_defaultElemCompareFunc);
     bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
     bool compareDocTypes(XmlDocument doc1, XmlDocument doc2);
     bool compareElems(XmlDocument doc1, XmlDocument doc2);
 
     XmlElemCompareFunc m_elemCompareFunc;
-    static XmlElemCompareFunc m_stdElemCompareFunc;
+    static XmlElemCompareFunc m_defaultElemCompareFunc;
 };
 
 #endif // XMLDOCUMENTCOMPARE_H
