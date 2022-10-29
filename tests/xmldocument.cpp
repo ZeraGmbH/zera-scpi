@@ -44,3 +44,8 @@ bool XmlDocument::findElem(QStringList elemSearchPath, QDomElement &foundElem)
     }
     return !foundElem.isNull();
 }
+
+bool XmlDocument::isEmpty()
+{
+    return begin() == end();
+}
