@@ -1,5 +1,5 @@
-#ifndef XMLELEMINFO_H
-#define XMLELEMINFO_H
+#ifndef XMLDOCUMENT_H
+#define XMLDOCUMENT_H
 
 #include "xmlelemiterator.h"
 #include <QStringList>
@@ -7,7 +7,7 @@
 #include <QDomDocumentType>
 #include <QDomElement>
 
-class XmlElemInfo
+class XmlDocument
 {
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
@@ -15,9 +15,9 @@ public:
     QDomDocumentType getDocType();
     XmlElemIterator begin();
     XmlElemIterator end();
-    bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);
+    bool findElem(QStringList elemSearchPath, QDomElement &foundElem);
 private:
     QDomDocument m_doc;
 };
 
-#endif // XMLELEMINFO_H
+#endif // XMLDOCUMENT_H

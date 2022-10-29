@@ -6,8 +6,8 @@ add_library(testhelpers STATIC
     xmlcomparer.h
     xmlelemcompareattribs.cpp
     xmlelemcompareattribs.h
-    xmleleminfo.cpp
-    xmleleminfo.h
+    xmldocument.cpp
+    xmldocument.h
     xmlelemiterator.cpp
     xmlelemiterator.h
     xmlelemcomparetext.cpp
@@ -52,8 +52,8 @@ endfunction()
 SETUP_TESTS(
     test_scpisingletonfactory
     test_xmlcomparer
+    test_xmldocument
     test_xmlelemcompareattribs
     test_xmlelemcomparetext
-    test_xmleleminfo
     test_xmlelemiterator
 )

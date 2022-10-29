@@ -17,9 +17,9 @@ XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
 
 bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
 {
-    XmlElemInfo elemInfo1;
+    XmlDocument elemInfo1;
     elemInfo1.loadXml(xml1, fatalOnInvalidXml);
-    XmlElemInfo elemInfo2;
+    XmlDocument elemInfo2;
     elemInfo2.loadXml(xml2, fatalOnInvalidXml);
 
     if(isXmlEmptyOrInvalid(elemInfo1) && isXmlEmptyOrInvalid(elemInfo2))
@@ -42,12 +42,12 @@ bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
     return true;
 }
 
-bool XmlComparer::isXmlEmptyOrInvalid(XmlElemInfo elemInfo)
+bool XmlComparer::isXmlEmptyOrInvalid(XmlDocument elemInfo)
 {
     return elemInfo.begin() == elemInfo.end();
 }
 
-bool XmlComparer::compareDocTypes(XmlElemInfo elemInfo1, XmlElemInfo elemInfo2)
+bool XmlComparer::compareDocTypes(XmlDocument elemInfo1, XmlDocument elemInfo2)
 {
     return elemInfo1.getDocType().name() == elemInfo2.getDocType().name();
 }

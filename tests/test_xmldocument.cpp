@@ -1,8 +1,8 @@
-#include "test_xmleleminfo.h"
-#include "xmleleminfo.h"
+#include "test_xmldocument.h"
+#include "xmldocument.h"
 #include <QTest>
 
-QTEST_MAIN(test_xmleleminfo)
+QTEST_MAIN(test_xmldocument)
 
 QString xmlOneNode =
     "<NODE1/>";
@@ -32,81 +32,81 @@ QString xmlTwoChildNodesNested =
         "</NODE2>"
     "</NODE1>";
 
-void test_xmleleminfo::loadInvalid()
+void test_xmldocument::loadInvalid()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(!cmp.loadXml("foo"));
 }
 
-void test_xmleleminfo::loadValid()
+void test_xmldocument::loadValid()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneNode, true));
 }
 
-void test_xmleleminfo::countRootNode()
+void test_xmldocument::countRootNode()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneNode, true));
     QCOMPARE(cmp.getElemCount(), 1);
 }
 
-void test_xmleleminfo::countOneChildNode()
+void test_xmldocument::countOneChildNode()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneChildNode, true));
     QCOMPARE(cmp.getElemCount(), 2);
 }
 
-void test_xmleleminfo::countTwoChildNodes()
+void test_xmldocument::countTwoChildNodes()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodes, true));
     QCOMPARE(cmp.getElemCount(), 3);
 
 }
 
-void test_xmleleminfo::countTwoChildNodesNested()
+void test_xmldocument::countTwoChildNodesNested()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesNested, true));
     QCOMPARE(cmp.getElemCount(), 3);
 }
 
-void test_xmleleminfo::countTwoChildNodesAttributes()
+void test_xmldocument::countTwoChildNodesAttributes()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
     QCOMPARE(cmp.getElemCount(), 3);
 }
 
-void test_xmleleminfo::findEmptySearch()
+void test_xmldocument::findEmptySearch()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(!cmp.findElem(QStringList(), elem));
 }
 
-void test_xmleleminfo::findRootNode()
+void test_xmldocument::findRootNode()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
 }
 
-void test_xmleleminfo::noFindRootNode()
+void test_xmldocument::noFindRootNode()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneNode, true));
     QDomElement elem;
     QVERIFY(!cmp.findElem(QStringList() << "foo", elem));
 }
 
-void test_xmleleminfo::findOneChildNode()
+void test_xmldocument::findOneChildNode()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlOneChildNode, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
@@ -116,9 +116,9 @@ void test_xmleleminfo::findOneChildNode()
     QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "foo", elem));
 }
 
-void test_xmleleminfo::findTwoChildNodes()
+void test_xmldocument::findTwoChildNodes()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodes, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
@@ -131,9 +131,9 @@ void test_xmleleminfo::findTwoChildNodes()
     QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2"  << "NODE2", elem));
 }
 
-void test_xmleleminfo::findTwoChildNodesNested()
+void test_xmldocument::findTwoChildNodesNested()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesNested, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
@@ -148,9 +148,9 @@ void test_xmleleminfo::findTwoChildNodesNested()
     QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2" << "foo", elem));
 }
 
-void test_xmleleminfo::findTwoChildNodesHasAttributes()
+void test_xmldocument::findTwoChildNodesHasAttributes()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
     QDomElement elem;
     QVERIFY(cmp.findElem(QStringList() << "NODE1", elem));
@@ -163,9 +163,9 @@ void test_xmleleminfo::findTwoChildNodesHasAttributes()
     QVERIFY(!cmp.findElem(QStringList() << "NODE1" << "NODE2"  << "NODE2", elem));
 }
 
-void test_xmleleminfo::identFoundElemByAttribCount()
+void test_xmldocument::identFoundElemByAttribCount()
 {
-    XmlElemInfo cmp;
+    XmlDocument cmp;
     QVERIFY(cmp.loadXml(xmlTwoChildNodesWithAttributes, true));
 
     QDomElement elem;
