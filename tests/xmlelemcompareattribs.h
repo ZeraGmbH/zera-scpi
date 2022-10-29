@@ -1,11 +1,9 @@
-#ifndef XMLATTRIBCOMPARE_H
-#define XMLATTRIBCOMPARE_H
+#ifndef XMLELEMCOMPAREATTRIBS_H
+#define XMLELEMCOMPAREATTRIBS_H
 
 #include <QDomElement>
-#include <QMap>
-#include <QString>
 
-class XmlAttribCompare
+class XmlElemCompareAttribs
 {
 public:
     static bool compare(const QDomElement &elem1, const QDomElement &elem2);
@@ -15,4 +13,4 @@ private:
     static bool compareAll(const QDomElement &elem1, const QDomElement &elem2);
 };
 
-#endif // XMLATTRIBCOMPARE_H
+#endif // XMLELEMCOMPAREATTRIBS_H

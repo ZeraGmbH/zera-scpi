@@ -5,7 +5,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 
-class test_xmlattribcompare : public QObject
+class test_xmlelemcompareattribs : public QObject
 {
     Q_OBJECT
 private slots:
