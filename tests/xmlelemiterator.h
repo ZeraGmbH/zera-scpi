@@ -20,7 +20,7 @@ private:
     void findAlreadyIteratedParentsNeighbor();
     void makeChildCurrent(QDomElement child);
     QDomElement m_elem;
-    QList<QDomElement> m_parentList;
+    QList<QDomElement> m_iteratedParentList;
 };
 
 #endif // XMLELEMITERATOR_H
