@@ -4,7 +4,6 @@
 #include "xmldocument.h"
 #include <QString>
 #include <QDomElement>
-#include <QList>
 #include <functional>
 
 typedef std::function<bool (const QDomElement, const QDomElement)> XmlElemCompareFunc;
