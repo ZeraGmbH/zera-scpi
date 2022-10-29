@@ -17,24 +17,24 @@ XmlElemCompareFunc XmlDocumentCompare::m_stdElemCompareFunc =
 
 bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
 {
-    XmlDocument elemInfo1;
-    elemInfo1.loadXml(xml1, fatalOnInvalidXml);
-    XmlDocument elemInfo2;
-    elemInfo2.loadXml(xml2, fatalOnInvalidXml);
+    XmlDocument doc1;
+    doc1.loadXml(xml1, fatalOnInvalidXml);
+    XmlDocument doc2;
+    doc2.loadXml(xml2, fatalOnInvalidXml);
 
-    if(isXmlEmptyOrInvalid(elemInfo1) && isXmlEmptyOrInvalid(elemInfo2))
+    if(isXmlEmptyOrInvalid(doc1) && isXmlEmptyOrInvalid(doc2))
         return true;
-    if(elemInfo1.getElemCount() != elemInfo2.getElemCount())
+    if(doc1.getElemCount() != doc2.getElemCount())
         return false;
-    if(!compareDocTypes(elemInfo1, elemInfo2)) {
+    if(!compareDocTypes(doc1, doc2)) {
         return false;
     }
 
-    for(auto iter=elemInfo1.begin(); iter!=elemInfo1.end(); ++iter) {
+    for(auto iter=doc1.begin(); iter!=doc1.end(); ++iter) {
         QDomElement elem1 = iter.getElem();
         QStringList tagpath1 = iter.getParentPath() + QStringList(elem1.tagName());
         QDomElement elem2;
-        if(elemInfo2.findElem(tagpath1, elem2)) {
+        if(doc2.findElem(tagpath1, elem2)) {
             if(!m_elemCompareFunc(elem1, elem2))
                 return false;
         }
@@ -42,12 +42,12 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
     return true;
 }
 
-bool XmlDocumentCompare::isXmlEmptyOrInvalid(XmlDocument elemInfo)
+bool XmlDocumentCompare::isXmlEmptyOrInvalid(XmlDocument doc)
 {
-    return elemInfo.begin() == elemInfo.end();
+    return doc.begin() == doc.end();
 }
 
-bool XmlDocumentCompare::compareDocTypes(XmlDocument elemInfo1, XmlDocument elemInfo2)
+bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 {
-    return elemInfo1.getDocType().name() == elemInfo2.getDocType().name();
+    return doc1.getDocType() == doc2.getDocType();
 }
