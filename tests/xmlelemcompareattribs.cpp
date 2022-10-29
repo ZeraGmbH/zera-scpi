@@ -9,14 +9,14 @@ bool XmlElemCompareAttribs::compare(const QDomElement &elem1, const QDomElement 
     return compareAll(elem1, elem2);
 }
 
-bool XmlElemCompareAttribs::elemEmpty(const QDomElement &elem)
+bool XmlElemCompareAttribs::isEmpty(const QDomElement &elem)
 {
     return !elem.hasAttributes();
 }
 
 bool XmlElemCompareAttribs::bothEmpty(const QDomElement &elem1, const QDomElement &elem2)
 {
-    return elemEmpty(elem1) && elemEmpty(elem2);
+    return isEmpty(elem1) && isEmpty(elem2);
 }
 
 bool XmlElemCompareAttribs::compareAll(const QDomElement &elem1, const QDomElement &elem2)
