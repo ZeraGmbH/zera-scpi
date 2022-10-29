@@ -53,13 +53,13 @@ QDomElement XmlElemIterator::getNextElem()
     else if(!neighbor.isNull())
         m_elem = neighbor;
     else if(!m_parentList.isEmpty())
-        findParentsNeighbor();
+        findAlreadyIteratedParentsNeighbor();
     else
         m_elem.clear();
     return m_elem;
 }
 
-void XmlElemIterator::findParentsNeighbor()
+void XmlElemIterator::findAlreadyIteratedParentsNeighbor()
 {
     m_elem.clear();
     while(m_elem.isNull() && !m_parentList.isEmpty()) {
