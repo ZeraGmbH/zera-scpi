@@ -21,6 +21,8 @@ private slots:
     void attibsUnequalTextEqual();
     void attibsEqualTextUnequal();
     void attibsEqualTextEqual();
+    void docTypeUnequal();
+    void docTypeEqual();
 };
 
 #endif // TEST_XMLCOMPARER_H

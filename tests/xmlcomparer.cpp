@@ -26,6 +26,9 @@ bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
         return true;
     if(elemInfo1.getElemCount() != elemInfo2.getElemCount())
         return false;
+    if(!compareDocTypes(elemInfo1, elemInfo2)) {
+        return false;
+    }
 
     for(auto iter=elemInfo1.begin(); iter!=elemInfo1.end(); ++iter) {
         QDomElement elem1 = iter.getElem();
@@ -39,7 +42,12 @@ bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
     return true;
 }
 
-bool XmlComparer::isXmlEmptyOrInvalid(XmlElemInfo xmlInfo)
+bool XmlComparer::isXmlEmptyOrInvalid(XmlElemInfo elemInfo)
 {
-    return xmlInfo.begin() == xmlInfo.end();
+    return elemInfo.begin() == elemInfo.end();
+}
+
+bool XmlComparer::compareDocTypes(XmlElemInfo elemInfo1, XmlElemInfo elemInfo2)
+{
+    return elemInfo1.getDocType().name() == elemInfo2.getDocType().name();
 }
