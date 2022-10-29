@@ -10,12 +10,12 @@ class XmlDocument
 {
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
-    int getElemCount();
-    QString getDocType();
+    bool isEmpty();
     XmlElemIterator begin();
     XmlElemIterator end();
     bool findElem(QStringList elemSearchPath, QDomElement &foundElem);
-    bool isEmpty();
+    int getElemCount();
+    QString getDocType();
 private:
     QDomDocument m_doc;
 };
