@@ -52,7 +52,7 @@ QDomElement XmlElemIterator::getNextElem()
         makeChildCurrent(child);
     else if(!neighbor.isNull())
         m_elem = neighbor;
-    else if(!m_parentList.isEmpty())
+    else if(!m_iteratedParentList.isEmpty())
         findAlreadyIteratedParentsNeighbor();
     else
         m_elem.clear();
@@ -62,14 +62,14 @@ QDomElement XmlElemIterator::getNextElem()
 void XmlElemIterator::findAlreadyIteratedParentsNeighbor()
 {
     m_elem.clear();
-    while(m_elem.isNull() && !m_parentList.isEmpty()) {
-        QDomElement handledParent = m_parentList.takeLast();
+    while(m_elem.isNull() && !m_iteratedParentList.isEmpty()) {
+        QDomElement handledParent = m_iteratedParentList.takeLast();
         m_elem = handledParent.nextSiblingElement();
     }
 }
 
 void XmlElemIterator::makeChildCurrent(QDomElement child)
 {
-    m_parentList.append(m_elem);
+    m_iteratedParentList.append(m_elem);
     m_elem = child;
 }
