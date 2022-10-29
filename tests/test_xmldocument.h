@@ -1,9 +1,9 @@
-#ifndef TEST_XMLELEMINFO_H
-#define TEST_XMLELEMINFO_H
+#ifndef TEST_XMLDOCUMENT_H
+#define TEST_XMLDOCUMENT_H
 
 #include <QObject>
 
-class test_xmleleminfo : public QObject
+class test_xmldocument : public QObject
 {
     Q_OBJECT
 private slots:
@@ -26,4 +26,4 @@ private slots:
     void identFoundElemByAttribCount();
 };
 
-#endif // TEST_XMLELEMINFO_H
+#endif // TEST_XMLDOCUMENT_H

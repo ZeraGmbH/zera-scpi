@@ -1,5 +1,5 @@
 #include "test_xmlelemiterator.h"
-#include "xmleleminfo.h"
+#include "xmldocument.h"
 #include <QTest>
 
 QTEST_MAIN(test_xmlelemiterator)
@@ -61,7 +61,7 @@ void test_xmlelemiterator::grandChildOfRoot()
 
 void test_xmlelemiterator::beginEmpty()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     XmlElemIterator iter = elemInfo.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getElem().isNull());
@@ -77,7 +77,7 @@ QString xmlOneChild =
 
 void test_xmlelemiterator::beginRoot()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlRootOnly, true));
     XmlElemIterator iter = elemInfo.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
@@ -87,7 +87,7 @@ void test_xmlelemiterator::beginRoot()
 
 void test_xmlelemiterator::endEmpty()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     XmlElemIterator iter = elemInfo.end();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getElem().isNull());
@@ -95,14 +95,14 @@ void test_xmlelemiterator::endEmpty()
 
 void test_xmlelemiterator::endValid()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlRootOnly, true));
     XmlElemIterator iter = elemInfo.end();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getElem().isNull());
 }
 
-static QStringList iteratePre(XmlElemInfo elemInfo, QStringList &expectedTags)
+static QStringList iteratePre(XmlDocument elemInfo, QStringList &expectedTags)
 {
     QStringList unknownTags;
     for(auto iter=elemInfo.begin(); iter!=elemInfo.end(); ++iter) {
@@ -116,7 +116,7 @@ static QStringList iteratePre(XmlElemInfo elemInfo, QStringList &expectedTags)
 
 void test_xmlelemiterator::iterateOnePre()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlOneChild, true));
     QStringList expectedTags = QStringList() << "root" << "child1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -126,7 +126,7 @@ void test_xmlelemiterator::iterateOnePre()
 
 void test_xmlelemiterator::iterateOnePost()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlOneChild, true));
     QStringList expectedTags = QStringList() << "root" << "child1";
     QStringList unknownTags;
@@ -150,7 +150,7 @@ QString xmlTwoNested =
 
 void test_xmlelemiterator::iterateTwoNested()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlTwoNested, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "grandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -166,7 +166,7 @@ QString xmlParallel =
 
 void test_xmlelemiterator::iterateTwoParallel()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlParallel, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -184,7 +184,7 @@ QString xmlFindUp =
 
 void test_xmlelemiterator::iterateTwoOneGrand()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlFindUp, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2" << "grandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -204,7 +204,7 @@ QString xmlFindUpUp =
 
 void test_xmlelemiterator::iterateTwoOneGGrand()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlFindUpUp, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2" << "grandchild1" << "ggrandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -226,7 +226,7 @@ QString xmlFindUpUpUp =
 
 void test_xmlelemiterator::iterateTwoOneGGGrand()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlFindUpUpUp, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2" << "grandchild1" << "ggrandchild1" << "gggrandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);
@@ -249,7 +249,7 @@ QString xmlFindUpUpUpMultipleNeighbors =
 
 void test_xmlelemiterator::iterateTwoOneGGGrandMulNeighbors()
 {
-    XmlElemInfo elemInfo;
+    XmlDocument elemInfo;
     QVERIFY(elemInfo.loadXml(xmlFindUpUpUpMultipleNeighbors, true));
     QStringList expectedTags = QStringList() << "root" << "child1" << "child2" << "child3" << "grandchild1" << "ggrandchild1" << "gggrandchild1";
     QStringList unknownTags = iteratePre(elemInfo, expectedTags);

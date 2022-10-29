@@ -1,6 +1,6 @@
-#include "xmleleminfo.h"
+#include "xmldocument.h"
 
-bool XmlElemInfo::loadXml(const QString &xml, bool fatalOnInvalidXml)
+bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
     bool loaded = m_doc.setContent(xml);
     if(!loaded && fatalOnInvalidXml) {
@@ -9,7 +9,7 @@ bool XmlElemInfo::loadXml(const QString &xml, bool fatalOnInvalidXml)
     return loaded;
 }
 
-int XmlElemInfo::getElemCount()
+int XmlDocument::getElemCount()
 {
     int nodeNums = 0;
     for(auto iter=begin(); iter!=end(); ++iter)
@@ -17,29 +17,29 @@ int XmlElemInfo::getElemCount()
     return nodeNums;
 }
 
-QDomDocumentType XmlElemInfo::getDocType()
+QDomDocumentType XmlDocument::getDocType()
 {
     return m_doc.doctype();
 }
 
-XmlElemIterator XmlElemInfo::begin()
+XmlElemIterator XmlDocument::begin()
 {
     return { m_doc.documentElement() };
 }
 
-XmlElemIterator XmlElemInfo::end()
+XmlElemIterator XmlDocument::end()
 {
     return { QDomElement() };
 }
 
-bool XmlElemInfo::findElem(QStringList nodeSearchPath, QDomElement &foundElem)
+bool XmlDocument::findElem(QStringList elemSearchPath, QDomElement &foundElem)
 {
-    if(nodeSearchPath.isEmpty())
+    if(elemSearchPath.isEmpty())
         return false;
-    QString childName = nodeSearchPath.takeFirst();
+    QString childName = elemSearchPath.takeFirst();
     foundElem = m_doc.firstChildElement(childName);
-    while(!foundElem.isNull() && !nodeSearchPath.isEmpty()) {
-        childName = nodeSearchPath.takeFirst();
+    while(!foundElem.isNull() && !elemSearchPath.isEmpty()) {
+        childName = elemSearchPath.takeFirst();
         foundElem = foundElem.firstChildElement(childName);
     }
     return !foundElem.isNull();
