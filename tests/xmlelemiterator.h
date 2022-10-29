@@ -17,7 +17,7 @@ public:
     bool operator!= (const XmlElemIterator &other) const;
 private:
     QDomElement getNextElem();
-    void findAlreadyIteratedParentsNeighbor();
+    void findIteratedParentsNeighbor();
     void makeChildCurrent(QDomElement child);
     QDomElement m_elem;
     QList<QDomElement> m_iteratedParentList;
