@@ -1,9 +1,9 @@
-#ifndef TEST_XMLCOMPARER_H
-#define TEST_XMLCOMPARER_H
+#ifndef TEST_XMLDOCUMENTCOMPARE_H
+#define TEST_XMLDOCUMENTCOMPARE_H
 
 #include <QObject>
 
-class test_xmlcomparer : public QObject
+class test_xmldocumentcompare : public QObject
 {
     Q_OBJECT
 private slots:
@@ -25,4 +25,4 @@ private slots:
     void docTypeEqual();
 };
 
-#endif // TEST_XMLCOMPARER_H
+#endif // TEST_XMLDOCUMENTCOMPARE_H

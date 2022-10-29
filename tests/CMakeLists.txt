@@ -2,12 +2,12 @@
 # https://github.com/KDAB/kdabtv/blob/master/Qt-Widgets-and-more/UnitTests/Tests/CMakeLists.txt
 
 add_library(testhelpers STATIC
-    xmlcomparer.cpp
-    xmlcomparer.h
-    xmlelemcompareattribs.cpp
-    xmlelemcompareattribs.h
     xmldocument.cpp
     xmldocument.h
+    xmldocumentcompare.cpp
+    xmldocumentcompare.h
+    xmlelemcompareattribs.cpp
+    xmlelemcompareattribs.h
     xmlelemiterator.cpp
     xmlelemiterator.h
     xmlelemcomparetext.cpp
@@ -51,7 +51,7 @@ endfunction()
 
 SETUP_TESTS(
     test_scpisingletonfactory
-    test_xmlcomparer
+    test_xmldocumentcompare
     test_xmldocument
     test_xmlelemcompareattribs
     test_xmlelemcomparetext

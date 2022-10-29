@@ -1,5 +1,5 @@
-#ifndef XMLCOMPARER_H
-#define XMLCOMPARER_H
+#ifndef XMLDOCUMENTCOMPARE_H
+#define XMLDOCUMENTCOMPARE_H
 
 #include "xmldocument.h"
 #include <QString>
@@ -9,10 +9,10 @@
 
 typedef std::function<bool (const QDomElement, const QDomElement)> XmlElemCompareFunc;
 
-class XmlComparer
+class XmlDocumentCompare
 {
 public:
-    XmlComparer(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
+    XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
     bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
     bool isXmlEmptyOrInvalid(XmlDocument elemInfo);
@@ -21,4 +21,4 @@ private:
     static XmlElemCompareFunc m_stdElemCompareFunc;
 };
 
-#endif // XMLCOMPARER_H
+#endif // XMLDOCUMENTCOMPARE_H

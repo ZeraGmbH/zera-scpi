@@ -1,13 +1,13 @@
-#include "xmlcomparer.h"
+#include "xmldocumentcompare.h"
 #include "xmlelemcompareattribs.h"
 #include "xmlelemcomparetext.h"
 
-XmlComparer::XmlComparer(XmlElemCompareFunc elemCompareFunction) :
+XmlDocumentCompare::XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction) :
     m_elemCompareFunc(elemCompareFunction)
 {
 }
 
-XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
+XmlElemCompareFunc XmlDocumentCompare::m_stdElemCompareFunc =
 [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
     return
@@ -15,7 +15,7 @@ XmlElemCompareFunc XmlComparer::m_stdElemCompareFunc =
         XmlElemCompareText::compare(elem1, elem2);
 };
 
-bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
+bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
 {
     XmlDocument elemInfo1;
     elemInfo1.loadXml(xml1, fatalOnInvalidXml);
@@ -42,12 +42,12 @@ bool XmlComparer::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
     return true;
 }
 
-bool XmlComparer::isXmlEmptyOrInvalid(XmlDocument elemInfo)
+bool XmlDocumentCompare::isXmlEmptyOrInvalid(XmlDocument elemInfo)
 {
     return elemInfo.begin() == elemInfo.end();
 }
 
-bool XmlComparer::compareDocTypes(XmlDocument elemInfo1, XmlDocument elemInfo2)
+bool XmlDocumentCompare::compareDocTypes(XmlDocument elemInfo1, XmlDocument elemInfo2)
 {
     return elemInfo1.getDocType().name() == elemInfo2.getDocType().name();
 }
