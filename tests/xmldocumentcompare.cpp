@@ -7,7 +7,7 @@ XmlDocumentCompare::XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction) :
 {
 }
 
-XmlElemCompareFunc XmlDocumentCompare::m_stdElemCompareFunc =
+XmlElemCompareFunc XmlDocumentCompare::m_defaultElemCompareFunc =
 [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
     return
