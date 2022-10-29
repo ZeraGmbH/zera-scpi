@@ -23,6 +23,7 @@ private slots:
     void attibsEqualTextEqual();
     void docTypeUnequal();
     void docTypeEqual();
+    void sameSizeDifferentElems();
 };
 
 #endif // TEST_XMLDOCUMENTCOMPARE_H
