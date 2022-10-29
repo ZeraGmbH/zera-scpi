@@ -17,9 +17,9 @@ int XmlDocument::getElemCount()
     return nodeNums;
 }
 
-QDomDocumentType XmlDocument::getDocType()
+QString XmlDocument::getDocType()
 {
-    return m_doc.doctype();
+    return m_doc.doctype().name();
 }
 
 XmlElemIterator XmlDocument::begin()
