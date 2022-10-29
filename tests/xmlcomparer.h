@@ -15,7 +15,8 @@ public:
     XmlComparer(XmlElemCompareFunc elemCompareFunction = m_stdElemCompareFunc);
     bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
-    bool isXmlEmptyOrInvalid(XmlElemInfo xmlInfo);
+    bool isXmlEmptyOrInvalid(XmlElemInfo elemInfo);
+    bool compareDocTypes(XmlElemInfo elemInfo1, XmlElemInfo elemInfo2);
     XmlElemCompareFunc m_elemCompareFunc;
     static XmlElemCompareFunc m_stdElemCompareFunc;
 };

@@ -4,6 +4,7 @@
 #include "xmlelemiterator.h"
 #include <QStringList>
 #include <QDomDocument>
+#include <QDomDocumentType>
 #include <QDomElement>
 
 class XmlElemInfo
@@ -11,6 +12,7 @@ class XmlElemInfo
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
     int getElemCount();
+    QDomDocumentType getDocType();
     XmlElemIterator begin();
     XmlElemIterator end();
     bool findElem(QStringList nodeSearchPath, QDomElement &foundElem);

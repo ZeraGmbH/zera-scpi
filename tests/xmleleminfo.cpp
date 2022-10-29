@@ -17,6 +17,11 @@ int XmlElemInfo::getElemCount()
     return nodeNums;
 }
 
+QDomDocumentType XmlElemInfo::getDocType()
+{
+    return m_doc.doctype();
+}
+
 XmlElemIterator XmlElemInfo::begin()
 {
     return { m_doc.documentElement() };

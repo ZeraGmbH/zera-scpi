@@ -188,4 +188,37 @@ void test_xmlcomparer::attibsEqualTextEqual()
     QVERIFY(comparer.compareXml(xml, xml, true));
 }
 
+
+void test_xmlcomparer::docTypeUnequal()
+{
+    QString xml1 =
+        "<!DOCTYPE foo>"
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<!DOCTYPE bar>"
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(!comparer.compareXml(xml1, xml2, true));
+}
+
+void test_xmlcomparer::docTypeEqual()
+{
+    QString xml1 =
+        "<!DOCTYPE foo>"
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<!DOCTYPE foo>"
+        "<NODE1>"
+            "<NODE2>foo</NODE2>"
+        "</NODE1>";
+    XmlComparer comparer;
+    QVERIFY(comparer.compareXml(xml1, xml2, true));
+}
+
 QTEST_MAIN(test_xmlcomparer)
