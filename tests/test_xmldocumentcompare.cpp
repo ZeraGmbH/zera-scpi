@@ -55,6 +55,7 @@ void test_xmldocumentcompare::bothSameNoAttribsDiffSequence()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(compare.compareXml(xml1, xml2, true));
+    QVERIFY(compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::firstEmptySecondValid()
@@ -93,6 +94,7 @@ void test_xmldocumentcompare::attibsUnequal()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::attibsEqual()
@@ -120,6 +122,7 @@ void test_xmldocumentcompare::attribsDiffSequence()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(compare.compareXml(xml1, xml2, true));
+    QVERIFY(compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::textUnequal()
@@ -134,16 +137,17 @@ void test_xmldocumentcompare::textUnequal()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::textEqual()
 {
-    QString xml1 =
+    QString xml =
         "<NODE1>"
             "<NODE2>foo</NODE2>"
         "</NODE1>";
     XmlDocumentCompare compare;
-    QVERIFY(compare.compareXml(xml1, xml1, true));
+    QVERIFY(compare.compareXml(xml, xml, true));
 }
 
 void test_xmldocumentcompare::attibsUnequalTextEqual()
@@ -160,6 +164,7 @@ void test_xmldocumentcompare::attibsUnequalTextEqual()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::attibsEqualTextUnequal()
@@ -176,6 +181,7 @@ void test_xmldocumentcompare::attibsEqualTextUnequal()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::attibsEqualTextEqual()
@@ -204,6 +210,7 @@ void test_xmldocumentcompare::docTypeUnequal()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::docTypeEqual()
@@ -234,6 +241,7 @@ void test_xmldocumentcompare::sameSizeDifferentElems()
         "</NODE3>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 QTEST_MAIN(test_xmldocumentcompare)
