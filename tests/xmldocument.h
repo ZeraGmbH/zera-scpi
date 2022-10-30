@@ -14,7 +14,6 @@ public:
     XmlElemIterator begin();
     XmlElemIterator end();
     bool findElem(QStringList elemSearchPath, QDomElement &foundElem);
-    int getElemCount();
     QString getDocType();
 private:
     QDomDocument m_doc;

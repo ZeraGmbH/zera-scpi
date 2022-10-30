@@ -23,11 +23,11 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
     doc2.loadXml(xml2, fatalOnInvalidXml);
     if(doc1.isEmpty() && doc2.isEmpty())
         return true;
-    if(doc1.getElemCount() != doc2.getElemCount())
+    if(doc1.isEmpty() || doc2.isEmpty())
         return false;
     if(!compareDocTypes(doc1, doc2))
         return false;
-    return compareElems(doc1, doc2);
+    return compareElems(doc1, doc2) && compareElems(doc2, doc1);
 }
 
 bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)

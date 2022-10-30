@@ -44,42 +44,6 @@ void test_xmldocument::loadValid()
     QVERIFY(doc.loadXml(xmlOneNode, true));
 }
 
-void test_xmldocument::countRootNode()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlOneNode, true));
-    QCOMPARE(doc.getElemCount(), 1);
-}
-
-void test_xmldocument::countOneChildNode()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlOneChildNode, true));
-    QCOMPARE(doc.getElemCount(), 2);
-}
-
-void test_xmldocument::countTwoChildNodes()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlTwoChildNodes, true));
-    QCOMPARE(doc.getElemCount(), 3);
-
-}
-
-void test_xmldocument::countTwoChildNodesNested()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlTwoChildNodesNested, true));
-    QCOMPARE(doc.getElemCount(), 3);
-}
-
-void test_xmldocument::countTwoChildNodesAttributes()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlTwoChildNodesWithAttributes, true));
-    QCOMPARE(doc.getElemCount(), 3);
-}
-
 void test_xmldocument::findEmptySearch()
 {
     XmlDocument doc;
