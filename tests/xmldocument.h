@@ -13,7 +13,7 @@ public:
     bool isEmpty();
     XmlElemIterator begin();
     XmlElemIterator end();
-    bool findElem(QStringList elemSearchPath, QDomElement &foundElem);
+    bool findElem(QStringList tagSearchPath, QDomElement &foundElem);
     QString getDocType();
 private:
     QDomDocument m_doc;
