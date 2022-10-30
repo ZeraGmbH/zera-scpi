@@ -4,11 +4,6 @@
 
 QTEST_MAIN(test_xmlelemiterator)
 
-QString xmlOneChildNode =
-    "<root>"
-        "<child/>"
-    "</root>";
-
 void test_xmlelemiterator::noDocNoParent()
 {
     QDomElement elem;

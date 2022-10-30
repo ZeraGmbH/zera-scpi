@@ -9,11 +9,6 @@ class test_xmldocument : public QObject
 private slots:
     void loadInvalid();
     void loadValid();
-    void countRootNode();
-    void countOneChildNode();
-    void countTwoChildNodes();
-    void countTwoChildNodesNested();
-    void countTwoChildNodesAttributes();
 
     void findEmptySearch();
     void findRootNode();

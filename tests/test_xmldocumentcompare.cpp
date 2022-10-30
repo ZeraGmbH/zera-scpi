@@ -38,6 +38,7 @@ void test_xmldocumentcompare::bothDifferentNoAttribs()
         "</NODE1>";
     XmlDocumentCompare compare;
     QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
 
 void test_xmldocumentcompare::bothSameNoAttribsDiffSequence()

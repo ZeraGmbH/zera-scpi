@@ -37,14 +37,6 @@ bool XmlDocument::findElem(QStringList elemSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
-int XmlDocument::getElemCount()
-{
-    int nodeNums = 0;
-    for(auto iter=begin(); iter!=end(); ++iter)
-        nodeNums++;
-    return nodeNums;
-}
-
 QString XmlDocument::getDocType()
 {
     return m_doc.doctype().name();
