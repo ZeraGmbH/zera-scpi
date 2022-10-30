@@ -15,11 +15,22 @@ public:
 
 QTEST_MAIN(test_scpiinterface)
 
-void test_scpiinterface::singleCmd()
+void test_scpiinterface::mostSimpleAddFindAndLearnBehaviour()
 {
     cSCPI interface("dev");
     SCPITestObject obj("foo", SCPI::isQuery);
-    interface.insertScpiCmd(QStringList() << "root", &obj);
-    cSCPIObject* foundObj = interface.getSCPIObject(QString("root:foo?"), "");
-    QVERIFY(foundObj);
+    interface.insertScpiCmd(QStringList() << "rootitem", &obj);
+    // We learned here:
+    // * cSCPI cares only for SCPI path
+    // * commands (+parameters) or queries are handled by cSCPICommand
+
+    QCOMPARE(interface.getSCPIObject(QString("rootitem:foo")), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:foo")), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root: foo")), &obj);
+    // interpreted as "root" path -> found but no object
+    QCOMPARE(interface.getSCPIObject(QString("root : foo")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("foo:foo")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("root:foo?")), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:foo bar")), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:foo bar;baz")), &obj);
 }
