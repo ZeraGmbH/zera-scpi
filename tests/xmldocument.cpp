@@ -24,14 +24,14 @@ XmlElemIterator XmlDocument::end()
     return { QDomElement() };
 }
 
-bool XmlDocument::findElem(QStringList elemSearchPath, QDomElement &foundElem)
+bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
 {
-    if(elemSearchPath.isEmpty())
+    if(tagSearchPath.isEmpty())
         return false;
-    QString childName = elemSearchPath.takeFirst();
+    QString childName = tagSearchPath.takeFirst();
     foundElem = m_doc.firstChildElement(childName);
-    while(!foundElem.isNull() && !elemSearchPath.isEmpty()) {
-        childName = elemSearchPath.takeFirst();
+    while(!foundElem.isNull() && !tagSearchPath.isEmpty()) {
+        childName = tagSearchPath.takeFirst();
         foundElem = foundElem.firstChildElement(childName);
     }
     return !foundElem.isNull();
