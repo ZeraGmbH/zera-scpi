@@ -51,6 +51,7 @@ endfunction()
 
 SETUP_TESTS(
     test_scpisingletonfactory
+    test_scpiinterface
     test_xmldocumentcompare
     test_xmldocument
     test_xmlelemcompareattribs
