@@ -20,7 +20,7 @@ public:
     cSCPIPrivate(const QString& interfaceName);
     void insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
     void delSCPICmds(const QString& cmd);
-    cSCPIObject* getSCPIObject(const QString& input, QString& Param, bool caseSensitive = false);
+    cSCPIObject* getSCPIObject(const QString& input, bool caseSensitive = false);
     void exportSCPIModelXML(QString &sxml);
 
 private:

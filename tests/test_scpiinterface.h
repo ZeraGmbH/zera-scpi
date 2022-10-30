@@ -7,7 +7,7 @@ class test_scpiinterface : public QObject
 {
     Q_OBJECT
 private slots:
-    void singleCmd();
+    void mostSimpleAddFindAndLearnBehaviour();
 };
 
 #endif // TEST_SCPIINTERFACE_H

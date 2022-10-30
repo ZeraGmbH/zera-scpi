@@ -96,16 +96,14 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     }
 }
 
-cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, QString &Param, bool caseSensitive)
+cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitive)
 {
     cSCPINode *childItem = nullptr;
     QChar* pInput;
     if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive)) {
-        Param = QString(pInput);
         return childItem->m_pSCPIObject;
     }
-    else
-        return nullptr;
+    return nullptr;
 }
 
 void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
