@@ -143,3 +143,104 @@ void test_xmldocument::identFoundElemByAttribCount()
     QCOMPARE(elem.attributes().count(), 3);
 }
 
+static int countElems(XmlDocument doc)
+{
+    int elemCount = 0;
+    for(auto iter=doc.begin(); iter!=doc.end(); ++iter)
+        elemCount++;
+    return elemCount;
+}
+
+void test_xmldocument::addRootOnEmpty()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList rootPath("root");
+    QVERIFY(doc.addOrFindElem(rootPath, insertedElem));
+    QVERIFY(!insertedElem.isNull());
+    QDomElement insertedElemCheck;
+    QVERIFY(doc.findElem(rootPath, insertedElemCheck));
+    QCOMPARE(countElems(doc), 1);
+}
+
+void test_xmldocument::addExistingRoot()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList rootPath("root");
+    QVERIFY(doc.addOrFindElem(rootPath, insertedElem));
+    QDomElement insertedElemSecond;
+    QVERIFY(!doc.addOrFindElem(rootPath, insertedElemSecond));
+    QCOMPARE(insertedElem.tagName(), insertedElemSecond.tagName());
+    QCOMPARE(countElems(doc), 1);
+}
+
+void test_xmldocument::addInvalidRoot()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    // Note: "0001" is accepted and using
+    // QDomImplementation::setInvalidDataPolicy has unforseeable
+    // side effects
+    QStringList rootPath("");
+    QVERIFY(!doc.addOrFindElem(rootPath, insertedElem));
+    QVERIFY(insertedElem.isNull());
+    QVERIFY(doc.isEmpty());
+}
+
+void test_xmldocument::addInvalidNested1()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList rootPath = QStringList() << "" << "foo";
+    QVERIFY(!doc.addOrFindElem(rootPath, insertedElem));
+    QVERIFY(insertedElem.isNull());
+    QVERIFY(doc.isEmpty());
+}
+
+/*void test_xmldocument::addInvalidNested2()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList rootPath = QStringList() << "foo"  << "";
+    QVERIFY(!doc.addOrFindElem(rootPath, insertedElem));
+    QVERIFY(insertedElem.isNull());
+    QVERIFY(doc.isEmpty());
+}*/
+
+void test_xmldocument::addSecondRoot()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QVERIFY(doc.addOrFindElem(QStringList("foo"), insertedElem));
+    QVERIFY(!doc.addOrFindElem(QStringList("bar"), insertedElem));
+    QVERIFY(insertedElem.isNull());
+    QCOMPARE(countElems(doc), 1);
+}
+
+void test_xmldocument::addNested1OnEmpty()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList nestedPath = QStringList() << "foo" << "bar";
+    QVERIFY(doc.addOrFindElem(nestedPath, insertedElem));
+    QVERIFY(!insertedElem.isNull());
+    QDomElement insertedElemCheck;
+    QVERIFY(doc.findElem(nestedPath, insertedElemCheck));
+    QCOMPARE(insertedElemCheck.tagName(), "bar");
+    QCOMPARE(countElems(doc), 2);
+}
+
+void test_xmldocument::addNested2OnEmpty()
+{
+    XmlDocument doc;
+    QDomElement insertedElem;
+    QStringList nestedPath = QStringList() << "foo" << "bar" << "baz";
+    QVERIFY(doc.addOrFindElem(nestedPath, insertedElem));
+    QVERIFY(!insertedElem.isNull());
+    QDomElement insertedElemCheck;
+    QVERIFY(doc.findElem(nestedPath, insertedElemCheck));
+    QCOMPARE(insertedElemCheck.tagName(), "baz");
+    QCOMPARE(countElems(doc), 3);
+}
+

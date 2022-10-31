@@ -37,6 +37,39 @@ bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
+bool XmlDocument::addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem)
+{
+    /* TODO:
+     * XmlElemIteratorTemplate
+     * Iterate sub trees
+     * Iterators for neighbors
+     * Validate Tags
+     * Insert (Arrays): addOrFindElem -> addElem
+     */
+
+    if(findElem(tagPath, insertedOrFoundElem))
+        return false;
+
+    bool added = false;
+    QStringList tagPathParent;
+    while(tagPath.size() > 1) {
+        tagPathParent.append(tagPath.takeFirst());
+        added |= addOrFindElem(tagPathParent, insertedOrFoundElem);
+        if(insertedOrFoundElem.isNull())
+            return false;
+    }
+    if(isEmpty()) {
+        insertedOrFoundElem = m_doc.createElement(tagPath.takeLast());
+        added |= !m_doc.appendChild(insertedOrFoundElem).isNull();
+    }
+    else if(!insertedOrFoundElem.isNull()) {
+        QDomElement addedSub = m_doc.createElement(tagPath.takeLast());
+        insertedOrFoundElem = insertedOrFoundElem.appendChild(addedSub).toElement();
+        added |= !insertedOrFoundElem.isNull();
+    }
+    return added;
+}
+
 QString XmlDocument::getDocType()
 {
     return m_doc.doctype().name();
