@@ -14,14 +14,14 @@ bool XmlDocument::isEmpty()
     return begin() == end();
 }
 
-XmlElemIterator XmlDocument::begin()
+XmlElemIteratorTree XmlDocument::begin()
 {
-    return XmlElemIterator(m_doc.documentElement());
+    return XmlElemIteratorTree(m_doc.documentElement());
 }
 
-XmlElemIterator XmlDocument::end()
+XmlElemIteratorTree XmlDocument::end()
 {
-    return XmlElemIterator(QDomElement());
+    return XmlElemIteratorTree(QDomElement());
 }
 
 bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
