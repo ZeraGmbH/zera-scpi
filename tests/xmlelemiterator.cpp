@@ -1,47 +1,8 @@
 #include "xmlelemiterator.h"
 
-XmlElemIterator::XmlElemIterator(QDomElement elem)
+XmlElemIterator::XmlElemIterator(QDomElement elem) :
+    XmlElemIteratorTemplate(elem)
 {
-    m_elem = elem;
-}
-
-QDomElement XmlElemIterator::getElem()
-{
-    return m_elem;
-}
-
-QStringList XmlElemIterator::getParentPath()
-{
-    QStringList parentPath;
-    QDomNode parent = m_elem.parentNode();
-    while(parent.isElement()) {
-        parentPath.prepend(parent.toElement().tagName());
-        parent = parent.parentNode();
-    }
-    return parentPath;
-}
-
-XmlElemIterator &XmlElemIterator::operator++()
-{
-    m_elem = getNextElem();
-    return *this;
-}
-
-XmlElemIterator XmlElemIterator::operator++(int)
-{
-    XmlElemIterator r = *this;
-    m_elem = getNextElem();
-    return r;
-}
-
-bool XmlElemIterator::operator==(const XmlElemIterator &other) const
-{
-    return other.m_elem == m_elem;
-}
-
-bool XmlElemIterator::operator!=(const XmlElemIterator &other) const
-{
-    return other.m_elem != m_elem;
 }
 
 QDomElement XmlElemIterator::getNextElem()

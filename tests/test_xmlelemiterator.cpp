@@ -59,7 +59,7 @@ void test_xmlelemiterator::beginEmpty()
     XmlDocument doc;
     XmlElemIterator iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    QVERIFY(iter.getCurrElem().isNull());
 }
 
 QString xmlRootOnly =
@@ -76,7 +76,7 @@ void test_xmlelemiterator::beginRoot()
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIterator iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QDomElement rootElem = iter.getElem();
+    QDomElement rootElem = iter.getCurrElem();
     QCOMPARE(rootElem.tagName(), "root");
 }
 
@@ -85,7 +85,7 @@ void test_xmlelemiterator::endEmpty()
     XmlDocument doc;
     XmlElemIterator iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    QVERIFY(iter.getCurrElem().isNull());
 }
 
 void test_xmlelemiterator::endValid()
@@ -94,14 +94,14 @@ void test_xmlelemiterator::endValid()
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIterator iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    QVERIFY(iter.getCurrElem().isNull());
 }
 
 static QStringList iteratePre(XmlDocument doc, QStringList &expectedTags)
 {
     QStringList unknownTags;
     for(auto iter=doc.begin(); iter!=doc.end(); ++iter) {
-        QDomElement elem = iter.getElem();
+        QDomElement elem = iter.getCurrElem();
         if(!expectedTags.removeOne(elem.tagName())) {
             unknownTags.append(elem.tagName());
         }
@@ -109,28 +109,12 @@ static QStringList iteratePre(XmlDocument doc, QStringList &expectedTags)
     return unknownTags;
 }
 
-void test_xmlelemiterator::iterateOnePre()
+void test_xmlelemiterator::iterateOne()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlOneChild, true));
     QStringList expectedTags = QStringList() << "root" << "child1";
     QStringList unknownTags = iteratePre(doc, expectedTags);
-    QCOMPARE(expectedTags, QStringList());
-    QCOMPARE(unknownTags, QStringList());
-}
-
-void test_xmlelemiterator::iterateOnePost()
-{
-    XmlDocument doc;
-    QVERIFY(doc.loadXml(xmlOneChild, true));
-    QStringList expectedTags = QStringList() << "root" << "child1";
-    QStringList unknownTags;
-    for(auto iter=doc.begin(); iter!=doc.end(); iter++) {
-        QDomElement elem = iter.getElem();
-        if(!expectedTags.removeOne(elem.tagName())) {
-            unknownTags.append(elem.tagName());
-        }
-    }
     QCOMPARE(expectedTags, QStringList());
     QCOMPARE(unknownTags, QStringList());
 }

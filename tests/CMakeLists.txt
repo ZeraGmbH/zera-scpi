@@ -10,6 +10,8 @@ add_library(testhelpers STATIC
     xmlelemcompareattribs.h
     xmlelemiterator.cpp
     xmlelemiterator.h
+    xmlelemiteratortemplate.cpp
+    xmlelemiteratortemplate.h
     xmlelemcomparetext.cpp
     xmlelemcomparetext.h
     )
