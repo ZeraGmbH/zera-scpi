@@ -1,46 +1,46 @@
-#include "test_xmlelemiterator.h"
+#include "test_xmlelemiteratortree.h"
 #include "xmldocument.h"
 #include <QTest>
 
-QTEST_MAIN(test_xmlelemiterator)
+QTEST_MAIN(test_xmlelemiteratortree)
 
-void test_xmlelemiterator::noDocNoParent()
+void test_xmlelemiteratortree::noDocNoParent()
 {
     QDomElement elem;
-    XmlElemIterator iter(elem);
+    XmlElemIteratorTree iter(elem);
     QStringList parentPath = iter.getParentPath();
     QVERIFY(parentPath.empty());
 }
 
-void test_xmlelemiterator::noParentNotInDoc()
+void test_xmlelemiteratortree::noParentNotInDoc()
 {
     QDomDocument doc;
     QDomElement freeNode = doc.createElement("root");
-    XmlElemIterator iter(freeNode);
+    XmlElemIteratorTree iter(freeNode);
     QCOMPARE(iter.getParentPath(), QStringList());
 }
 
-void test_xmlelemiterator::root()
+void test_xmlelemiteratortree::root()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
     doc.appendChild(root);
-    XmlElemIterator iter(root);
+    XmlElemIteratorTree iter(root);
     QCOMPARE(iter.getParentPath(), QStringList());
 }
 
-void test_xmlelemiterator::childOfRoot()
+void test_xmlelemiteratortree::childOfRoot()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
     doc.appendChild(root);
     QDomElement child = doc.createElement("child");
     root.appendChild(child);
-    XmlElemIterator iter(child);
+    XmlElemIteratorTree iter(child);
     QCOMPARE(iter.getParentPath(), QStringList("root"));
 }
 
-void test_xmlelemiterator::grandChildOfRoot()
+void test_xmlelemiteratortree::grandChildOfRoot()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
@@ -50,14 +50,14 @@ void test_xmlelemiterator::grandChildOfRoot()
     QDomElement grandChild = doc.createElement("grandChild");
     child.appendChild(grandChild);
 
-    XmlElemIterator iter(grandChild);
+    XmlElemIteratorTree iter(grandChild);
     QCOMPARE(iter.getParentPath(), QStringList() << "root" << "child");
 }
 
-void test_xmlelemiterator::beginEmpty()
+void test_xmlelemiteratortree::beginEmpty()
 {
     XmlDocument doc;
-    XmlElemIterator iter = doc.begin();
+    XmlElemIteratorTree iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getCurrElem().isNull());
 }
@@ -70,29 +70,29 @@ QString xmlOneChild =
         "<child1/>"
     "</root>";
 
-void test_xmlelemiterator::beginRoot()
+void test_xmlelemiteratortree::beginRoot()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIterator iter = doc.begin();
+    XmlElemIteratorTree iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
     QDomElement rootElem = iter.getCurrElem();
     QCOMPARE(rootElem.tagName(), "root");
 }
 
-void test_xmlelemiterator::endEmpty()
+void test_xmlelemiteratortree::endEmpty()
 {
     XmlDocument doc;
-    XmlElemIterator iter = doc.end();
+    XmlElemIteratorTree iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getCurrElem().isNull());
 }
 
-void test_xmlelemiterator::endValid()
+void test_xmlelemiteratortree::endValid()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIterator iter = doc.end();
+    XmlElemIteratorTree iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getCurrElem().isNull());
 }
@@ -109,7 +109,7 @@ static QStringList iteratePre(XmlDocument doc, QStringList &expectedTags)
     return unknownTags;
 }
 
-void test_xmlelemiterator::iterateOne()
+void test_xmlelemiteratortree::iterateOne()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlOneChild, true));
@@ -127,7 +127,7 @@ QString xmlTwoNested =
     "</root>";
 
 
-void test_xmlelemiterator::iterateTwoNested()
+void test_xmlelemiteratortree::iterateTwoNested()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlTwoNested, true));
@@ -143,7 +143,7 @@ QString xmlParallel =
         "<child2/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoParallel()
+void test_xmlelemiteratortree::iterateTwoParallel()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlParallel, true));
@@ -161,7 +161,7 @@ QString xmlFindUp =
         "<child2/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoOneGrand()
+void test_xmlelemiteratortree::iterateTwoOneGrand()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlFindUp, true));
@@ -181,7 +181,7 @@ QString xmlFindUpUp =
         "<child2/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoOneGGrand()
+void test_xmlelemiteratortree::iterateTwoOneGGrand()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlFindUpUp, true));
@@ -203,7 +203,7 @@ QString xmlFindUpUpUp =
         "<child2/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoOneGGGrand()
+void test_xmlelemiteratortree::iterateTwoOneGGGrand()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlFindUpUpUp, true));
@@ -226,7 +226,7 @@ QString xmlFindUpUpUpMultipleNeighbors =
         "<child3/>"
     "</root>";
 
-void test_xmlelemiterator::iterateTwoOneGGGrandMulNeighbors()
+void test_xmlelemiteratortree::iterateTwoOneGGGrandMulNeighbors()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlFindUpUpUpMultipleNeighbors, true));

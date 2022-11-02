@@ -1,11 +1,11 @@
-#include "xmlelemiterator.h"
+#include "xmlelemiteratortree.h"
 
-XmlElemIterator::XmlElemIterator(QDomElement elem) :
+XmlElemIteratorTree::XmlElemIteratorTree(QDomElement elem) :
     XmlElemIteratorTemplate(elem)
 {
 }
 
-QDomElement XmlElemIterator::getNextElem()
+QDomElement XmlElemIteratorTree::getNextElem()
 {
     QDomElement neighbor = m_elem.nextSiblingElement();
     QDomElement child = m_elem.firstChildElement();
@@ -20,7 +20,7 @@ QDomElement XmlElemIterator::getNextElem()
     return m_elem;
 }
 
-void XmlElemIterator::findIteratedParentsNeighbor()
+void XmlElemIteratorTree::findIteratedParentsNeighbor()
 {
     m_elem.clear();
     while(m_elem.isNull() && !m_iteratedParentList.isEmpty()) {
@@ -29,7 +29,7 @@ void XmlElemIterator::findIteratedParentsNeighbor()
     }
 }
 
-void XmlElemIterator::makeChildCurrent(QDomElement child)
+void XmlElemIteratorTree::makeChildCurrent(QDomElement child)
 {
     m_iteratedParentList.append(m_elem);
     m_elem = child;

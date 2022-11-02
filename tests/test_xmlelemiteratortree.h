@@ -1,9 +1,9 @@
-#ifndef TEST_XMLELEMITERATOR_H
-#define TEST_XMLELEMITERATOR_H
+#ifndef TEST_XMLELEMITERATORTREE_H
+#define TEST_XMLELEMITERATORTREE_H
 
 #include <QObject>
 
-class test_xmlelemiterator : public QObject
+class test_xmlelemiteratortree : public QObject
 {
     Q_OBJECT
 private slots:
@@ -28,4 +28,4 @@ private slots:
 
 };
 
-#endif // TEST_XMLELEMITERATOR_H
+#endif // TEST_XMLELEMITERATORTREE_H

@@ -1,14 +1,14 @@
-#ifndef XMLELEMITERATOR_H
-#define XMLELEMITERATOR_H
+#ifndef XMLELEMITERATORTREE_H
+#define XMLELEMITERATORTREE_H
 
 #include <xmlelemiteratortemplate.h>
 #include <QDomElement>
 #include <QList>
 
-class XmlElemIterator : public XmlElemIteratorTemplate
+class XmlElemIteratorTree : public XmlElemIteratorTemplate
 {
 public:
-    XmlElemIterator(QDomElement elem);
+    XmlElemIteratorTree(QDomElement elem);
     QDomElement getNextElem();
 private:
     void findIteratedParentsNeighbor();
@@ -16,4 +16,4 @@ private:
     QList<QDomElement> m_iteratedParentList;
 };
 
-#endif // XMLELEMITERATOR_H
+#endif // XMLELEMITERATORTREE_H
