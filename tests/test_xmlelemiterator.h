@@ -18,9 +18,7 @@ private slots:
     void endEmpty();
     void endValid();
 
-    void iterateOnePre();
-    void iterateOnePost();
-
+    void iterateOne();
     void iterateTwoNested();
     void iterateTwoParallel();
     void iterateTwoOneGrand();

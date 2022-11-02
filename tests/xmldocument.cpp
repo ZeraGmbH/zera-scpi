@@ -16,12 +16,12 @@ bool XmlDocument::isEmpty()
 
 XmlElemIterator XmlDocument::begin()
 {
-    return { m_doc.documentElement() };
+    return XmlElemIterator(m_doc.documentElement());
 }
 
 XmlElemIterator XmlDocument::end()
 {
-    return { QDomElement() };
+    return XmlElemIterator(QDomElement());
 }
 
 bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
