@@ -7,6 +7,7 @@ class XmlElemIteratorList : public XmlElemIteratorTemplate
 {
 public:
     XmlElemIteratorList(QDomElement elem);
+protected:
     QDomElement getNextElem() override;
 };
 

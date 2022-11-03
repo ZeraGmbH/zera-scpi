@@ -38,7 +38,7 @@ bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 bool XmlDocumentCompare::compareElems(XmlDocument doc1, XmlDocument doc2)
 {
     for(auto iter=doc1.begin(); iter!=doc1.end(); ++iter) {
-        QDomElement elem1 = iter.getCurrElem();
+        QDomElement elem1 = iter.getElem();
         QStringList tagpath1 = iter.getParentPath() + QStringList(elem1.tagName());
         QDomElement elem2;
         if(!doc2.findElem(tagpath1, elem2))

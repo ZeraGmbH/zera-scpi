@@ -2,6 +2,8 @@
 #include "xmldocumentcompare.h"
 #include <QTest>
 
+QTEST_MAIN(test_xmldocumentcompare)
+
 void test_xmldocumentcompare::bothEmpty()
 {
     XmlDocumentCompare compare;
@@ -243,5 +245,3 @@ void test_xmldocumentcompare::sameSizeDifferentElems()
     QVERIFY(!compare.compareXml(xml1, xml2, true));
     QVERIFY(!compare.compareXml(xml2, xml1, true));
 }
-
-QTEST_MAIN(test_xmldocumentcompare)

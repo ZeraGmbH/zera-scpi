@@ -6,7 +6,7 @@ XmlElemIteratorTemplate::XmlElemIteratorTemplate(QDomElement elem) :
 
 }
 
-QDomElement XmlElemIteratorTemplate::getCurrElem()
+QDomElement XmlElemIteratorTemplate::getElem()
 {
     return m_elem;
 }

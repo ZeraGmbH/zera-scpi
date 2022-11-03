@@ -8,14 +8,14 @@ class XmlElemIteratorTemplate
 {
 public:
     XmlElemIteratorTemplate(QDomElement elem);
-    QDomElement getCurrElem();
-    virtual QDomElement getNextElem() = 0;
+    QDomElement getElem();
     QStringList getParentPath();
 
     XmlElemIteratorTemplate &operator++();
     bool operator== (const XmlElemIteratorTemplate &other) const;
     bool operator!= (const XmlElemIteratorTemplate &other) const;
 protected:
+    virtual QDomElement getNextElem() = 0;
     QDomElement m_elem;
 };
 
