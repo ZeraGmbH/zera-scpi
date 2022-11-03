@@ -99,8 +99,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitive)
 {
     cSCPINode *childItem = nullptr;
-    QChar* pInput;
-    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, pInput = (QChar*) input.data(), caseSensitive)) {
+    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, (QChar*) input.data(), caseSensitive)) {
         return childItem->m_pSCPIObject;
     }
     return nullptr;
