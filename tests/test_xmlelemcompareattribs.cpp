@@ -111,6 +111,17 @@ void test_xmlelemcompareattribs::compareTwo()
     QVERIFY(XmlElemCompareAttribs::compare(*m_elem1, *m_elem2));
 }
 
+void test_xmlelemcompareattribs::compareTwoDiffOrder()
+{
+    QDomDocument doc1;
+    QVERIFY(doc1.setContent(QString("<root a='1' b='2'/>")));
+    QDomDocument doc2;
+    QVERIFY(doc2.setContent(QString("<root b='2' a='1'/>")));
+    QDomElement elem1 = doc1.firstChildElement();
+    QDomElement elem2 = doc2.firstChildElement();
+    QVERIFY(XmlElemCompareAttribs::compare(elem1, elem2));
+}
+
 void test_xmlelemcompareattribs::compareSameText()
 {
     QDomDocument doc;
