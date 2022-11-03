@@ -37,6 +37,13 @@ bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
+XmlElemIteratorList XmlDocument::find(QStringList tagSearchPath)
+{
+    QDomElement foundElem;
+    findElem(tagSearchPath, foundElem);
+    return XmlElemIteratorList(foundElem);
+}
+
 bool XmlDocument::addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem)
 {
     /* TODO:
