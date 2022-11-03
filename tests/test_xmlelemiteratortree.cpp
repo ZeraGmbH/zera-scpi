@@ -4,55 +4,6 @@
 
 QTEST_MAIN(test_xmlelemiteratortree)
 
-void test_xmlelemiteratortree::noDocNoParent()
-{
-    QDomElement elem;
-    XmlElemIteratorTree iter(elem);
-    QStringList parentPath = iter.getParentPath();
-    QVERIFY(parentPath.empty());
-}
-
-void test_xmlelemiteratortree::noParentNotInDoc()
-{
-    QDomDocument doc;
-    QDomElement freeNode = doc.createElement("root");
-    XmlElemIteratorTree iter(freeNode);
-    QCOMPARE(iter.getParentPath(), QStringList());
-}
-
-void test_xmlelemiteratortree::root()
-{
-    QDomDocument doc;
-    QDomElement root = doc.createElement("root");
-    doc.appendChild(root);
-    XmlElemIteratorTree iter(root);
-    QCOMPARE(iter.getParentPath(), QStringList());
-}
-
-void test_xmlelemiteratortree::childOfRoot()
-{
-    QDomDocument doc;
-    QDomElement root = doc.createElement("root");
-    doc.appendChild(root);
-    QDomElement child = doc.createElement("child");
-    root.appendChild(child);
-    XmlElemIteratorTree iter(child);
-    QCOMPARE(iter.getParentPath(), QStringList("root"));
-}
-
-void test_xmlelemiteratortree::grandChildOfRoot()
-{
-    QDomDocument doc;
-    QDomElement root = doc.createElement("root");
-    doc.appendChild(root);
-    QDomElement child = doc.createElement("child");
-    root.appendChild(child);
-    QDomElement grandChild = doc.createElement("grandChild");
-    child.appendChild(grandChild);
-
-    XmlElemIteratorTree iter(grandChild);
-    QCOMPARE(iter.getParentPath(), QStringList() << "root" << "child");
-}
 
 void test_xmlelemiteratortree::beginEmpty()
 {
