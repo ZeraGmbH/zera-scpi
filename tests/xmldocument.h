@@ -2,6 +2,7 @@
 #define XMLDOCUMENT_H
 
 #include "xmlelemiteratortree.h"
+#include "xmlelemiteratorlist.h"
 #include <QStringList>
 #include <QDomDocument>
 #include <QDomElement>
@@ -14,6 +15,7 @@ public:
     XmlElemIteratorTree begin();
     XmlElemIteratorTree end();
     bool findElem(QStringList tagSearchPath, QDomElement &foundElem);
+    XmlElemIteratorList find(QStringList tagSearchPath);
     bool addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem);
     QString getDocType();
 private:
