@@ -23,6 +23,7 @@ private slots:
     void compareTwoSecondValUnequal();
     void compareTwoDifferentAttribNames();
     void compareTwo();
+    void compareTwoDiffOrder();
     void compareSameText();
     void compareDiffText();
 private:
