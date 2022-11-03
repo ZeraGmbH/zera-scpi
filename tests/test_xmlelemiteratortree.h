@@ -7,12 +7,6 @@ class test_xmlelemiteratortree : public QObject
 {
     Q_OBJECT
 private slots:
-    void noDocNoParent();
-    void noParentNotInDoc();
-    void root();
-    void childOfRoot();
-    void grandChildOfRoot();
-
     void beginEmpty();
     void beginRoot();
     void endEmpty();

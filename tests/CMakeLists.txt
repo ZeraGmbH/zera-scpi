@@ -58,5 +58,6 @@ SETUP_TESTS(
     test_xmldocument
     test_xmlelemcompareattribs
     test_xmlelemcomparetext
+    test_xmlelemiteratortemplate
     test_xmlelemiteratortree
 )
