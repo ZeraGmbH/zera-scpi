@@ -9,6 +9,7 @@ class XmlElemIteratorTree : public XmlElemIteratorTemplate
 {
 public:
     XmlElemIteratorTree(QDomElement elem);
+protected:
     QDomElement getNextElem() override;
 private:
     void findIteratedParentsNeighbor();

@@ -11,6 +11,7 @@ public:
         XmlElemIteratorTemplate(elem)
     {
     }
+protected:
     QDomElement getNextElem() override
     {
        return m_elem;

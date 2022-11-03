@@ -10,7 +10,7 @@ void test_xmlelemiteratortree::beginEmpty()
     XmlDocument doc;
     XmlElemIteratorTree iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getCurrElem().isNull());
+    QVERIFY(iter.getElem().isNull());
 }
 
 QString xmlRootOnly =
@@ -27,7 +27,7 @@ void test_xmlelemiteratortree::beginRoot()
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIteratorTree iter = doc.begin();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QDomElement rootElem = iter.getCurrElem();
+    QDomElement rootElem = iter.getElem();
     QCOMPARE(rootElem.tagName(), "root");
 }
 
@@ -36,7 +36,7 @@ void test_xmlelemiteratortree::endEmpty()
     XmlDocument doc;
     XmlElemIteratorTree iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getCurrElem().isNull());
+    QVERIFY(iter.getElem().isNull());
 }
 
 void test_xmlelemiteratortree::endValid()
@@ -45,14 +45,14 @@ void test_xmlelemiteratortree::endValid()
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIteratorTree iter = doc.end();
     QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getCurrElem().isNull());
+    QVERIFY(iter.getElem().isNull());
 }
 
 static QStringList iteratePre(XmlDocument doc, QStringList &expectedTags)
 {
     QStringList unknownTags;
     for(auto iter=doc.begin(); iter!=doc.end(); ++iter) {
-        QDomElement elem = iter.getCurrElem();
+        QDomElement elem = iter.getElem();
         if(!expectedTags.removeOne(elem.tagName())) {
             unknownTags.append(elem.tagName());
         }
