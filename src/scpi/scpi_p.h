@@ -9,12 +9,6 @@
 #include <QStringList>
 #include <QDomDocument>
 
-const QString scpimodelDocName = "SCPIModel";
-const QString scpimodelrootName = "MODELLIST";
-const QString scpimodeldeviceTag =  "DEVICE";
-const QString scpimodelsTag = "MODELS";
-const QString scpinodeAttributeName = "Type";
-
 class cSCPIPrivate {
 public:
     cSCPIPrivate(const QString& interfaceName);

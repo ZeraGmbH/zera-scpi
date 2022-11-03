@@ -130,7 +130,7 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& 
         if (parentNames.isEmpty())
             typeInfo = "Model,";
         typeInfo += scpiTypeToString(childItem->getType());
-        cmdTag.setAttribute(scpinodeAttributeName, typeInfo);
+        cmdTag.setAttribute("Type", typeInfo);
 
         rootElement.appendChild(cmdTag);
         appendScpiNodeXmlInfo(childItem, doc, cmdTag, childNames);
@@ -173,17 +173,17 @@ QString cSCPIPrivate::scpiTypeToString(quint8 scpiType)
 
 void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
 {
-    QDomDocument modelDoc(scpimodelDocName);
+    QDomDocument modelDoc("SCPIModel");
 
-    QDomElement rootTag = modelDoc.createElement( scpimodelrootName );
+    QDomElement rootTag = modelDoc.createElement("MODELLIST");
     modelDoc.appendChild( rootTag );
 
-    QDomElement deviceTag = modelDoc.createElement( scpimodeldeviceTag );
+    QDomElement deviceTag = modelDoc.createElement("DEVICE");
     rootTag.appendChild( deviceTag );
     QDomText t = modelDoc.createTextNode(m_interfaceName);
     deviceTag.appendChild( t );
 
-    QDomElement modelsTag = modelDoc.createElement(scpimodelsTag);
+    QDomElement modelsTag = modelDoc.createElement("MODELS");
     rootTag.appendChild( modelsTag );
 
     appendScpiNodeXmlInfo(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, QStringList());
