@@ -15,7 +15,8 @@ public:
     bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
     bool compareDocTypes(XmlDocument doc1, XmlDocument doc2);
-    bool compareElems(XmlDocument doc1, XmlDocument doc2);
+    bool compareAllElems(XmlDocument doc1, XmlDocument doc2);
+    bool compareElemsAt(QStringList tagPath, XmlDocument doc1, XmlDocument doc2);
 
     XmlElemCompareFunc m_elemCompareFunc;
     static XmlElemCompareFunc m_defaultElemCompareFunc;

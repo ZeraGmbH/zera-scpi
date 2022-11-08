@@ -21,6 +21,10 @@ private slots:
     void attibsUnequalTextEqual();
     void attibsEqualTextUnequal();
     void attibsEqualTextEqual();
+    void arraySecondMoreElems();
+    void arraySwappedSequence();
+    void arrayNestedSwappedSequence();
+    void arrayEqual();
     void docTypeUnequal();
     void docTypeEqual();
     void sameSizeDifferentElems();
