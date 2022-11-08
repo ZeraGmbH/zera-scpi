@@ -197,6 +197,85 @@ void test_xmldocumentcompare::attibsEqualTextEqual()
     QVERIFY(compare.compareXml(xml, xml, true));
 }
 
+void test_xmldocumentcompare::arraySecondMoreElems()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2 a='1' b='2'></NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2 a='1' b='2'></NODE2>"
+            "<NODE2 a='1' b='2'></NODE2>"
+        "</NODE1>";
+    XmlDocumentCompare compare;
+    QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
+}
+
+void test_xmldocumentcompare::arraySwappedSequence()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2 a='1' b='2'></NODE2>"
+            "<NODE2 c='1' d='2'></NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2 c='1' d='2'></NODE2>"
+            "<NODE2 a='1' b='2'></NODE2>"
+        "</NODE1>";
+    XmlDocumentCompare compare;
+    QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
+}
+
+void test_xmldocumentcompare::arrayNestedSwappedSequence()
+{
+    QString xml1 =
+        "<NODE1>"
+            "<NODE2>"
+                "<NODE3 a='1' b='2'></NODE3>"
+                "<NODE3 c='1' d='2'></NODE3>"
+            "</NODE2>"
+            "<NODE2>"
+                "<NODE3 a='1' b='2'></NODE3>"
+                "<NODE3 c='1' d='2'></NODE3>"
+            "</NODE2>"
+        "</NODE1>";
+    QString xml2 =
+        "<NODE1>"
+            "<NODE2>"
+                "<NODE3 a='1' b='2'></NODE3>"
+                "<NODE3 c='1' d='2'></NODE3>"
+            "</NODE2>"
+            "<NODE2>"
+                "<NODE3 c='1' d='2'></NODE3>"
+                "<NODE3 a='1' b='2'></NODE3>"
+            "</NODE2>"
+        "</NODE1>";
+    XmlDocumentCompare compare;
+    QVERIFY(!compare.compareXml(xml1, xml2, true));
+    QVERIFY(!compare.compareXml(xml2, xml1, true));
+}
+
+void test_xmldocumentcompare::arrayEqual()
+{
+    QString xml =
+        "<NODE1>"
+            "<NODE2>"
+                "<NODE3 a='1' b='2'></NODE3>"
+                "<NODE3 c='1' d='2'></NODE3>"
+            "</NODE2>"
+            "<NODE2>"
+                "<NODE3 a='1' b='2'></NODE3>"
+                "<NODE3 c='1' d='2'></NODE3>"
+            "</NODE2>"
+        "</NODE1>";
+    XmlDocumentCompare compare;
+    QVERIFY(compare.compareXml(xml, xml, true));
+}
+
 
 void test_xmldocumentcompare::docTypeUnequal()
 {
