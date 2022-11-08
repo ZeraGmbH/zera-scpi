@@ -19,6 +19,7 @@ private slots:
     void iterateTwoOneGGrand();
     void iterateTwoOneGGGrand();
     void iterateTwoOneGGGrandMulNeighbors();
+    void iterateNestedArray();
 
 };
 
