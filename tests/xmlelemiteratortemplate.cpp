@@ -22,6 +22,11 @@ QStringList XmlElemIteratorTemplate::getParentPath()
     return parentPath;
 }
 
+bool XmlElemIteratorTemplate::isEnd()
+{
+    return m_elem == QDomElement();
+}
+
 bool XmlElemIteratorTemplate::operator==(const XmlElemIteratorTemplate &other) const
 {
     return other.m_elem == m_elem;

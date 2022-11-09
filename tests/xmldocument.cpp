@@ -11,17 +11,12 @@ bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 
 bool XmlDocument::isEmpty()
 {
-    return *begin() == *end();
+    return begin()->getElem() == QDomElement();
 }
 
 XmlElemIterator XmlDocument::begin()
 {
     return std::make_shared<XmlElemIteratorTree>(m_doc.documentElement());
-}
-
-XmlElemIterator XmlDocument::end()
-{
-    return std::make_shared<XmlElemIteratorTree>(QDomElement());
 }
 
 bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
