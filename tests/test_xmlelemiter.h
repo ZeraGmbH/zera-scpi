@@ -1,9 +1,9 @@
-#ifndef TEST_XMLELEMITERATORTEMPLATE_H
-#define TEST_XMLELEMITERATORTEMPLATE_H
+#ifndef TEST_XMLELEMITER_H
+#define TEST_XMLELEMITER_H
 
 #include <QObject>
 
-class test_xmlelemiteratortemplate : public QObject
+class test_xmlelemiter : public QObject
 {
     Q_OBJECT
 private slots:
@@ -14,4 +14,4 @@ private slots:
     void grandChildOfRoot();
 };
 
-#endif // TEST_XMLELEMITERATORTEMPLATE_H
+#endif // TEST_XMLELEMITER_H

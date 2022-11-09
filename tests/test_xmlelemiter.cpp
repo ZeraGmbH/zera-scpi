@@ -1,59 +1,53 @@
-#include "test_xmlelemiteratortemplate.h"
-#include "xmlelemiteratortemplate.h"
+#include "test_xmlelemiter.h"
+#include "xmlelemiter.h"
 #include <QTest>
 
-QTEST_MAIN(test_xmlelemiteratortemplate)
+QTEST_MAIN(test_xmlelemiter)
 
-class XmlElemIteratorTest : public XmlElemIteratorTemplate
+class XmlElemIterStrategyTest : public XmlElemIterStrategy
 {
 public:
-    XmlElemIteratorTest(QDomElement elem) :
-        XmlElemIteratorTemplate(elem)
-    {
-    }
-protected:
-    void next() override
-    {
-    }
+    virtual QDomElement next(QDomElement current) { return QDomElement(); }
 };
 
-void test_xmlelemiteratortemplate::noDocNoParent()
+
+void test_xmlelemiter::noDocNoParent()
 {
     QDomElement elem;
-    XmlElemIteratorTest iter(elem);
+    XmlElemIter iter(std::make_unique<XmlElemIterStrategyTest>(), elem);
     QStringList parentPath = iter.getParentPath();
     QVERIFY(parentPath.empty());
 }
 
-void test_xmlelemiteratortemplate::noParentNotInDoc()
+void test_xmlelemiter::noParentNotInDoc()
 {
     QDomDocument doc;
     QDomElement freeNode = doc.createElement("root");
-    XmlElemIteratorTest iter(freeNode);
+    XmlElemIter iter(std::make_unique<XmlElemIterStrategyTest>(), freeNode);
     QCOMPARE(iter.getParentPath(), QStringList());
 }
 
-void test_xmlelemiteratortemplate::root()
+void test_xmlelemiter::root()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
     doc.appendChild(root);
-    XmlElemIteratorTest iter(root);
+    XmlElemIter iter(std::make_unique<XmlElemIterStrategyTest>(), root);
     QCOMPARE(iter.getParentPath(), QStringList());
 }
 
-void test_xmlelemiteratortemplate::childOfRoot()
+void test_xmlelemiter::childOfRoot()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
     doc.appendChild(root);
     QDomElement child = doc.createElement("child");
     root.appendChild(child);
-    XmlElemIteratorTest iter(child);
+    XmlElemIter iter(std::make_unique<XmlElemIterStrategyTest>(), child);
     QCOMPARE(iter.getParentPath(), QStringList("root"));
 }
 
-void test_xmlelemiteratortemplate::grandChildOfRoot()
+void test_xmlelemiter::grandChildOfRoot()
 {
     QDomDocument doc;
     QDomElement root = doc.createElement("root");
@@ -63,6 +57,6 @@ void test_xmlelemiteratortemplate::grandChildOfRoot()
     QDomElement grandChild = doc.createElement("grandChild");
     child.appendChild(grandChild);
 
-    XmlElemIteratorTest iter(grandChild);
+    XmlElemIter iter(std::make_unique<XmlElemIterStrategyTest>(), grandChild);
     QCOMPARE(iter.getParentPath(), QStringList() << "root" << "child");
 }
