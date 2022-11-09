@@ -16,8 +16,6 @@ add_library(testhelpers STATIC
     xmlelemiterstrategylist.h
     xmlelemiterstrategytree.cpp
     xmlelemiterstrategytree.h
-    xmlelemiteratortemplate.cpp
-    xmlelemiteratortemplate.h
     )
 
 target_include_directories(testhelpers
@@ -62,7 +60,7 @@ SETUP_TESTS(
     test_xmldocument
     test_xmlelemcompareattribs
     test_xmlelemcomparetext
-    test_xmlelemiteratortemplate
+    test_xmlelemiter
     test_xmlelemiteratortree
     test_xmlelemiteratorlist
 )
