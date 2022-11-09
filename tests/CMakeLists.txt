@@ -8,6 +8,8 @@ add_library(testhelpers STATIC
     xmldocumentcompare.h
     xmlelemcompareattribs.cpp
     xmlelemcompareattribs.h
+    xmlelemiter.cpp
+    xmlelemiter.h
     xmlelemiteratorlist.cpp
     xmlelemiteratorlist.h
     xmlelemiteratortemplate.cpp
@@ -16,6 +18,8 @@ add_library(testhelpers STATIC
     xmlelemiteratortree.h
     xmlelemcomparetext.cpp
     xmlelemcomparetext.h
+    xmlelemiterstrategytree.cpp
+    xmlelemiterstrategytree.h
     )
 
 target_include_directories(testhelpers

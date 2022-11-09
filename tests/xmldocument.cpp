@@ -1,6 +1,7 @@
 #include "xmldocument.h"
 #include "xmlelemiteratortree.h"
 #include "xmlelemiteratorlist.h"
+#include "xmlelemiterstrategytree.h"
 
 bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
@@ -13,12 +14,12 @@ bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 
 bool XmlDocument::isEmpty()
 {
-    return begin()->getElem() == QDomElement();
+    return begin().getElem() == QDomElement();
 }
 
-XmlElemIterator XmlDocument::begin()
+XmlElemIter XmlDocument::begin(std::unique_ptr<XmlElemIterStrategy> &&iterStrategy)
 {
-    return std::make_shared<XmlElemIteratorTree>(m_doc.documentElement());
+    return XmlElemIter(std::move(iterStrategy), m_doc.documentElement());
 }
 
 bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
@@ -39,6 +40,13 @@ XmlElemIterator XmlDocument::find(QStringList tagSearchPath)
     QDomElement foundElem;
     findElem(tagSearchPath, foundElem);
     return std::make_shared<XmlElemIteratorList>(foundElem);
+}
+
+XmlElemIter XmlDocument::find(QStringList tagSearchPath, std::unique_ptr<XmlElemIterStrategy> &&iterStrategy)
+{
+    QDomElement foundElem;
+    findElem(tagSearchPath, foundElem);
+    return XmlElemIter(std::move(iterStrategy), foundElem);
 }
 
 bool XmlDocument::addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem)

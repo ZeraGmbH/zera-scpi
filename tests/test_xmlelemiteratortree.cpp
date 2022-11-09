@@ -1,5 +1,6 @@
 #include "test_xmlelemiteratortree.h"
 #include "xmldocument.h"
+#include "xmlelemiterstrategytree.h"
 #include <QTest>
 
 QTEST_MAIN(test_xmlelemiteratortree)
@@ -8,9 +9,9 @@ QTEST_MAIN(test_xmlelemiteratortree)
 void test_xmlelemiteratortree::beginEmpty()
 {
     XmlDocument doc;
-    XmlElemIterator iter = doc.begin();
-    QCOMPARE(iter->getParentPath(), QStringList());
-    QVERIFY(iter->getElem().isNull());
+    XmlElemIter iter = doc.begin();
+    QCOMPARE(iter.getParentPath(), QStringList());
+    QVERIFY(iter.getElem().isNull());
 }
 
 QString xmlRootOnly =
@@ -25,17 +26,17 @@ void test_xmlelemiteratortree::beginRoot()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIterator iter = doc.begin();
-    QCOMPARE(iter->getParentPath(), QStringList());
-    QDomElement rootElem = iter->getElem();
+    XmlElemIter iter = doc.begin();
+    QCOMPARE(iter.getParentPath(), QStringList());
+    QDomElement rootElem = iter.getElem();
     QCOMPARE(rootElem.tagName(), "root");
 }
 
 static QStringList iterateCheckExpected(XmlDocument doc, QStringList &expectedTags)
 {
     QStringList unexpectedTags;
-    for(auto iter=doc.begin(); !iter->isEnd(); iter->next()) {
-        QDomElement elem = iter->getElem();
+    for(auto iter=doc.begin(); !iter.isEnd(); iter.next()) {
+        QDomElement elem = iter.getElem();
         if(!expectedTags.removeOne(elem.tagName())) {
             unexpectedTags.append(elem.tagName());
         }
