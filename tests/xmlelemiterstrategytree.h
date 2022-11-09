@@ -2,6 +2,7 @@
 #define XMLELEMITERSTRATEGYTREE_H
 
 #include "xmlelemiter.h"
+#include <QList>
 
 class XmlElemIterStrategyTree : public XmlElemIterStrategy
 {

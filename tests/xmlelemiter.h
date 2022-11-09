@@ -12,10 +12,12 @@ public:
     virtual ~XmlElemIterStrategy() = default;
 };
 
+typedef std::unique_ptr<XmlElemIterStrategy> XmlElemIterStrategyPtr;
+
 class XmlElemIter
 {
 public:
-    XmlElemIter(std::unique_ptr<XmlElemIterStrategy> &&iterStrategy, QDomElement elem);
+    XmlElemIter(XmlElemIterStrategyPtr &&iterStrategy, QDomElement elem);
     QDomElement getElem();
     QStringList getParentPath();
     bool isEnd();
@@ -23,7 +25,7 @@ public:
     bool operator== (const XmlElemIter &other) const;
     bool operator!= (const XmlElemIter &other) const;
 private:
-    std::unique_ptr<XmlElemIterStrategy> m_iterStrategy;
+    XmlElemIterStrategyPtr m_iterStrategy;
     QDomElement m_elem;
 };
 

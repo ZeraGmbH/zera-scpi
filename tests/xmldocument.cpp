@@ -4,18 +4,17 @@
 bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
     bool loaded = m_doc.setContent(xml);
-    if(!loaded && fatalOnInvalidXml) {
+    if(!loaded && fatalOnInvalidXml)
         qFatal("Invalid XML\n%s", qPrintable(xml));
-    }
     return loaded;
 }
 
 bool XmlDocument::isEmpty()
 {
-    return begin().getElem() == QDomElement();
+    return root().getElem() == QDomElement();
 }
 
-XmlElemIter XmlDocument::begin(std::unique_ptr<XmlElemIterStrategy> &&iterStrategy)
+XmlElemIter XmlDocument::root(XmlElemIterStrategyPtr &&iterStrategy)
 {
     return XmlElemIter(std::move(iterStrategy), m_doc.documentElement());
 }
@@ -33,7 +32,7 @@ bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
-XmlElemIter XmlDocument::find(QStringList tagSearchPath, std::unique_ptr<XmlElemIterStrategy> &&iterStrategy)
+XmlElemIter XmlDocument::find(QStringList tagSearchPath, XmlElemIterStrategyPtr &&iterStrategy)
 {
     QDomElement foundElem;
     findElem(tagSearchPath, foundElem);
@@ -43,9 +42,6 @@ XmlElemIter XmlDocument::find(QStringList tagSearchPath, std::unique_ptr<XmlElem
 bool XmlDocument::addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem)
 {
     /* TODO:
-     * XmlElemIteratorTemplate
-     * Iterate sub trees
-     * Iterators for neighbors
      * Validate Tags
      * Insert (Arrays): addOrFindElem -> addElem
      */

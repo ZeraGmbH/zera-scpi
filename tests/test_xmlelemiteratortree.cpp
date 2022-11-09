@@ -9,7 +9,7 @@ QTEST_MAIN(test_xmlelemiteratortree)
 void test_xmlelemiteratortree::beginEmpty()
 {
     XmlDocument doc;
-    XmlElemIter iter = doc.begin();
+    XmlElemIter iter = doc.root();
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getElem().isNull());
 }
@@ -26,7 +26,7 @@ void test_xmlelemiteratortree::beginRoot()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIter iter = doc.begin();
+    XmlElemIter iter = doc.root();
     QCOMPARE(iter.getParentPath(), QStringList());
     QDomElement rootElem = iter.getElem();
     QCOMPARE(rootElem.tagName(), "root");
@@ -35,7 +35,7 @@ void test_xmlelemiteratortree::beginRoot()
 static QStringList iterateCheckExpected(XmlDocument doc, QStringList &expectedTags)
 {
     QStringList unexpectedTags;
-    for(auto iter=doc.begin(); !iter.isEnd(); iter.next()) {
+    for(auto iter=doc.root(); !iter.isEnd(); iter.next()) {
         QDomElement elem = iter.getElem();
         if(!expectedTags.removeOne(elem.tagName())) {
             unexpectedTags.append(elem.tagName());
