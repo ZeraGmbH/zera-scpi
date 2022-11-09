@@ -1,5 +1,4 @@
 #include "xmldocument.h"
-#include "xmlelemiteratortree.h"
 #include "xmlelemiteratorlist.h"
 #include "xmlelemiterstrategytree.h"
 

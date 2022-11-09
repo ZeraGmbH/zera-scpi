@@ -14,8 +14,6 @@ add_library(testhelpers STATIC
     xmlelemiteratorlist.h
     xmlelemiteratortemplate.cpp
     xmlelemiteratortemplate.h
-    xmlelemiteratortree.cpp
-    xmlelemiteratortree.h
     xmlelemcomparetext.cpp
     xmlelemcomparetext.h
     xmlelemiterstrategytree.cpp
