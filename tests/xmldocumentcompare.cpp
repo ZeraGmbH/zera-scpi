@@ -52,22 +52,22 @@ bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 
 bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCount, XmlDocument doc1, XmlDocument doc2)
 {
-    XmlElemIterator arrIter1 = doc1.find(tagPath);
-    XmlElemIterator arrIter2 = doc2.find(tagPath);
+    XmlElemIter arrIter1 = doc1.find(tagPath);
+    XmlElemIter arrIter2 = doc2.find(tagPath);
     if(parentVisitCount > 0) {
         QString tagName = tagPath.last();
-        QDomElement elem1 = arrIter1->getElem().parentNode().toElement();
-        QDomElement elem2 = arrIter2->getElem().parentNode().toElement();
+        QDomElement elem1 = arrIter1.getElem().parentNode().toElement();
+        QDomElement elem2 = arrIter2.getElem().parentNode().toElement();
         while(parentVisitCount > 0) {
             elem1 = elem1.nextSiblingElement(tagName);
             elem2 = elem2.nextSiblingElement(tagName);
             parentVisitCount--;
         }
     }
-    for(;!arrIter1->isEnd(); arrIter1->next(), arrIter2->next()) {
-        if(arrIter2->isEnd())
+    for(;!arrIter1.isEnd(); arrIter1.next(), arrIter2.next()) {
+        if(arrIter2.isEnd())
             return false;
-        if(!m_elemCompareFunc(arrIter1->getElem(), arrIter2->getElem()))
+        if(!m_elemCompareFunc(arrIter1.getElem(), arrIter2.getElem()))
             return false;
     }
     return true;
