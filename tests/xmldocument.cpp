@@ -11,17 +11,17 @@ bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 
 bool XmlDocument::isEmpty()
 {
-    return begin() == end();
+    return *begin() == *end();
 }
 
-XmlElemIteratorTree XmlDocument::begin()
+XmlElemIterator XmlDocument::begin()
 {
-    return XmlElemIteratorTree(m_doc.documentElement());
+    return std::make_shared<XmlElemIteratorTree>(m_doc.documentElement());
 }
 
-XmlElemIteratorTree XmlDocument::end()
+XmlElemIterator XmlDocument::end()
 {
-    return XmlElemIteratorTree(QDomElement());
+    return std::make_shared<XmlElemIteratorTree>(QDomElement());
 }
 
 bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
@@ -37,11 +37,11 @@ bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
     return !foundElem.isNull();
 }
 
-XmlElemIteratorList XmlDocument::find(QStringList tagSearchPath)
+XmlElemIterator XmlDocument::find(QStringList tagSearchPath)
 {
     QDomElement foundElem;
     findElem(tagSearchPath, foundElem);
-    return XmlElemIteratorList(foundElem);
+    return std::make_shared<XmlElemIteratorList>(foundElem);
 }
 
 bool XmlDocument::addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem)

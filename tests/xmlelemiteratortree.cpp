@@ -5,7 +5,7 @@ XmlElemIteratorTree::XmlElemIteratorTree(QDomElement elem) :
 {
 }
 
-QDomElement XmlElemIteratorTree::getNextElem()
+void XmlElemIteratorTree::next()
 {
     QDomElement neighbor = m_elem.nextSiblingElement();
     QDomElement child = m_elem.firstChildElement();
@@ -17,7 +17,6 @@ QDomElement XmlElemIteratorTree::getNextElem()
         findIteratedParentsNeighbor();
     else
         m_elem.clear();
-    return m_elem;
 }
 
 void XmlElemIteratorTree::findIteratedParentsNeighbor()

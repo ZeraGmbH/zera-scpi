@@ -146,7 +146,7 @@ void test_xmldocument::identFoundElemByAttribCount()
 static int countElems(XmlDocument doc)
 {
     int elemCount = 0;
-    for(auto iter=doc.begin(); iter!=doc.end(); ++iter)
+    for(auto iter=doc.begin(); *iter!=*doc.end(); iter->next())
         elemCount++;
     return elemCount;
 }

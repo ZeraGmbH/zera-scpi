@@ -12,9 +12,8 @@ public:
     {
     }
 protected:
-    QDomElement getNextElem() override
+    void next() override
     {
-       return m_elem;
     }
 };
 

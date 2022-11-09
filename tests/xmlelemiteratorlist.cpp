@@ -5,7 +5,7 @@ XmlElemIteratorList::XmlElemIteratorList(QDomElement elem) :
 {
 }
 
-QDomElement XmlElemIteratorList::getNextElem()
+void XmlElemIteratorList::next()
 {
-    return m_elem.nextSiblingElement(m_elem.tagName());
+    m_elem = m_elem.nextSiblingElement(m_elem.tagName());
 }

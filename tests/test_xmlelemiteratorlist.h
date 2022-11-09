@@ -7,8 +7,6 @@ class test_xmlelemiteratorlist : public QObject
 {
     Q_OBJECT
 private slots:
-    void nextForNullElem();
-
     void findEmptyDoc();
     void findRoot();
     void findRootHasOne();
