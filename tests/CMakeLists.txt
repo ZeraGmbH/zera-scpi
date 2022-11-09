@@ -1,7 +1,7 @@
 # Inspired by
 # https://github.com/KDAB/kdabtv/blob/master/Qt-Widgets-and-more/UnitTests/Tests/CMakeLists.txt
 
-add_library(testhelpers STATIC
+add_library(helpers_xml STATIC
     xmldocument.cpp
     xmldocument.h
     xmldocumentcompare.cpp
@@ -18,12 +18,12 @@ add_library(testhelpers STATIC
     xmlelemiterstrategytree.h
     )
 
-target_include_directories(testhelpers
+target_include_directories(helpers_xml
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
 
-target_link_libraries(testhelpers
+target_link_libraries(helpers_xml
     PUBLIC
     Qt5::Core
     Qt5::Xml
@@ -47,7 +47,7 @@ function(SETUP_TESTS)
         target_link_libraries(${_testname}
             PUBLIC
             Qt5::Test
-            testhelpers
+            helpers_xml
             scpi-tcp
             )
     endforeach()

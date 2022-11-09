@@ -10,7 +10,6 @@ public:
     virtual QDomElement next(QDomElement current) { return QDomElement(); }
 };
 
-
 void test_xmlelemiter::noDocNoParent()
 {
     QDomElement elem;
