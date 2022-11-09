@@ -1,10 +1,9 @@
 #include "xmlelemiter.h"
 
-XmlElemIter::XmlElemIter(std::unique_ptr<XmlElemIterStrategy> &&iterStrategy, QDomElement elem) :
+XmlElemIter::XmlElemIter(XmlElemIterStrategyPtr &&iterStrategy, QDomElement elem) :
     m_iterStrategy(std::move(iterStrategy)),
     m_elem(elem)
 {
-
 }
 
 QDomElement XmlElemIter::getElem()
