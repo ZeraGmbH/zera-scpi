@@ -1,8 +1,7 @@
 #ifndef XMLDOCUMENT_H
 #define XMLDOCUMENT_H
 
-#include "xmlelemiteratortree.h"
-#include "xmlelemiteratorlist.h"
+#include "xmlelemiteratortemplate.h"
 #include <QStringList>
 #include <QDomDocument>
 #include <QDomElement>
