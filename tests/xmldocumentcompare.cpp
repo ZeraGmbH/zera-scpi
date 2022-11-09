@@ -63,8 +63,6 @@ bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCoun
             elem2 = elem2.nextSiblingElement(tagName);
             parentVisitCount--;
         }
-        XmlElemIteratorList arrIter1 = elem1;
-        XmlElemIteratorList arrIter2 = elem2;
     }
     for(;!arrIter1->isEnd(); arrIter1->next(), arrIter2->next()) {
         if(arrIter2->isEnd())

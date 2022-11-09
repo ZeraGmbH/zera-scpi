@@ -1,4 +1,6 @@
 #include "xmldocument.h"
+#include "xmlelemiteratortree.h"
+#include "xmlelemiteratorlist.h"
 
 bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
