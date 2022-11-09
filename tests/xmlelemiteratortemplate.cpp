@@ -22,12 +22,6 @@ QStringList XmlElemIteratorTemplate::getParentPath()
     return parentPath;
 }
 
-XmlElemIteratorTemplate &XmlElemIteratorTemplate::operator++()
-{
-    m_elem = getNextElem();
-    return *this;
-}
-
 bool XmlElemIteratorTemplate::operator==(const XmlElemIteratorTemplate &other) const
 {
     return other.m_elem == m_elem;

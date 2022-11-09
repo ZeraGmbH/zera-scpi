@@ -39,9 +39,9 @@ bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 {
     QHash<QStringList, int> tagPathVisitCounts;
-    for(auto iter1=doc1.begin(); iter1!=doc1.end(); ++iter1) {
-        QDomElement elem1 = iter1.getElem();
-        QStringList parentPath1 = iter1.getParentPath();
+    for(auto iter1=doc1.begin(); *iter1!=*doc1.end(); iter1->next()) {
+        QDomElement elem1 = iter1->getElem();
+        QStringList parentPath1 = iter1->getParentPath();
         QStringList tagPath1 = parentPath1 + QStringList(elem1.tagName());
         if(!compareElemsAt(tagPath1, tagPathVisitCounts[parentPath1], doc1, doc2))
            return false;
@@ -52,12 +52,12 @@ bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 
 bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCount, XmlDocument doc1, XmlDocument doc2)
 {
-    XmlElemIteratorList arrIter1 = doc1.find(tagPath);
-    XmlElemIteratorList arrIter2 = doc2.find(tagPath);
+    XmlElemIterator arrIter1 = doc1.find(tagPath);
+    XmlElemIterator arrIter2 = doc2.find(tagPath);
     if(parentVisitCount > 0) {
         QString tagName = tagPath.last();
-        QDomElement elem1 = arrIter1.getElem().parentNode().toElement();
-        QDomElement elem2 = arrIter2.getElem().parentNode().toElement();
+        QDomElement elem1 = arrIter1->getElem().parentNode().toElement();
+        QDomElement elem2 = arrIter2->getElem().parentNode().toElement();
         while(parentVisitCount > 0) {
             elem1 = elem1.nextSiblingElement(tagName);
             elem2 = elem2.nextSiblingElement(tagName);
@@ -66,10 +66,10 @@ bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCoun
         XmlElemIteratorList arrIter1 = elem1;
         XmlElemIteratorList arrIter2 = elem2;
     }
-    for(;arrIter1!=doc1.end(); ++arrIter1,++arrIter2) {
-        if(arrIter2 == doc2.end())
+    for(;*arrIter1!=*doc1.end(); arrIter1->next(), arrIter2->next()) {
+        if(*arrIter2 == *doc2.end())
             return false;
-        if(!m_elemCompareFunc(arrIter1.getElem(), arrIter2.getElem()))
+        if(!m_elemCompareFunc(arrIter1->getElem(), arrIter2->getElem()))
             return false;
     }
     return true;

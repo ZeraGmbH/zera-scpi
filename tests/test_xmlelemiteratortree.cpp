@@ -8,9 +8,9 @@ QTEST_MAIN(test_xmlelemiteratortree)
 void test_xmlelemiteratortree::beginEmpty()
 {
     XmlDocument doc;
-    XmlElemIteratorTree iter = doc.begin();
-    QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    XmlElemIterator iter = doc.begin();
+    QCOMPARE(iter->getParentPath(), QStringList());
+    QVERIFY(iter->getElem().isNull());
 }
 
 QString xmlRootOnly =
@@ -25,34 +25,34 @@ void test_xmlelemiteratortree::beginRoot()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIteratorTree iter = doc.begin();
-    QCOMPARE(iter.getParentPath(), QStringList());
-    QDomElement rootElem = iter.getElem();
+    XmlElemIterator iter = doc.begin();
+    QCOMPARE(iter->getParentPath(), QStringList());
+    QDomElement rootElem = iter->getElem();
     QCOMPARE(rootElem.tagName(), "root");
 }
 
 void test_xmlelemiteratortree::endEmpty()
 {
     XmlDocument doc;
-    XmlElemIteratorTree iter = doc.end();
-    QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    XmlElemIterator iter = doc.end();
+    QCOMPARE(iter->getParentPath(), QStringList());
+    QVERIFY(iter->getElem().isNull());
 }
 
 void test_xmlelemiteratortree::endValid()
 {
     XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
-    XmlElemIteratorTree iter = doc.end();
-    QCOMPARE(iter.getParentPath(), QStringList());
-    QVERIFY(iter.getElem().isNull());
+    XmlElemIterator iter = doc.end();
+    QCOMPARE(iter->getParentPath(), QStringList());
+    QVERIFY(iter->getElem().isNull());
 }
 
 static QStringList iterateCheckExpected(XmlDocument doc, QStringList &expectedTags)
 {
     QStringList unexpectedTags;
-    for(auto iter=doc.begin(); iter!=doc.end(); ++iter) {
-        QDomElement elem = iter.getElem();
+    for(auto iter=doc.begin(); *iter!=*doc.end(); iter->next()) {
+        QDomElement elem = iter->getElem();
         if(!expectedTags.removeOne(elem.tagName())) {
             unexpectedTags.append(elem.tagName());
         }

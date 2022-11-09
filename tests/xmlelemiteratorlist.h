@@ -8,7 +8,7 @@ class XmlElemIteratorList : public XmlElemIteratorTemplate
 public:
     XmlElemIteratorList(QDomElement elem);
 protected:
-    QDomElement getNextElem() override;
+    void next() override;
 };
 
 #endif // XMLELEMITERATORLIST_H
