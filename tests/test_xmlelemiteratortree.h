@@ -9,8 +9,6 @@ class test_xmlelemiteratortree : public QObject
 private slots:
     void beginEmpty();
     void beginRoot();
-    void endEmpty();
-    void endValid();
 
     void iterateOne();
     void iterateTwoNested();

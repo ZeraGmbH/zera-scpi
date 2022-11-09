@@ -39,7 +39,7 @@ bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 {
     QHash<QStringList, int> tagPathVisitCounts;
-    for(auto iter1=doc1.begin(); *iter1!=*doc1.end(); iter1->next()) {
+    for(auto iter1=doc1.begin(); !iter1->isEnd(); iter1->next()) {
         QDomElement elem1 = iter1->getElem();
         QStringList parentPath1 = iter1->getParentPath();
         QStringList tagPath1 = parentPath1 + QStringList(elem1.tagName());
@@ -66,8 +66,8 @@ bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCoun
         XmlElemIteratorList arrIter1 = elem1;
         XmlElemIteratorList arrIter2 = elem2;
     }
-    for(;*arrIter1!=*doc1.end(); arrIter1->next(), arrIter2->next()) {
-        if(*arrIter2 == *doc2.end())
+    for(;!arrIter1->isEnd(); arrIter1->next(), arrIter2->next()) {
+        if(arrIter2->isEnd())
             return false;
         if(!m_elemCompareFunc(arrIter1->getElem(), arrIter2->getElem()))
             return false;

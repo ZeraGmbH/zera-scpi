@@ -11,6 +11,7 @@ public:
     XmlElemIteratorTemplate(QDomElement elem);
     QDomElement getElem();
     QStringList getParentPath();
+    bool isEnd();
     virtual void next() = 0;
 
     bool operator== (const XmlElemIteratorTemplate &other) const;
