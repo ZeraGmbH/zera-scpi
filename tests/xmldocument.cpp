@@ -1,5 +1,4 @@
 #include "xmldocument.h"
-#include "xmlelemiteratorlist.h"
 #include "xmlelemiterstrategytree.h"
 
 bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
@@ -32,13 +31,6 @@ bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
         foundElem = foundElem.firstChildElement(childName);
     }
     return !foundElem.isNull();
-}
-
-XmlElemIterator XmlDocument::find(QStringList tagSearchPath)
-{
-    QDomElement foundElem;
-    findElem(tagSearchPath, foundElem);
-    return std::make_shared<XmlElemIteratorList>(foundElem);
 }
 
 XmlElemIter XmlDocument::find(QStringList tagSearchPath, std::unique_ptr<XmlElemIterStrategy> &&iterStrategy)

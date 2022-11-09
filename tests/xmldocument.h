@@ -1,9 +1,9 @@
 #ifndef XMLDOCUMENT_H
 #define XMLDOCUMENT_H
 
-#include "xmlelemiteratortemplate.h"
 #include "xmlelemiter.h"
 #include "xmlelemiterstrategytree.h"
+#include "xmlelemiterstrategylist.h"
 #include <QStringList>
 #include <QDomDocument>
 #include <QDomElement>
@@ -17,8 +17,7 @@ public:
     XmlElemIter begin(std::unique_ptr<XmlElemIterStrategy> &&iterStrategy = std::make_unique<XmlElemIterStrategyTree>());
 
     bool findElem(QStringList tagSearchPath, QDomElement &foundElem);
-    XmlElemIterator find(QStringList tagSearchPath);
-    XmlElemIter find(QStringList tagSearchPath, std::unique_ptr<XmlElemIterStrategy> &&iterStrategy);
+    XmlElemIter find(QStringList tagSearchPath, std::unique_ptr<XmlElemIterStrategy> &&iterStrategy= std::make_unique<XmlElemIterStrategyList>());
 
     bool addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem);
 
