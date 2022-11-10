@@ -2,39 +2,42 @@
 
 QDomElement XmlElemIterStrategySort::next(QDomElement current)
 {
-    if(m_nextChildren.isEmpty()) {
-        if(m_potentialNextParents.isEmpty()) {
-            if(collectChildren(current))
-                return nextChild();
-        }
-        else {
-            while(!m_potentialNextParents.isEmpty()) {
-                if(collectChildren(m_potentialNextParents.takeFirst()))
-                    return nextChild();
-            }
-        }
-    }
-    else
-        return nextChild();
-    return QDomElement();
+    if(!m_nextSortedChildren.isEmpty())
+        return getNextChild();
+    else if(!m_handledChildren.isEmpty())
+        return createGrandChildrenSetAndGetFirst();
+    return createChildrenSetAndGetFirst(current);
+}
+
+QDomElement XmlElemIterStrategySort::getNextChild()
+{
+    QString firstTag = m_nextSortedChildren.firstKey();
+    QDomElement next = m_nextSortedChildren[firstTag].takeFirst();
+    if(m_nextSortedChildren[firstTag].isEmpty())
+        m_nextSortedChildren.remove(firstTag);
+    m_handledChildren.append(next);
+    return next;
 }
 
 bool XmlElemIterStrategySort::collectChildren(QDomElement elem)
 {
-    QDomElement firstChild = elem.firstChildElement();
-    m_currentParentPath.append(elem.tagName());
-    for(auto child = firstChild; !child.isNull(); child=child.nextSiblingElement())
-        m_nextChildren[child.tagName()].append(child);
-    return !m_nextChildren.isEmpty();
+    for(auto child = elem.firstChildElement(); !child.isNull(); child=child.nextSiblingElement())
+        m_nextSortedChildren[child.tagName()].append(child);
+    return !m_nextSortedChildren.isEmpty();
 }
 
-QDomElement XmlElemIterStrategySort::nextChild()
+QDomElement XmlElemIterStrategySort::createChildrenSetAndGetFirst(QDomElement current)
 {
-    QString firstTag = m_nextChildren.firstKey();
-    QDomElement next = m_nextChildren[firstTag].takeFirst();
-    if(m_nextChildren[firstTag].isEmpty())
-        m_nextChildren.remove(firstTag);
-    m_potentialNextParents.append(next);
-    return next;
+    if(collectChildren(current))
+        return getNextChild();
+    return QDomElement();
 }
 
+QDomElement XmlElemIterStrategySort::createGrandChildrenSetAndGetFirst()
+{
+    while(!m_handledChildren.isEmpty()) {
+        if(collectChildren(m_handledChildren.takeFirst()))
+            return getNextChild();
+    }
+    return QDomElement();
+}
