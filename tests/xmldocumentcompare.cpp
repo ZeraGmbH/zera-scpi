@@ -1,6 +1,7 @@
 #include "xmldocumentcompare.h"
 #include "xmlelemcompareattribs.h"
 #include "xmlelemcomparetext.h"
+#include "xmlelemcomparetag.h"
 #include <QHash>
 
 XmlDocumentCompare::XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction) :
@@ -12,6 +13,7 @@ XmlElemCompareFunc XmlDocumentCompare::m_defaultElemCompareFunc =
 [](const QDomElement& elem1, const QDomElement& elem2) -> bool
 {
     return
+        XmlElemCompareTag::compare(elem1, elem2) &&
         XmlElemCompareAttribs::compare(elem1, elem2) &&
         XmlElemCompareText::compare(elem1, elem2);
 };

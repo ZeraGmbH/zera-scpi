@@ -8,10 +8,12 @@ add_library(helpers_xml STATIC
     xmldocumentcompare.h
     xmlelemcompareattribs.cpp
     xmlelemcompareattribs.h
+    xmlelemcomparetext.cpp
+    xmlelemcomparetag.h
+    xmlelemcomparetag.cpp
+    xmlelemcomparetext.h
     xmlelemiter.cpp
     xmlelemiter.h
-    xmlelemcomparetext.cpp
-    xmlelemcomparetext.h
     xmlelemiterstrategylist.cpp
     xmlelemiterstrategylist.h
     xmlelemiterstrategysort.cpp
