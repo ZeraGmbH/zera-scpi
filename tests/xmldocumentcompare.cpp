@@ -2,6 +2,7 @@
 #include "xmlelemcompareattribs.h"
 #include "xmlelemcomparetext.h"
 #include "xmlelemcomparetag.h"
+#include "xmlelemiterstrategysort.h"
 #include <QHash>
 
 XmlDocumentCompare::XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction) :
@@ -40,37 +41,13 @@ bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 
 bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 {
-    QHash<QStringList, int> tagPathVisitCounts;
-    for(auto iter1=doc1.root(); !iter1.isEnd(); iter1.next()) {
-        QDomElement elem1 = iter1.getElem();
-        QStringList parentPath1 = iter1.getParentPath();
-        QStringList tagPath1 = parentPath1 + QStringList(elem1.tagName());
-        if(!compareElemsAt(tagPath1, tagPathVisitCounts[parentPath1], doc1, doc2))
-           return false;
-        tagPathVisitCounts[tagPath1]++;
-    }
-    return true;
-}
-
-bool XmlDocumentCompare::compareElemsAt(QStringList tagPath, int parentVisitCount, XmlDocument doc1, XmlDocument doc2)
-{
-    XmlElemIter arrIter1 = doc1.find(tagPath);
-    XmlElemIter arrIter2 = doc2.find(tagPath);
-    if(parentVisitCount > 0) {
-        QString tagName = tagPath.last();
-        QDomElement elem1 = arrIter1.getElem().parentNode().toElement();
-        QDomElement elem2 = arrIter2.getElem().parentNode().toElement();
-        while(parentVisitCount > 0) {
-            elem1 = elem1.nextSiblingElement(tagName);
-            elem2 = elem2.nextSiblingElement(tagName);
-            parentVisitCount--;
-        }
-    }
-    for(;!arrIter1.isEnd(); arrIter1.next(), arrIter2.next()) {
-        if(arrIter2.isEnd())
-            return false;
-        if(!m_elemCompareFunc(arrIter1.getElem(), arrIter2.getElem()))
+    auto iter1 = doc1.root(std::make_unique<XmlElemIterStrategySort>());
+    auto iter2 = doc2.root(std::make_unique<XmlElemIterStrategySort>());
+    for(;!iter1.isEnd(); iter1.next(), iter2.next()) {
+        if(!m_elemCompareFunc(iter1.getElem(), iter2.getElem()))
             return false;
     }
+    if(!iter2.isEnd())
+        return false;
     return true;
 }

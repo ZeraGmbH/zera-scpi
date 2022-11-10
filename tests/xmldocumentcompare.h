@@ -16,7 +16,6 @@ public:
 private:
     bool compareDocTypes(XmlDocument doc1, XmlDocument doc2);
     bool compareAllElems(XmlDocument doc1, XmlDocument doc2);
-    bool compareElemsAt(QStringList tagPath, int parentVisitCount, XmlDocument doc1, XmlDocument doc2);
 
     XmlElemCompareFunc m_elemCompareFunc;
     static XmlElemCompareFunc m_defaultElemCompareFunc;
