@@ -31,7 +31,7 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
         return false;
     if(!compareDocTypes(doc1, doc2))
         return false;
-    return compareAllElems(doc1, doc2) && compareAllElems(doc2, doc1);
+    return compareAllElems(doc1, doc2);
 }
 
 bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
