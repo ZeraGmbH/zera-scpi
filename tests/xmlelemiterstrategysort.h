@@ -11,11 +11,13 @@ class XmlElemIterStrategySort : public XmlElemIterStrategy
 public:
     QDomElement next(QDomElement current) override;
 private:
+    QDomElement getNextChild();
     bool collectChildren(QDomElement elem);
-    QDomElement nextChild();
-    QMap<QString /*tag*/, QList<QDomElement>> m_nextChildren;
-    QList<QDomElement> m_potentialNextParents;
-    QStringList m_currentParentPath;
+    QDomElement createChildrenSetAndGetFirst(QDomElement current);
+    QDomElement createGrandChildrenSetAndGetFirst();
+
+    QMap<QString /*tag*/, QList<QDomElement>> m_nextSortedChildren;
+    QList<QDomElement> m_handledChildren;
 };
 
 #endif // XMLELEMITERSTRATEGYSORT_H
