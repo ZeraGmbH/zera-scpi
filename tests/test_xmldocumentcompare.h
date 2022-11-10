@@ -24,6 +24,7 @@ private slots:
     void arraySecondMoreElems();
     void arraySwappedSequence();
     void arrayNestedSwappedSequence();
+    void arrayNestedMissing();
     void arrayEqual();
     void docTypeUnequal();
     void docTypeEqual();
