@@ -4,16 +4,15 @@ QDomElement XmlElemIterStrategyTree::next(QDomElement current)
 {
     QDomElement neighbor = current.nextSiblingElement();
     QDomElement child = current.firstChildElement();
-    QDomElement next;
     if(!child.isNull()) {
         m_iteratedParentList.append(current);
-        next = child;
+        return child;
     }
     else if(!neighbor.isNull())
-        next = neighbor;
+        return neighbor;
     else if(!m_iteratedParentList.isEmpty())
-        next = findIteratedParentsNeighbor();
-    return next;
+        return findIteratedParentsNeighbor();
+    return QDomElement();
 }
 
 QDomElement XmlElemIterStrategyTree::findIteratedParentsNeighbor()
