@@ -14,6 +14,8 @@ add_library(helpers_xml STATIC
     xmlelemcomparetext.h
     xmlelemiterstrategylist.cpp
     xmlelemiterstrategylist.h
+    xmlelemiterstrategysort.cpp
+    xmlelemiterstrategysort.h
     xmlelemiterstrategytree.cpp
     xmlelemiterstrategytree.h
     )
@@ -61,6 +63,7 @@ SETUP_TESTS(
     test_xmlelemcompareattribs
     test_xmlelemcomparetext
     test_xmlelemiter
-    test_xmlelemiteratortree
     test_xmlelemiteratorlist
+    test_xmlelemiteratorsort
+    test_xmlelemiteratortree
 )
