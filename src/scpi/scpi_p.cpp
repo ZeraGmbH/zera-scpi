@@ -39,14 +39,6 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject
     }
 }
 
-void cSCPIPrivate::delChildItems(ScpiItem *Item)
-{
-    while ( Item->rowCount() > 0 ) { // as long as we have child item rows
-        delChildItems(Item->child(0)); // we delete all entries behind item recursively
-        Item->removeRow(0);
-    }
-}
-
 void cSCPIPrivate::delItemAndParents(ScpiItem *Item)
 {
     ScpiItem *parentItem = Item->parent();
@@ -86,7 +78,6 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
                 break;
         }
         if (parentItem) { // we found the whole keyword list in the model
-            delChildItems(parentItem); // so lets delete what's necessary
             delItemAndParents(parentItem);
         }
     }

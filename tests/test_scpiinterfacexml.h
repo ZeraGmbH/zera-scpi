@@ -35,6 +35,7 @@ private slots:
     void twoElementNestedSamePathRemoveNonExistent();
     void twoElementNestedSamePathRemoveParent();
     void twoElementNestedSamePathRemoveGrandParent();
+    void twoElementNestedRemoveHalfUp();
     void threeElementAddRemoveFirstThirdWhichIsSecondAfterFirstDelete();
 
     void iteminstanceCountInit();
