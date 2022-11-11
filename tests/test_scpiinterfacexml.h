@@ -30,10 +30,12 @@ private slots:
     void twoElementNestedAlmostSamePath();
 
     void oneElementNestedRemove();
+    void oneElementNestedRemoveReAdd();
     void twoElementNestedSamePathRemoveFirst();
     void twoElementNestedSamePathRemoveNonExistent();
     void twoElementNestedSamePathRemoveParent();
     void twoElementNestedSamePathRemoveGrandParent();
+    void threeElementAddRemoveFirstThirdWhichIsSecondAfterFirstDelete();
 
     void init();
     void cleanup();
