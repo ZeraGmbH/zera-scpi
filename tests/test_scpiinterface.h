@@ -8,6 +8,11 @@ class test_scpiinterface : public QObject
     Q_OBJECT
 private slots:
     void mostSimpleAddFindAndLearnBehaviour();
+    void addFindTwoRoot();
+    void addFindTwoNestedSamePath();
+    void addFindTwoNestedIdentical();
+    void addFindTwoNestedDiffPath();
+    void addFindTwoNestedAlmostDiffPath();
 };
 
 #endif // TEST_SCPIINTERFACE_H
