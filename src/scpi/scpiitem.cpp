@@ -1,13 +1,17 @@
 #include "scpiitem.h"
 
+int ScpiItem::m_instanceCount = 0;
+
 ScpiItem::ScpiItem()
 {
+    m_instanceCount++;
 }
 
 ScpiItem::~ScpiItem()
 {
     while(!m_rowItems.isEmpty())
         delete m_rowItems.takeFirst();
+    m_instanceCount--;
 }
 
 ScpiItem *ScpiItem::child(int row) const
@@ -43,4 +47,9 @@ void ScpiItem::removeRow(int row)
     for(int row=0; row<m_rowItems.count(); ++row) {
         m_rowItems.at(row)->m_row = row;
     }
+}
+
+int ScpiItem::getInstanceCount()
+{
+    return m_instanceCount;
 }

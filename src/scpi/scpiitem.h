@@ -17,10 +17,13 @@ public:
     void appendRow(ScpiItem *item);
     void removeRow(int row);
 
+    static int getInstanceCount();
 private:
     ScpiItem *m_parent = nullptr;
     int m_row = 0;
     QList<ScpiItem*> m_rowItems;
+
+    static int m_instanceCount;
 };
 
 #endif // SCPIITEM_H
