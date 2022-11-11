@@ -15,7 +15,7 @@ cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
 
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
-    ScpiItem *parentItem = m_SCPIModel.invisibleRootItem();
+    ScpiItem *parentItem = &m_invisibleRootItem;
     cSCPINode *childItem;
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
@@ -63,7 +63,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     } while (*pInput  == ':');
 
     if (slNodeNames.count() > 0 ) {
-        ScpiItem *parentItem = m_SCPIModel.invisibleRootItem();
+        ScpiItem *parentItem = &m_invisibleRootItem;
         for(const auto &nodeName: slNodeNames) {
             cSCPINode *childItem = nullptr;
             for (int row = 0; row < parentItem->rowCount(); row++) {
@@ -86,7 +86,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitive)
 {
     cSCPINode *childItem = nullptr;
-    if (foundItem(m_SCPIModel.invisibleRootItem(), &childItem, (QChar*) input.data(), caseSensitive)) {
+    if (foundItem(&m_invisibleRootItem, &childItem, (QChar*) input.data(), caseSensitive)) {
         return childItem->m_pSCPIObject;
     }
     return nullptr;
@@ -173,7 +173,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     QDomElement modelsTag = modelDoc.createElement("MODELS");
     rootTag.appendChild( modelsTag );
 
-    appendScpiNodeXmlInfo(m_SCPIModel.invisibleRootItem(), modelDoc, modelsTag, QStringList());
+    appendScpiNodeXmlInfo(&m_invisibleRootItem, modelDoc, modelsTag, QStringList());
 
     sxml = modelDoc.toString();
 }
@@ -238,9 +238,8 @@ bool cSCPIPrivate::isNodeTypeOnly(cSCPINode *item)
 QString cSCPIPrivate::makeValidXmlTag(QString xmlTag)
 {
     xmlTag.replace("*", "");
-    if(xmlTag.count() > 0 && xmlTag[0].isNumber()) {
+    if(xmlTag.count() > 0 && xmlTag[0].isNumber())
         xmlTag = "N_" + xmlTag;
-    }
     return xmlTag;
 }
 
