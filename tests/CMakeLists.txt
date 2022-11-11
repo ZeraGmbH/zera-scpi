@@ -2,8 +2,8 @@
 # https://github.com/KDAB/kdabtv/blob/master/Qt-Widgets-and-more/UnitTests/Tests/CMakeLists.txt
 
 add_library(helpers_xml STATIC
-    xmldocument.cpp
-    xmldocument.h
+    xmlqtdomdociteration.cpp
+    xmlqtdomdociteration.h
     xmldocumentcompare.cpp
     xmldocumentcompare.h
     xmlelemcompareattribs.cpp

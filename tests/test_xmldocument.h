@@ -20,14 +20,14 @@ private slots:
     void findTwoChildNodesHasAttributes();
     void identFoundElemByAttribCount();
 
-    void addRootOnEmpty();
+    /*void addRootOnEmpty();
     void addExistingRoot();
     void addInvalidRoot();
     void addInvalidNested1();
-    //void addInvalidNested2();
+    void addInvalidNested2();
     void addSecondRoot();
     void addNested1OnEmpty();
-    void addNested2OnEmpty();
+    void addNested2OnEmpty();*/
 };
 
 #endif // TEST_XMLDOCUMENT_H

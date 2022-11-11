@@ -1,5 +1,5 @@
 #include "test_xmlelemiteratorsort.h"
-#include "xmldocument.h"
+#include "xmlqtdomdociteration.h"
 #include "xmlelemiterstrategysort.h"
 #include <QTest>
 
@@ -7,7 +7,7 @@ QTEST_MAIN(test_xmlelemiteratorsort)
 
 void test_xmlelemiteratorsort::noFreakOutOnEmpty()
 {
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     iter.next(); QVERIFY(iter.getElem().isNull());
 }
@@ -20,7 +20,7 @@ void test_xmlelemiteratorsort::noArrayOneNested()
                 "<cchild1/>"
             "</child1>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().tagName(), "root");
@@ -36,7 +36,7 @@ void test_xmlelemiteratorsort::noArraySortTwo()
             "<child2/>"
             "<child1/>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().tagName(), "root");
@@ -56,7 +56,7 @@ void test_xmlelemiteratorsort::noArraySortTwoNested()
                 "<cchild1/>"
             "</child1>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().tagName(), "root");
@@ -80,7 +80,7 @@ void test_xmlelemiteratorsort::noArraySortTwoNestedTwo()
                 "<cchild2/>"
             "</child1>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().tagName(), "root");
@@ -106,7 +106,7 @@ void test_xmlelemiteratorsort::arraySortTwoNestedTwo()
                 "<NODE3 i='7'></NODE3>"
             "</NODE2>"
         "</NODE1>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().attribute("i"), "1");
@@ -134,7 +134,7 @@ void test_xmlelemiteratorsort::arraySortTwoNestedTwoMixNonArray()
                 "<NODE3 i='9'></NODE3>"
             "</NODE2>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().attribute("i"), "1");
@@ -164,7 +164,7 @@ void test_xmlelemiteratorsort::arraySortTwoNestedTwoMixNonArraySort()
             "</NODE2>"
             "<NODE1 i='2'></NODE1>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().attribute("i"), "1");
@@ -194,7 +194,7 @@ void test_xmlelemiteratorsort::arraySortTwoNestedTwoMixNonArrayObscure()
                 "<NODE3 i='9'></NODE3>"
             "</NODE2>"
         "</root>";
-    XmlDocument doc;
+    XmlQtDomDocIteration doc;
     doc.loadXml(xml, true);
     XmlElemIter iter = doc.root(std::make_unique<XmlElemIterStrategySort>());
     QCOMPARE(iter.getElem().attribute("i"), "1");
