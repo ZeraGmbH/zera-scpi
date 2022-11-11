@@ -9,6 +9,11 @@ bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
     return loaded;
 }
 
+void XmlDocument::setXmlDomDoc(QDomDocument xmlDoc)
+{
+    m_doc = xmlDoc;
+}
+
 bool XmlDocument::isEmpty()
 {
     return root().getElem() == QDomElement();

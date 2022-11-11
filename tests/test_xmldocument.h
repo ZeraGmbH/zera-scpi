@@ -9,6 +9,7 @@ class test_xmldocument : public QObject
 private slots:
     void loadInvalid();
     void loadValid();
+    void setDoc();
 
     void findEmptySearch();
     void findRootNode();

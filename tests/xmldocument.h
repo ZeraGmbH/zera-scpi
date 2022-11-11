@@ -11,6 +11,8 @@ class XmlDocument
 {
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
+    void setXmlDomDoc(QDomDocument xmlDoc);
+
     bool isEmpty();
     QString getDocType();
 
