@@ -1,7 +1,7 @@
 #ifndef XMLDOCUMENTCOMPARE_H
 #define XMLDOCUMENTCOMPARE_H
 
-#include "xmlqtdomdociteration.h"
+#include "xmldocument.h"
 #include <QString>
 #include <QDomElement>
 #include <functional>
@@ -14,8 +14,8 @@ public:
     XmlDocumentCompare(XmlElemCompareFunc elemCompareFunction = m_defaultElemCompareFunc);
     bool compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml=false);
 private:
-    bool compareDocTypes(XmlQtDomDocIteration doc1, XmlQtDomDocIteration doc2);
-    bool compareAllElems(XmlQtDomDocIteration doc1, XmlQtDomDocIteration doc2);
+    bool compareDocTypes(XmlDocument doc1, XmlDocument doc2);
+    bool compareAllElems(XmlDocument doc1, XmlDocument doc2);
 
     XmlElemCompareFunc m_elemCompareFunc;
     static XmlElemCompareFunc m_defaultElemCompareFunc;

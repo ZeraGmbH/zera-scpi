@@ -1,12 +1,12 @@
 #include "test_xmlelemiteratorlist.h"
-#include "xmlqtdomdociteration.h"
+#include "xmldocument.h"
 #include <QTest>
 
 QTEST_MAIN(test_xmlelemiteratorlist)
 
 void test_xmlelemiteratorlist::findEmptyDoc()
 {
-    XmlQtDomDocIteration doc;
+    XmlDocument doc;
     XmlElemIter iter = doc.find(QStringList("foo"));
     QCOMPARE(iter.getParentPath(), QStringList());
     QVERIFY(iter.getElem().isNull());
@@ -17,7 +17,7 @@ QString xmlRootOnly =
 
 void test_xmlelemiteratorlist::findRoot()
 {
-    XmlQtDomDocIteration doc;
+    XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIter iter = doc.find(QStringList("root"));
     QCOMPARE(iter.getParentPath(), QStringList());
@@ -27,7 +27,7 @@ void test_xmlelemiteratorlist::findRoot()
 
 void test_xmlelemiteratorlist::findRootHasOne()
 {
-    XmlQtDomDocIteration doc;
+    XmlDocument doc;
     QVERIFY(doc.loadXml(xmlRootOnly, true));
     XmlElemIter iter = doc.find(QStringList("root"));
     iter.next();
@@ -42,7 +42,7 @@ QString xmlTwoDiffChildren =
 
 void test_xmlelemiteratorlist::findOneOnTwoDiffChildren()
 {
-    XmlQtDomDocIteration doc;
+    XmlDocument doc;
     QVERIFY(doc.loadXml(xmlTwoDiffChildren, true));
     XmlElemIter iter = doc.find(QStringList() << "root" << "child1");
     QDomElement childElem = iter.getElem();
@@ -61,7 +61,7 @@ QString xmlTwoEqualChildren =
 
 void test_xmlelemiteratorlist::findOneOnTwoEqualChildren()
 {
-    XmlQtDomDocIteration doc;
+    XmlDocument doc;
     QVERIFY(doc.loadXml(xmlTwoEqualChildren, true));
     XmlElemIter iter = doc.find(QStringList() << "root" << "child1");
     QDomElement childElem = iter.getElem();

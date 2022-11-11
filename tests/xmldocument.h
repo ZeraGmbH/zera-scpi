@@ -1,5 +1,5 @@
-#ifndef XMLQTDOMDOCITERATION_H
-#define XMLQTDOMDOCITERATION_H
+#ifndef XMLDOCUMENT_H
+#define XMLDOCUMENT_H
 
 #include "xmlelemiterstrategytree.h"
 #include "xmlelemiterstrategylist.h"
@@ -7,7 +7,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 
-class XmlQtDomDocIteration
+class XmlDocument
 {
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
@@ -25,4 +25,4 @@ private:
     QDomDocument m_doc;
 };
 
-#endif // XMLQTDOMDOCITERATION_H
+#endif // XMLDOCUMENT_H

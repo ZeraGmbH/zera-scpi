@@ -21,9 +21,9 @@ XmlElemCompareFunc XmlDocumentCompare::m_defaultElemCompareFunc =
 
 bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInvalidXml)
 {
-    XmlQtDomDocIteration doc1;
+    XmlDocument doc1;
     doc1.loadXml(xml1, fatalOnInvalidXml);
-    XmlQtDomDocIteration doc2;
+    XmlDocument doc2;
     doc2.loadXml(xml2, fatalOnInvalidXml);
     if(doc1.isEmpty() && doc2.isEmpty())
         return true;
@@ -34,12 +34,12 @@ bool XmlDocumentCompare::compareXml(QString xml1, QString xml2, bool fatalOnInva
     return compareAllElems(doc1, doc2);
 }
 
-bool XmlDocumentCompare::compareDocTypes(XmlQtDomDocIteration doc1, XmlQtDomDocIteration doc2)
+bool XmlDocumentCompare::compareDocTypes(XmlDocument doc1, XmlDocument doc2)
 {
     return doc1.getDocType() == doc2.getDocType();
 }
 
-bool XmlDocumentCompare::compareAllElems(XmlQtDomDocIteration doc1, XmlQtDomDocIteration doc2)
+bool XmlDocumentCompare::compareAllElems(XmlDocument doc1, XmlDocument doc2)
 {
     auto iter1 = doc1.root(std::make_unique<XmlElemIterStrategySort>());
     auto iter2 = doc2.root(std::make_unique<XmlElemIterStrategySort>());

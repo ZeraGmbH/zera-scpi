@@ -1,7 +1,7 @@
-#include "xmlqtdomdociteration.h"
+#include "xmldocument.h"
 #include "xmlelemiterstrategytree.h"
 
-bool XmlQtDomDocIteration::loadXml(const QString &xml, bool fatalOnInvalidXml)
+bool XmlDocument::loadXml(const QString &xml, bool fatalOnInvalidXml)
 {
     bool loaded = m_doc.setContent(xml);
     if(!loaded && fatalOnInvalidXml)
@@ -9,22 +9,22 @@ bool XmlQtDomDocIteration::loadXml(const QString &xml, bool fatalOnInvalidXml)
     return loaded;
 }
 
-void XmlQtDomDocIteration::setXmlDomDoc(QDomDocument xmlDoc)
+void XmlDocument::setXmlDomDoc(QDomDocument xmlDoc)
 {
     m_doc = xmlDoc;
 }
 
-bool XmlQtDomDocIteration::isEmpty()
+bool XmlDocument::isEmpty()
 {
     return root().getElem() == QDomElement();
 }
 
-XmlElemIter XmlQtDomDocIteration::root(XmlElemIterStrategyPtr &&iterStrategy)
+XmlElemIter XmlDocument::root(XmlElemIterStrategyPtr &&iterStrategy)
 {
     return XmlElemIter(std::move(iterStrategy), m_doc.documentElement());
 }
 
-bool XmlQtDomDocIteration::findElem(QStringList tagSearchPath, QDomElement &foundElem)
+bool XmlDocument::findElem(QStringList tagSearchPath, QDomElement &foundElem)
 {
     if(tagSearchPath.isEmpty())
         return false;
@@ -37,14 +37,14 @@ bool XmlQtDomDocIteration::findElem(QStringList tagSearchPath, QDomElement &foun
     return !foundElem.isNull();
 }
 
-XmlElemIter XmlQtDomDocIteration::find(QStringList tagSearchPath, XmlElemIterStrategyPtr &&iterStrategy)
+XmlElemIter XmlDocument::find(QStringList tagSearchPath, XmlElemIterStrategyPtr &&iterStrategy)
 {
     QDomElement foundElem;
     findElem(tagSearchPath, foundElem);
     return XmlElemIter(std::move(iterStrategy), foundElem);
 }
 
-QString XmlQtDomDocIteration::getDocType()
+QString XmlDocument::getDocType()
 {
     return m_doc.doctype().name();
 }
