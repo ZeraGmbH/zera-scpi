@@ -11,7 +11,6 @@ public:
     explicit ScpiItemModel(QObject *parent = nullptr);
     ~ScpiItemModel();
     ScpiItem *invisibleRootItem() const;
-    bool removeRow(int row);
 private:
     ScpiItem *m_invisibleRootItem;
 };

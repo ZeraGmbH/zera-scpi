@@ -58,9 +58,6 @@ void cSCPIPrivate::delItemAndParents(ScpiItem *Item)
         else
             parentItem->removeRow(Item->row());
     }
-    else {
-        m_SCPIModel.removeRow(Item->row()); // can this go? see parentItem->removeRow(0)
-    }
 }
 
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
