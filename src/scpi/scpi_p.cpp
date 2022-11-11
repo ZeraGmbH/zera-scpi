@@ -15,7 +15,7 @@ cSCPIPrivate::cSCPIPrivate(const QString &interfaceName)
 
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
-    QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
+    ScpiItem *parentItem = m_SCPIModel.invisibleRootItem();
     cSCPINode *childItem;
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
@@ -39,7 +39,7 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject
     }
 }
 
-void cSCPIPrivate::delChildItems(QStandardItem *Item)
+void cSCPIPrivate::delChildItems(ScpiItem *Item)
 {
     while ( Item->rowCount() > 0 ) { // as long as we have child item rows
         delChildItems(Item->child(0)); // we delete all entries behind item recursively
@@ -47,9 +47,9 @@ void cSCPIPrivate::delChildItems(QStandardItem *Item)
     }
 }
 
-void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
+void cSCPIPrivate::delItemAndParents(ScpiItem *Item)
 {
-    QStandardItem *parentItem = Item->parent();
+    ScpiItem *parentItem = Item->parent();
     if (parentItem) { // do we have a parent ?
         if (parentItem->rowCount() == 1) { // if this item is the ony child of parent
             parentItem->removeRow(0); // we delete it
@@ -74,7 +74,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     } while (*pInput  == ':');
 
     if (slNodeNames.count() > 0 ) {
-        QStandardItem *parentItem = m_SCPIModel.invisibleRootItem();
+        ScpiItem *parentItem = m_SCPIModel.invisibleRootItem();
         for(const auto &nodeName: slNodeNames) {
             cSCPINode *childItem = nullptr;
             for (int row = 0; row < parentItem->rowCount(); row++) {
@@ -104,7 +104,7 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitiv
     return nullptr;
 }
 
-void cSCPIPrivate::appendScpiNodeXmlInfo(QStandardItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
+void cSCPIPrivate::appendScpiNodeXmlInfo(ScpiItem *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
         cSCPINode *childItem = static_cast<cSCPINode*>(rootItem->child(row));
@@ -190,7 +190,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     sxml = modelDoc.toString();
 }
 
-QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentItem, const QStringList &parentnodeNames)
+ScpiItem *cSCPIPrivate::findOrCreateChildParentItem(ScpiItem *parentItem, const QStringList &parentnodeNames)
 {
     for(const QString &nodeName : parentnodeNames) {
         cSCPINode *childItem = nullptr;
@@ -210,7 +210,7 @@ QStandardItem *cSCPIPrivate::findOrCreateChildParentItem(QStandardItem *parentIt
     return parentItem;
 }
 
-bool cSCPIPrivate::foundItem(QStandardItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
+bool cSCPIPrivate::foundItem(ScpiItem *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
 {
     bool found = false;
     int nrows = parentItem->rowCount();
