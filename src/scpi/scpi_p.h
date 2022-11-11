@@ -18,16 +18,16 @@ public:
     void exportSCPIModelXML(QString &sxml);
 
 private:
-    cSCPINode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
-    void delItemAndParents(cSCPINode* Item);
-    void appendScpiNodeXmlInfo(cSCPINode* rootItem, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
+    ScpiNode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
+    void delItemAndParents(ScpiNode* Item);
+    void appendScpiNodeXmlInfo(ScpiNode* rootItem, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
     static QString scpiTypeToString(quint8 scpiType);
-    cSCPINode *findOrCreateChildParentItem(cSCPINode *parentItem, const QStringList& parentnodeNames);
-    bool foundItem(cSCPINode *parentItem, cSCPINode** scpiChildItem, QChar* pInput, bool caseSensitive);
-    bool isNodeTypeOnly(cSCPINode *item);
+    ScpiNode *findOrCreateChildParentItem(ScpiNode *parentItem, const QStringList& parentnodeNames);
+    bool foundItem(ScpiNode *parentItem, ScpiNode** scpiChildItem, QChar* pInput, bool caseSensitive);
+    bool isNodeTypeOnly(ScpiNode *item);
     QString makeValidXmlTag(QString xmlTag);
 
-    cSCPINode m_invisibleRootItem;
+    ScpiNode m_invisibleRootItem;
     QString m_interfaceName;
     cParse m_Parser;
 };

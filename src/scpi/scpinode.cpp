@@ -1,71 +1,80 @@
 #include "scpinode.h"
-#include "scpi.h"
 
-int cSCPINode::m_instanceCount = 0;
+int ScpiNode::m_instanceCount = 0;
 
-cSCPINode::cSCPINode()
+ScpiNode::ScpiNode()
 {
     m_instanceCount++;
 }
 
-cSCPINode::cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject) :
-    m_pSCPIObject(pSCPIObject),
+ScpiNode::ScpiNode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject) :
+    m_pScpiObject(pSCPIObject),
     m_sNodeName(sNodeName),
     m_nType(t)
 {
     m_instanceCount++;
 }
 
-cSCPINode::~cSCPINode()
+ScpiNode::~ScpiNode()
 {
     while(!m_rowItems.isEmpty())
         delete m_rowItems.takeFirst();
     m_instanceCount--;
 }
 
-quint8 cSCPINode::getType()
+cSCPIObject *ScpiNode::getScpiObject() const
+{
+    return m_pScpiObject;
+}
+
+void ScpiNode::setScpiObject(cSCPIObject *pScpiObject)
+{
+    m_pScpiObject = pScpiObject;
+}
+
+quint8 ScpiNode::getType()
 {
     return m_nType;
 }
 
-void cSCPINode::setType(quint8 type)
+void ScpiNode::setType(quint8 type)
 {
     m_nType = type;
 }
 
-const QString &cSCPINode::getName()
+const QString &ScpiNode::getName()
 {
     return m_sNodeName;
 }
 
-cSCPINode *cSCPINode::child(int row) const
+ScpiNode *ScpiNode::child(int row) const
 {
     return m_rowItems[row];
 }
 
-cSCPINode *cSCPINode::parent() const
+ScpiNode *ScpiNode::parent() const
 {
     return m_parent;
 }
 
-int cSCPINode::rowCount() const
+int ScpiNode::rowCount() const
 {
     return m_rowItems.count();
 }
 
-int cSCPINode::row() const
+int ScpiNode::row() const
 {
     return m_row;
 }
 
-void cSCPINode::appendRow(cSCPINode *item)
+void ScpiNode::appendRow(ScpiNode *item)
 {
     item->m_parent = this;
     item->m_row = m_rowItems.count();
     m_rowItems.append(item);
 }
 
-void cSCPINode::removeRow(int row)
+void ScpiNode::removeRow(int row)
 {
     delete m_rowItems.takeAt(row);
     for(int row=0; row<m_rowItems.count(); ++row) {
@@ -73,7 +82,7 @@ void cSCPINode::removeRow(int row)
     }
 }
 
-int cSCPINode::getInstanceCount()
+int ScpiNode::getInstanceCount()
 {
     return m_instanceCount;
 }

@@ -3,35 +3,37 @@
 
 #include "scpiobject.h"
 
-class cSCPINode
+class ScpiNode
 {
 public:
-    cSCPIObject* m_pSCPIObject; // !!!!!!!!
+    ScpiNode();
+    ScpiNode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
+    virtual ~ScpiNode();
 
-    cSCPINode();
-    cSCPINode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
-    virtual ~cSCPINode();
+    cSCPIObject* getScpiObject() const;
+    void setScpiObject(cSCPIObject*pScpiObject);
 
     quint8 getType();
     void setType(quint8 type);
     const QString &getName();
 
-    cSCPINode *child(int row) const;
-    cSCPINode *parent() const;
+    ScpiNode *child(int row) const;
+    ScpiNode *parent() const;
 
     int rowCount() const;
     int row() const;
-    void appendRow(cSCPINode *item);
+    void appendRow(ScpiNode *item);
     void removeRow(int row);
 
     static int getInstanceCount();
 private:
+    cSCPIObject* m_pScpiObject;
     QString m_sNodeName;
     quint8 m_nType;
 
-    cSCPINode *m_parent = nullptr;
+    ScpiNode *m_parent = nullptr;
     int m_row = 0;
-    QList<cSCPINode*> m_rowItems;
+    QList<ScpiNode*> m_rowItems;
 
     static int m_instanceCount;
 };
