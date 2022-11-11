@@ -19,13 +19,13 @@ cSCPIObject::~cSCPIObject()
 }
 
 
-const QString cSCPIObject::getName()
+const QString cSCPIObject::getName() const
 {
     return d_ptr->m_sName;
 }
 
 
-quint8 cSCPIObject::getType()
+quint8 cSCPIObject::getType() const
 {
     return d_ptr->m_nType;
 }

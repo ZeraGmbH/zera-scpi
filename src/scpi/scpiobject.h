@@ -12,8 +12,8 @@ public:
     cSCPIObject(const QString &name, quint8 type);
     virtual ~cSCPIObject();
     virtual bool executeSCPI(const QString& sInput, QString& sOutput) = 0;
-    const QString getName();
-    quint8 getType();
+    const QString getName() const;
+    quint8 getType() const;
 
     void setXmlAttribute(const QString &key, const QString &value);
     typedef QMap<QString, QString> XmlKeyValueMap;

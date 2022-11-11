@@ -32,7 +32,7 @@ void ScpiNode::setScpiObject(cSCPIObject *pScpiObject)
     m_pScpiObject = pScpiObject;
 }
 
-quint8 ScpiNode::getType()
+quint8 ScpiNode::getType() const
 {
     return m_nType;
 }
@@ -42,7 +42,7 @@ void ScpiNode::setType(quint8 type)
     m_nType = type;
 }
 
-const QString &ScpiNode::getName()
+const QString &ScpiNode::getName() const
 {
     return m_sNodeName;
 }
