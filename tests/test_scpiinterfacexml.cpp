@@ -1,5 +1,4 @@
 #include "test_scpiinterfacexml.h"
-#include "scpi.h"
 #include "xmldocumentcompare.h"
 #include <QTest>
 #include <QStringLiteral>
@@ -14,7 +13,8 @@ void test_scpiinterfacexml::oneQuery()
 {
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "foo", SCPI::isQuery});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root Type='Model,Node'>"
@@ -30,7 +30,8 @@ void test_scpiinterfacexml::oneCmd()
 {
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "foo", SCPI::isCmd});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root Type='Model,Node'>"
@@ -46,7 +47,8 @@ void test_scpiinterfacexml::oneCmdwP()
 {
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "foo", SCPI::isCmdwP});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root Type='Model,Node'>"
@@ -62,7 +64,8 @@ void test_scpiinterfacexml::oneXMLCmd()
 {
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "foo", SCPI::isXMLCmd});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root Type='Model,Node'>"
@@ -78,7 +81,8 @@ void test_scpiinterfacexml::oneElementNested()
 {
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "child" << "child1" << "foo", SCPI::isQuery});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root Type='Model,Node'>"
@@ -99,7 +103,8 @@ void test_scpiinterfacexml::twoElementNestedDifferentPath()
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
     scpiInfos.append({QStringList() << "root2" << "child3" << "child4" << "bar", SCPI::isQuery});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root1 Type='Model,Node'>"
@@ -127,7 +132,8 @@ void test_scpiinterfacexml::twoElementNestedSamePath()
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root1 Type='Model,Node'>"
@@ -149,7 +155,8 @@ void test_scpiinterfacexml::twoElementNestedAlmostSamePath()
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
     scpiInfos.append({QStringList() << "root1" << "child1" << "child3" << "bar", SCPI::isQuery});
-    QString xmlExport = createScpiString(scpiInfos);
+    addScpiObjects(scpiInfos);
+    QString xmlExport = createScpiString();
 
     QString scpiModelXml =
             "<root1 Type='Model,Node'>"
@@ -168,29 +175,123 @@ void test_scpiinterfacexml::twoElementNestedAlmostSamePath()
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
 
-void test_scpiinterfacexml::addTwoRootRemoveOne()
+void test_scpiinterfacexml::oneElementNestedRemove()
 {
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root" << "child" << "child1" << "foo", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root:child:child1:foo");
 
+    QString xmlExport = createScpiString();
+    const QString xmlExpected = xmlLead + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirst()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root1:child1:child2:foo");
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<root1 Type='Model,Node'>"
+                "<child1 Type='Node'>"
+                    "<child2 Type='Node'>"
+                        "<bar ScpiPath='root1:child1:child2:bar' Type='Query'/>"
+                    "</child2>"
+                "</child1>"
+            "</root1>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoElementNestedSamePathRemoveNonExistent()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root1:child1:child2:honk");
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<root1 Type='Model,Node'>"
+                "<child1 Type='Node'>"
+                    "<child2 Type='Node'>"
+                        "<foo ScpiPath='root1:child1:child2:foo' Type='Query'/>"
+                        "<bar ScpiPath='root1:child1:child2:bar' Type='Query'/>"
+                    "</child2>"
+                "</child1>"
+            "</root1>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoElementNestedSamePathRemoveParent()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root1:child1:child2");
+
+    QString xmlExport = createScpiString();
+    const QString xmlExpected = xmlLead + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoElementNestedSamePathRemoveGrandParent()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root1:child1");
+
+    QString xmlExport = createScpiString();
+    const QString xmlExpected = xmlLead + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::init()
+{
+    m_scpiInterface = new cSCPI("dev");
 }
 
 void test_scpiinterfacexml::cleanup()
 {
     while(!m_perTestScpiObjects.isEmpty())
         delete m_perTestScpiObjects.takeLast();
+    delete m_scpiInterface;
 }
 
-QString test_scpiinterfacexml::createScpiString(QList<ScpiNodeInfo> scpiNodes)
+void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
 {
-    cSCPI interface("dev");
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
         SCPITestObject* tmpScpiObject = new SCPITestObject(nodePath.takeLast(), scpiNode.type);
         m_perTestScpiObjects.append(tmpScpiObject);
-        interface.insertScpiCmd(nodePath, tmpScpiObject);
+        m_scpiInterface->insertScpiCmd(nodePath, tmpScpiObject);
     }
-    QString exportedXml;
-    interface.exportSCPIModelXML(exportedXml);
+}
 
+QString test_scpiinterfacexml::createScpiString()
+{
+    QString exportedXml;
+    m_scpiInterface->exportSCPIModelXML(exportedXml);
     return exportedXml;
 }
 
