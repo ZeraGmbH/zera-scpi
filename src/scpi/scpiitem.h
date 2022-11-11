@@ -7,6 +7,7 @@ class ScpiItem
 {
 public:
     ScpiItem();
+    virtual ~ScpiItem();
 
     ScpiItem *child(int row) const;
     ScpiItem *parent() const;

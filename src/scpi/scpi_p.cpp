@@ -59,7 +59,7 @@ void cSCPIPrivate::delItemAndParents(ScpiItem *Item)
             parentItem->removeRow(Item->row());
     }
     else {
-        m_SCPIModel.removeRow(Item->row());
+        m_SCPIModel.removeRow(Item->row()); // can this go? see parentItem->removeRow(0)
     }
 }
 

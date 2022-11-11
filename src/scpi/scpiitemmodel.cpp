@@ -16,7 +16,9 @@ ScpiItem *ScpiItemModel::invisibleRootItem() const
     return m_invisibleRootItem;
 }
 
-bool ScpiItemModel::removeRow(int row)
+bool ScpiItemModel::removeRow(int row) // can this go?
 {
+    if(row < m_invisibleRootItem->rowCount())
+        m_invisibleRootItem->removeRow(row);
     return true;
 }

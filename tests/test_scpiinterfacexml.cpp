@@ -189,6 +189,32 @@ void test_scpiinterfacexml::oneElementNestedRemove()
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
 
+void test_scpiinterfacexml::oneElementNestedRemoveReAdd()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root" << "child" << "child1" << "foo", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root:child:child1:foo");
+
+    scpiInfos.clear(); // !!!
+    scpiInfos.append({QStringList() << "root1" << "child" << "child1" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<root1 Type='Model,Node'>"
+                "<child Type='Node'>"
+                    "<child1 Type='Node'>"
+                        "<bar Type='Query' ScpiPath='root1:child:child1:bar'/>"
+                    "</child1>"
+                "</child>"
+            "</root1>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
 void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirst()
 {
     QList<ScpiNodeInfo> scpiInfos;
@@ -261,6 +287,27 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveGrandParent()
 
     QString xmlExport = createScpiString();
     const QString xmlExpected = xmlLead + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFirstDelete()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root" << "child1", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root" << "child2", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root" << "child3", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root:child1");
+    m_scpiInterface->delSCPICmds("root:child3");
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<root Type='Model,Node'>"
+                "<child2 ScpiPath='root:child2' Type='Query'/>"
+            "</root>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
