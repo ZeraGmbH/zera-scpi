@@ -1,6 +1,5 @@
 #include "test_scpiinterfacexml.h"
 #include "scpi.h"
-#include "scpiobject.h"
 #include "xmldocumentcompare.h"
 #include <QTest>
 #include <QStringLiteral>
@@ -10,39 +9,6 @@ QTEST_MAIN(test_scpiinterfacexml)
 QString xmlLead = "<!DOCTYPE SCPIModel><MODELLIST><DEVICE>dev</DEVICE><MODELS>";
 QString xmlTrail = "</MODELS></MODELLIST>";
 
-class SCPITestObject : public cSCPIObject
-{
-public:
-    SCPITestObject(QString name, quint8 type) : cSCPIObject(name, type) { }
-    bool executeSCPI(const QString& sInput, QString& sOutput) override
-    {
-        return true;
-    }
-};
-
-struct ScpiNodeInfo
-{
-    QStringList nodePath;
-    quint8 type;
-};
-
-QString createScpiString(QList<ScpiNodeInfo> scpiNodes)
-{
-    QList<SCPITestObject*> tmpScpiObjects;
-    cSCPI interface("dev");
-    for(const auto &scpiNode : scpiNodes) {
-        QStringList nodePath = scpiNode.nodePath;
-        SCPITestObject* tmpScpiObject = new SCPITestObject(nodePath.takeLast(), scpiNode.type);
-        tmpScpiObjects.append(tmpScpiObject);
-        interface.insertScpiCmd(nodePath, tmpScpiObject);
-    }
-    QString exportedXml;
-    interface.exportSCPIModelXML(exportedXml);
-
-    while(!tmpScpiObjects.isEmpty())
-        delete tmpScpiObjects.takeLast();
-    return exportedXml;
-}
 
 void test_scpiinterfacexml::oneQuery()
 {
@@ -200,6 +166,32 @@ void test_scpiinterfacexml::twoElementNestedAlmostSamePath()
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::addTwoRootRemoveOne()
+{
+
+}
+
+void test_scpiinterfacexml::cleanup()
+{
+    while(!m_perTestScpiObjects.isEmpty())
+        delete m_perTestScpiObjects.takeLast();
+}
+
+QString test_scpiinterfacexml::createScpiString(QList<ScpiNodeInfo> scpiNodes)
+{
+    cSCPI interface("dev");
+    for(const auto &scpiNode : scpiNodes) {
+        QStringList nodePath = scpiNode.nodePath;
+        SCPITestObject* tmpScpiObject = new SCPITestObject(nodePath.takeLast(), scpiNode.type);
+        m_perTestScpiObjects.append(tmpScpiObject);
+        interface.insertScpiCmd(nodePath, tmpScpiObject);
+    }
+    QString exportedXml;
+    interface.exportSCPIModelXML(exportedXml);
+
+    return exportedXml;
 }
 
 // In case more tests are added: To get exported string
