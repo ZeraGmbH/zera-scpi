@@ -13,9 +13,9 @@ public:
     cSCPIObject* getScpiObject() const;
     void setScpiObject(cSCPIObject*pScpiObject);
 
-    quint8 getType();
+    quint8 getType() const;
     void setType(quint8 type);
-    const QString &getName();
+    const QString &getName() const;
 
     ScpiNode *child(int row) const;
     ScpiNode *parent() const;
