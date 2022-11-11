@@ -5,7 +5,7 @@
 #include "parse.h"
 #include "scpiobject.h"
 #include "scpinode.h"
-#include "scpiitemmodel.h"
+#include "scpiitem.h"
 #include <QStringList>
 #include <QDomDocument>
 
@@ -28,7 +28,7 @@ private:
     bool isNodeTypeOnly(cSCPINode *item);
     QString makeValidXmlTag(QString xmlTag);
 
-    ScpiItemModel m_SCPIModel;
+    ScpiItem m_invisibleRootItem;
     QString m_interfaceName;
     cParse m_Parser;
 };
