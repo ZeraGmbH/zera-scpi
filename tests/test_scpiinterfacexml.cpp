@@ -301,6 +301,32 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveGrandParent()
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
 
+void test_scpiinterfacexml::twoElementNestedRemoveHalfUp()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "child3" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "child4" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("root1:child1:child2:child3");
+    QCOMPARE(ScpiItem::getInstanceCount(), 6);
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<root1 Type='Model,Node'>"
+                "<child1 Type='Node'>"
+                    "<child2 Type='Node'>"
+                        "<child4 Type='Node'>"
+                            "<bar ScpiPath='root1:child1:child2:child4:bar' Type='Query'/>"
+                        "</child4>"
+                    "</child2>"
+                "</child1>"
+            "</root1>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
 void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFirstDelete()
 {
     QList<ScpiNodeInfo> scpiInfos;
