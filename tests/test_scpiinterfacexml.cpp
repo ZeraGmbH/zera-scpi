@@ -1,6 +1,6 @@
 #include "test_scpiinterfacexml.h"
 #include "xmldocumentcompare.h"
-#include "scpiitem.h"
+#include "scpinode.h"
 #include <QTest>
 #include <QStringLiteral>
 
@@ -8,7 +8,6 @@ QTEST_MAIN(test_scpiinterfacexml)
 
 QString xmlLead = "<!DOCTYPE SCPIModel><MODELLIST><DEVICE>dev</DEVICE><MODELS>";
 QString xmlTrail = "</MODELS></MODELLIST>";
-
 
 void test_scpiinterfacexml::oneQuery()
 {
@@ -25,7 +24,7 @@ void test_scpiinterfacexml::oneQuery()
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
-    QCOMPARE(ScpiItem::getInstanceCount(), 3);
+    QCOMPARE(cSCPINode::getInstanceCount(), 3);
 }
 
 void test_scpiinterfacexml::oneCmd()
@@ -127,7 +126,7 @@ void test_scpiinterfacexml::twoElementNestedDifferentPath()
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
-    QCOMPARE(ScpiItem::getInstanceCount(), 9);
+    QCOMPARE(cSCPINode::getInstanceCount(), 9);
 }
 
 void test_scpiinterfacexml::twoElementNestedSamePath()
@@ -184,7 +183,7 @@ void test_scpiinterfacexml::oneElementNestedRemove()
     scpiInfos.append({QStringList() << "root" << "child" << "child1" << "foo", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root:child:child1:foo");
-    QCOMPARE(ScpiItem::getInstanceCount(), 1);
+    QCOMPARE(cSCPINode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
     const QString xmlExpected = xmlLead + xmlTrail;
@@ -203,7 +202,7 @@ void test_scpiinterfacexml::oneElementNestedRemoveReAdd()
     scpiInfos.clear(); // !!!
     scpiInfos.append({QStringList() << "root1" << "child" << "child1" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
-    QCOMPARE(ScpiItem::getInstanceCount(), 5);
+    QCOMPARE(cSCPINode::getInstanceCount(), 5);
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
@@ -227,7 +226,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirst()
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root1:child1:child2:foo");
-    QCOMPARE(ScpiItem::getInstanceCount(), 5);
+    QCOMPARE(cSCPINode::getInstanceCount(), 5);
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
@@ -251,7 +250,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveNonExistent()
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root1:child1:child2:honk");
-    QCOMPARE(ScpiItem::getInstanceCount(), 6);
+    QCOMPARE(cSCPINode::getInstanceCount(), 6);
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
@@ -276,7 +275,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveParent()
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root1:child1:child2");
-    QCOMPARE(ScpiItem::getInstanceCount(), 1);
+    QCOMPARE(cSCPINode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
     const QString xmlExpected = xmlLead + xmlTrail;
@@ -292,7 +291,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveGrandParent()
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root1:child1");
-    QCOMPARE(ScpiItem::getInstanceCount(), 1);
+    QCOMPARE(cSCPINode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
     const QString xmlExpected = xmlLead + xmlTrail;
@@ -308,7 +307,7 @@ void test_scpiinterfacexml::twoElementNestedRemoveHalfUp()
     scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "child4" << "bar", SCPI::isQuery});
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root1:child1:child2:child3");
-    QCOMPARE(ScpiItem::getInstanceCount(), 6);
+    QCOMPARE(cSCPINode::getInstanceCount(), 6);
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
@@ -336,7 +335,7 @@ void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFir
     addScpiObjects(scpiInfos);
     m_scpiInterface->delSCPICmds("root:child1");
     m_scpiInterface->delSCPICmds("root:child3");
-    QCOMPARE(ScpiItem::getInstanceCount(), 3);
+    QCOMPARE(cSCPINode::getInstanceCount(), 3);
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
@@ -351,12 +350,12 @@ void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFir
 
 void test_scpiinterfacexml::iteminstanceCountInit()
 {
-    QCOMPARE(ScpiItem::getInstanceCount(), 1);
+    QCOMPARE(cSCPINode::getInstanceCount(), 1);
 }
 
 void test_scpiinterfacexml::init()
 {
-    QCOMPARE(ScpiItem::getInstanceCount(), 0);
+    QCOMPARE(cSCPINode::getInstanceCount(), 0);
     m_scpiInterface = new cSCPI("dev");
 }
 
@@ -365,7 +364,7 @@ void test_scpiinterfacexml::cleanup()
     while(!m_perTestScpiObjects.isEmpty())
         delete m_perTestScpiObjects.takeLast();
     delete m_scpiInterface;
-    QCOMPARE(ScpiItem::getInstanceCount(), 0);
+    QCOMPARE(cSCPINode::getInstanceCount(), 0);
 }
 
 void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
