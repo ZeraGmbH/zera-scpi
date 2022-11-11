@@ -15,8 +15,8 @@ cSCPIPrivate::cSCPIPrivate(const QString &interfaceName) :
 
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject *pSCPIObject)
 {
-    cSCPINode *parentItem = &m_invisibleRootItem;
-    cSCPINode *childItem;
+    ScpiNode *parentItem = &m_invisibleRootItem;
+    ScpiNode *childItem;
     if (parentnodeNames.count() > 0 && parentnodeNames.at(0) != "") {
         parentItem = findOrCreateChildParentItem(parentItem, parentnodeNames);
     }
@@ -30,7 +30,7 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject
         }
     }
     if (overwriteExisting) {
-        childItem->m_pSCPIObject = pSCPIObject;
+        childItem->setScpiObject(pSCPIObject);
         childItem->setType(SCPI::isNode | pSCPIObject->getType());
     }
     else {
@@ -38,9 +38,9 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject
     }
 }
 
-void cSCPIPrivate::delItemAndParents(cSCPINode *Item)
+void cSCPIPrivate::delItemAndParents(ScpiNode *Item)
 {
-    cSCPINode *parentItem = Item->parent();
+    ScpiNode *parentItem = Item->parent();
     if (parentItem) { // do we have a parent ?
         if (parentItem->rowCount() == 1) { // if this item is the ony child of parent
             parentItem->removeRow(0); // we delete it
@@ -62,9 +62,9 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     } while (*pInput  == ':');
 
     if (slNodeNames.count() > 0 ) {
-        cSCPINode *parentItem = &m_invisibleRootItem;
+        ScpiNode *parentItem = &m_invisibleRootItem;
         for(const auto &nodeName: slNodeNames) {
-            cSCPINode *childItem = nullptr;
+            ScpiNode *childItem = nullptr;
             for (int row = 0; row < parentItem->rowCount(); row++) {
                 childItem = parentItem->child(row);
                 if (childItem->getName() == nodeName)
@@ -84,17 +84,17 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitive)
 {
-    cSCPINode *childItem = nullptr;
+    ScpiNode *childItem = nullptr;
     if (foundItem(&m_invisibleRootItem, &childItem, (QChar*) input.data(), caseSensitive)) {
-        return childItem->m_pSCPIObject;
+        return childItem->getScpiObject();
     }
     return nullptr;
 }
 
-void cSCPIPrivate::appendScpiNodeXmlInfo(cSCPINode *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
+void cSCPIPrivate::appendScpiNodeXmlInfo(ScpiNode *rootItem, QDomDocument& doc,  QDomElement &rootElement, const QStringList parentNames)
 {
     for (int row = 0; row < rootItem->rowCount(); row++) {
-        cSCPINode *childItem = rootItem->child(row);
+        ScpiNode *childItem = rootItem->child(row);
         QString childName = childItem->getName();
 
         QDomElement cmdTag = doc.createElement(makeValidXmlTag(childName));
@@ -105,8 +105,8 @@ void cSCPIPrivate::appendScpiNodeXmlInfo(cSCPINode *rootItem, QDomDocument& doc,
             cmdTag.setAttribute("ScpiPath", childNames.join(":"));
         }
         cSCPIObject::XmlKeyValueMap xmlAtributes;
-        if(childItem->m_pSCPIObject) {
-            xmlAtributes = childItem->m_pSCPIObject->getXmlAttibuteMap();
+        if(childItem->getScpiObject()) {
+            xmlAtributes = childItem->getScpiObject()->getXmlAttibuteMap();
         }
         for(auto iter=xmlAtributes.constBegin(); iter!=xmlAtributes.constEnd(); ++iter) {
             cmdTag.setAttribute(iter.key(), iter.value());
@@ -177,10 +177,10 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     sxml = modelDoc.toString();
 }
 
-cSCPINode *cSCPIPrivate::findOrCreateChildParentItem(cSCPINode *parentItem, const QStringList &parentnodeNames)
+ScpiNode *cSCPIPrivate::findOrCreateChildParentItem(ScpiNode *parentItem, const QStringList &parentnodeNames)
 {
     for(const QString &nodeName : parentnodeNames) {
-        cSCPINode *childItem = nullptr;
+        ScpiNode *childItem = nullptr;
         for (int row = 0; row < parentItem->rowCount(); row++) {
             childItem = parentItem->child(row);
             if (childItem->getName() == nodeName)
@@ -197,7 +197,7 @@ cSCPINode *cSCPIPrivate::findOrCreateChildParentItem(cSCPINode *parentItem, cons
     return parentItem;
 }
 
-bool cSCPIPrivate::foundItem(cSCPINode *parentItem, cSCPINode **scpiChildItem, QChar *pInput, bool caseSensitive)
+bool cSCPIPrivate::foundItem(ScpiNode *parentItem, ScpiNode **scpiChildItem, QChar *pInput, bool caseSensitive)
 {
     bool found = false;
     int nrows = parentItem->rowCount();
@@ -206,14 +206,14 @@ bool cSCPIPrivate::foundItem(cSCPINode *parentItem, cSCPINode **scpiChildItem, Q
         if (!caseSensitive)
             keyw = keyw.toUpper();
         for (int row = 0; row < nrows; row++) {
-            cSCPINode *childItem = parentItem->child(row);
+            ScpiNode *childItem = parentItem->child(row);
             *scpiChildItem = childItem;
             QString s = (*scpiChildItem)->getName();
             if (!caseSensitive)
                 s = s.toUpper(); // (s) is a node name from command tree
             if ((found = (keyw == s))) {
                 if (*pInput == ':') { // in case input is not parsed completely
-                    cSCPINode* saveNode = *scpiChildItem;
+                    ScpiNode* saveNode = *scpiChildItem;
                     QChar* saveInput = pInput;
                     found = found && foundItem(childItem, scpiChildItem, pInput, caseSensitive);
                     if (!found) {
@@ -229,7 +229,7 @@ bool cSCPIPrivate::foundItem(cSCPINode *parentItem, cSCPINode **scpiChildItem, Q
     return found;
 }
 
-bool cSCPIPrivate::isNodeTypeOnly(cSCPINode *item)
+bool cSCPIPrivate::isNodeTypeOnly(ScpiNode *item)
 {
     return item->getType() == SCPI::isNode;
 }
@@ -242,8 +242,8 @@ QString cSCPIPrivate::makeValidXmlTag(QString xmlTag)
     return xmlTag;
 }
 
-cSCPINode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
+ScpiNode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
 {
-    return new cSCPINode(name, type, scpiObject);
+    return new ScpiNode(name, type, scpiObject);
 }
 
