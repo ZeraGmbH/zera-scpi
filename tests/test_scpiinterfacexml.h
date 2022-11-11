@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QStringList>
+#include "scpi.h"
 #include "scpiobject.h"
 
 class SCPITestObject : public cSCPIObject
@@ -28,9 +29,13 @@ private slots:
     void twoElementNestedSamePath();
     void twoElementNestedAlmostSamePath();
 
-    void addTwoRootRemoveOne();
+    void oneElementNestedRemove();
+    void twoElementNestedSamePathRemoveFirst();
+    void twoElementNestedSamePathRemoveNonExistent();
+    void twoElementNestedSamePathRemoveParent();
+    void twoElementNestedSamePathRemoveGrandParent();
 
-    //void init();
+    void init();
     void cleanup();
 private:
     struct ScpiNodeInfo
@@ -39,9 +44,11 @@ private:
         quint8 type;
     };
 
-    QString createScpiString(QList<ScpiNodeInfo> scpiNodes);
+    void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
+    QString createScpiString();
 
     QList<SCPITestObject*> m_perTestScpiObjects;
+    cSCPI *m_scpiInterface;
 };
 
 #endif // TEST_SCPIINTERFACEXML_H
