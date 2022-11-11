@@ -32,5 +32,5 @@ void test_scpiinterface::mostSimpleAddFindAndLearnBehaviour()
     QCOMPARE(interface.getSCPIObject(QString("foo:foo")), nullptr);
     QCOMPARE(interface.getSCPIObject(QString("root:foo?")), &obj);
     QCOMPARE(interface.getSCPIObject(QString("root:foo bar")), &obj);
-    QCOMPARE(interface.getSCPIObject(QString("root:foo bar;baz")), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:foo bar;secondCmd")), &obj);
 }
