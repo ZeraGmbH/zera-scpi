@@ -16,7 +16,6 @@ target_link_libraries(SCPI
     PUBLIC
     Qt5::Core
     Qt5::Xml
-    Qt5::Gui
     )
 
 # announce headers - target perspective

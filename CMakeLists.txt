@@ -15,7 +15,7 @@ include(FeatureSummary)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 
-find_package(Qt5 COMPONENTS Core Xml Gui Test CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Xml Test CONFIG REQUIRED)
 find_package(xiqnet REQUIRED)
 
 add_subdirectory(src)
