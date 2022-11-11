@@ -1,5 +1,5 @@
-#ifndef XMLDOCUMENT_H
-#define XMLDOCUMENT_H
+#ifndef XMLQTDOMDOCITERATION_H
+#define XMLQTDOMDOCITERATION_H
 
 #include "xmlelemiterstrategytree.h"
 #include "xmlelemiterstrategylist.h"
@@ -7,7 +7,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 
-class XmlDocument
+class XmlQtDomDocIteration
 {
 public:
     bool loadXml(const QString &xml, bool fatalOnInvalidXml = false);
@@ -21,9 +21,8 @@ public:
     XmlElemIter find(QStringList tagSearchPath, XmlElemIterStrategyPtr &&iterStrategy= std::make_unique<XmlElemIterStrategyList>());
     bool findElem(QStringList tagSearchPath, QDomElement &foundElem);
 
-    bool addOrFindElem(QStringList tagPath, QDomElement &insertedOrFoundElem);
 private:
     QDomDocument m_doc;
 };
 
-#endif // XMLDOCUMENT_H
+#endif // XMLQTDOMDOCITERATION_H
