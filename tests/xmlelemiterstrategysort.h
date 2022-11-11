@@ -12,11 +12,11 @@ public:
     QDomElement next(QDomElement current) override;
 private:
     QDomElement getNextChild();
-    bool collectChildren(QDomElement elem);
-    QDomElement createChildrenSetAndGetFirst(QDomElement current);
-    QDomElement createGrandChildrenSetAndGetFirst();
+    bool addChildren(QDomElement elem);
+    QDomElement addChildrenAndGetFirst(QDomElement elem);
+    QDomElement addChildrenOfHandledChildrenAndGetFirst();
 
-    QMap<QString /*tag*/, QList<QDomElement>> m_nextSortedChildren;
+    QMap<QString /*tag*/, QList<QDomElement>> m_children;
     QList<QDomElement> m_handledChildren;
 };
 
