@@ -1,10 +1,10 @@
 #ifndef SCPINODE_H
 #define SCPINODE_H
 
-#include <QStandardItem>
+#include "scpiitem.h"
 #include "scpiobject.h"
 
-class cSCPINode: public QStandardItem {
+class cSCPINode: public ScpiItem {
 public:
     cSCPIObject* m_pSCPIObject;
 
