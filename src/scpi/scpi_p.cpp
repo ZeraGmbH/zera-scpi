@@ -59,8 +59,7 @@ void cSCPIPrivate::delItemAndParents(QStandardItem *Item)
             parentItem->removeRow(Item->row());
     }
     else {
-        QStandardItemModel *mdl = Item->model();
-        mdl->removeRow(Item->row());
+        m_SCPIModel.removeRow(Item->row());
     }
 }
 
