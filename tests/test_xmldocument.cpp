@@ -44,6 +44,16 @@ void test_xmldocument::loadValid()
     QVERIFY(doc.loadXml(xmlOneNode, true));
 }
 
+void test_xmldocument::setDoc()
+{
+    QDomDocument domDoc;
+    domDoc.setContent(xmlOneNode);
+    XmlDocument doc;
+    doc.setXmlDomDoc(domDoc);
+    QDomElement elem;
+    QVERIFY(!doc.findElem(QStringList() << "foo", elem));
+}
+
 void test_xmldocument::findEmptySearch()
 {
     XmlDocument doc;
