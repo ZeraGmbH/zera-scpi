@@ -35,6 +35,14 @@ void test_scpiinterface::mostSimpleAddFindAndLearnBehaviour()
     QCOMPARE(interface.getSCPIObject(QString("root:foo bar;secondCmd")), &obj);
 }
 
+void test_scpiinterface::addRoot()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj("foo", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList(), &obj);
+    QCOMPARE(interface.getSCPIObject(QString("foo")), &obj);
+}
+
 void test_scpiinterface::addFindTwoRoot()
 {
     cSCPI interface("dev");

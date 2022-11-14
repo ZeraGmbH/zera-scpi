@@ -20,6 +20,9 @@ class test_scpiinterfacexml : public QObject
 {
     Q_OBJECT
 private slots:
+    void addEmptyRoot();
+    void addEmptyRootNested();
+
     void oneQuery();
     void oneCmd();
     void oneCmdwP();
