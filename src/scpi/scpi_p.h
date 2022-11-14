@@ -19,7 +19,7 @@ public:
 
 private:
     ScpiNode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
-    void delItemAndParents(ScpiNode* Item);
+    void delItemAndParents(ScpiNode* delItem);
     void appendScpiNodeXmlInfo(ScpiNode* rootItem, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
     static QString scpiTypeToString(quint8 scpiType);
     ScpiNode *findOrCreateChildParentItem(ScpiNode *parentItem, const QStringList& parentnodeNames);
