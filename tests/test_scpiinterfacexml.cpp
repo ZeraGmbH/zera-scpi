@@ -9,6 +9,33 @@ QTEST_MAIN(test_scpiinterfacexml)
 QString xmlLead = "<!DOCTYPE SCPIModel><MODELLIST><DEVICE>dev</DEVICE><MODELS>";
 QString xmlTrail = "</MODELS></MODELLIST>";
 
+void test_scpiinterfacexml::addEmptyRoot()
+{
+    m_scpiInterface->insertScpiCmd(QStringList() << "root", nullptr);
+    QString xmlExport = createScpiString();
+
+    QString scpiModelXml =
+            "<root Type='Model,Node'>"
+            "</root>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::addEmptyRootNested()
+{
+    m_scpiInterface->insertScpiCmd(QStringList() << "root" << "child", nullptr);
+    QString xmlExport = createScpiString();
+
+    QString scpiModelXml =
+            "<root Type='Model,Node'>"
+                "<child Type='Node'/>"
+            "</root>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
 void test_scpiinterfacexml::oneQuery()
 {
     QList<ScpiNodeInfo> scpiInfos;

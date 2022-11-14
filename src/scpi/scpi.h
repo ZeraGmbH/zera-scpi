@@ -55,7 +55,7 @@ public:
     cSCPI(QString interfaceName);
     virtual ~cSCPI();
 
-    void insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject* pSCPIObject);
+    void insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject* pSCPIObject);
 
     void delSCPICmds(const QString& cmd);
     void delSCPICmds(cSCPICommand &cmd);
