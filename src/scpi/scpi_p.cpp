@@ -38,16 +38,15 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentnodeNames, cSCPIObject
     }
 }
 
-void cSCPIPrivate::delItemAndParents(ScpiNode *Item)
+void cSCPIPrivate::delItemAndParents(ScpiNode *delItem)
 {
-    ScpiNode *parentItem = Item->parent();
-    if (parentItem) { // do we have a parent ?
-        if (parentItem->rowCount() == 1) { // if this item is the ony child of parent
-            parentItem->removeRow(0); // we delete it
-            delItemAndParents(parentItem); // and test if the parent has to be deleted too
-        }
-        else
-            parentItem->removeRow(Item->row());
+    while(delItem->parent()) {
+        int row = delItem->row();
+        ScpiNode *parent = delItem->parent();
+        parent->removeRow(row);
+        if(parent->rowCount() >= 1)
+            return;
+        delItem = parent;
     }
 }
 
