@@ -41,6 +41,8 @@ private slots:
     void twoElementNestedRemoveHalfUp();
     void threeElementAddRemoveFirstThirdWhichIsSecondAfterFirstDelete();
 
+    void twoDifferentCase();
+
     void iteminstanceCountInit();
 
     void init();
