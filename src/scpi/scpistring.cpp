@@ -5,18 +5,15 @@ cSCPIString::cSCPIString()
 {
 }
 
-
 cSCPIString::cSCPIString(const QString& s)
     :QString(s)
 {
 }
 
-
 cSCPIString::cSCPIString(const char* s)
     :QString(s)
 {
 }
-
 
 bool cSCPIString::operator == (const QString& toCompare)
 {
@@ -28,23 +25,24 @@ bool cSCPIString::operator == (const QString& toCompare)
     return (b);
 }
 
-
-cSCPIString& cSCPIString::operator = (const QString& s) {
+cSCPIString& cSCPIString::operator = (const QString& s)
+{
     *this=(cSCPIString) s;
     return (*this);
 }
 
-
-cSCPIString& cSCPIString::operator = (const char* s) {
+cSCPIString& cSCPIString::operator = (const char* s)
+{
     *this=(cSCPIString) QString(s);
     return (*this);
 }
 
-
 QString& cSCPIString::m_ScpiAbreviation (const QString& s) {
-    if (s.length() <= 4) return (QString&) s; // if command <= 4 characters -> short command = long command
+    if (s.length() <= 4)
+        return (QString&) s; // if command <= 4 characters -> short command = long command
     m_SAbreviation = s.left(4); // first: short command is first 4 characters
-    if ( QString("AEIOU").contains(m_SAbreviation.right(1),Qt::CaseInsensitive) ) m_SAbreviation = m_SAbreviation.left(3);
-    // if the 4th character is vocal -> short command is 3 characters
+    if ( QString("AEIOU").contains(m_SAbreviation.right(1),Qt::CaseInsensitive) )
+        // if the 4th character is vocal -> short command is 3 characters
+        m_SAbreviation = m_SAbreviation.left(3);
     return(m_SAbreviation);
 }
