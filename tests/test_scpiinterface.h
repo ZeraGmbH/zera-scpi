@@ -11,9 +11,17 @@ private slots:
     void addRoot();
     void addFindTwoRoot();
     void addFindTwoNestedSamePath();
-    void addFindTwoNestedIdentical();
+    void addFindTwoIdenticalSecondOverwrites();
     void addFindTwoNestedDiffPath();
     void addFindTwoNestedAlmostDiffPath();
+    void addFindCaseInsensitive1();
+    void addFindCaseInsensitive2();
+    void addFindExactShortLong();
+    void addFindExactShortLongVowelA();
+    void addFindExactShortLongVowelE();
+    void addFindExactShortLongVowelI();
+    void addFindExactShortLongVowelO();
+    void addFindExactShortLongVowelU();
 };
 
 #endif // TEST_SCPIINTERFACE_H

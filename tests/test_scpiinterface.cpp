@@ -65,7 +65,7 @@ void test_scpiinterface::addFindTwoNestedSamePath()
     QCOMPARE(interface.getSCPIObject(QString("root:child:bar")), &obj2);
 }
 
-void test_scpiinterface::addFindTwoNestedIdentical()
+void test_scpiinterface::addFindTwoIdenticalSecondOverwrites()
 {
     cSCPI interface("dev");
     SCPITestObject obj1("foo", SCPI::isQuery);
@@ -95,4 +95,86 @@ void test_scpiinterface::addFindTwoNestedAlmostDiffPath()
     interface.insertScpiCmd(QStringList() << "root" << "child2", &obj2);
     QCOMPARE(interface.getSCPIObject(QString("root:child1:foo")), &obj1);
     QCOMPARE(interface.getSCPIObject(QString("root:child2:bar")), &obj2);
+}
+
+void test_scpiinterface::addFindCaseInsensitive1()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("xxxx", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "root" << "child", &obj1);
+    SCPITestObject obj2("XXXX", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "ROOT" << "CHILD", &obj2);
+    QCOMPARE(interface.getSCPIObject(QString("root:child:xxxx")), &obj2);
+    QCOMPARE(interface.getSCPIObject(QString("ROOT:CHILD:XXXX")), &obj2);
+}
+
+void test_scpiinterface::addFindCaseInsensitive2()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("XXXX", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "ROOT" << "CHILD", &obj1);
+    SCPITestObject obj2("xxxx", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "root" << "child", &obj2);
+    QCOMPARE(interface.getSCPIObject(QString("root:child:xxxx")), &obj2);
+    QCOMPARE(interface.getSCPIObject(QString("ROOT:CHILD:XXXX")), &obj2);
+}
+
+void test_scpiinterface::addFindExactShortLong()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("xxxxxx", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "bbbbbb", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("bbbb:xxxx")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("bbbbbb:xxxxxx")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("bbbbb:xxxx")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("bbbb:xxxxx")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelA()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("x", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "aaaaaa", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("aaa:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("aaaaaa:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("aaaa:x")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("aaaaa:x")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelE()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("x", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "eeeeee", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("eee:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("eeeeee:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("eeee:x")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("eeeee:x")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelI()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("x", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "iiiiii", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("iii:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("iiiiii:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("iiii:x")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("iiiii:x")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelO()
+{
+    cSCPI interface("dev");
+    SCPITestObject obj1("x", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "uuuuuu", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("uuu:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("uuuuuu:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("uuuu:x")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("uuuuu:x")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelU()
+{
+
 }

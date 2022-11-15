@@ -375,6 +375,25 @@ void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFir
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
 
+void test_scpiinterfacexml::twoDifferentCase()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "ROOT" << "CHILD", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root" << "child", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    QCOMPARE(ScpiNode::getInstanceCount(), 3);
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<ROOT Type='Model,Node'>"
+                "<child2 ScpiPath='ROOT:CHILD' Type='Query'/>"
+            "</ROOT>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
 void test_scpiinterfacexml::iteminstanceCountInit()
 {
     QCOMPARE(ScpiNode::getInstanceCount(), 1);
