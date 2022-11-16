@@ -60,8 +60,8 @@ public:
     void delSCPICmds(const QString& cmd);
     void delSCPICmds(cSCPICommand &cmd);
 
-    cSCPIObject* getSCPIObject(const QString& input, bool caseSensitive = false) const;
-    cSCPIObject* getSCPIObject(const cSCPICommand &input, bool caseSensitive = false) const;
+    cSCPIObject* getSCPIObject(const QString& input) const;
+    cSCPIObject* getSCPIObject(const cSCPICommand &input) const;
 
     void exportSCPIModelXML(QString &sxml);
 private:

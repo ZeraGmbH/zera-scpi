@@ -7,15 +7,15 @@ class ScpiNode
 {
 public:
     ScpiNode();
-    ScpiNode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject);
+    ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject);
     virtual ~ScpiNode();
 
     cSCPIObject* getScpiObject() const;
     void setScpiObject(cSCPIObject*pScpiObject);
 
     quint8 getType() const;
-    void setType(quint8 type);
-    const QString &getName() const;
+    const QString &getFullHeader() const;
+    const QString &getShortHeader() const;
 
     ScpiNode *child(int row) const;
     ScpiNode *parent() const;
@@ -27,9 +27,12 @@ public:
 
     static int getInstanceCount();
 private:
+    void adjustScpiHeaders(QString scpiHeader);
+    bool isLastShortAVowel();
+
     cSCPIObject* m_pScpiObject;
-    QString m_sNodeName;
-    quint8 m_nType;
+    QString m_sScpiHeaderShort;
+    QString m_sScpiHeaderFull;
 
     ScpiNode *m_parent = nullptr;
     int m_row = 0;

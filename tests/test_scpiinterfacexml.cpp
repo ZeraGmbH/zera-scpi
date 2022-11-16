@@ -15,8 +15,8 @@ void test_scpiinterfacexml::addEmptyRoot()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -28,9 +28,9 @@ void test_scpiinterfacexml::addEmptyRootNested()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<child Type='Node'/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<CHILD Type='Node'/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -44,9 +44,9 @@ void test_scpiinterfacexml::oneQuery()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<foo ScpiPath='root:foo' Type='Query'/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<FOO ScpiPath='ROOT:FOO' Type='Query'/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -62,9 +62,9 @@ void test_scpiinterfacexml::oneCmd()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<foo ScpiPath='root:foo' Type='Command'/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<FOO ScpiPath='ROOT:FOO' Type='Command'/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -79,9 +79,9 @@ void test_scpiinterfacexml::oneCmdwP()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<foo ScpiPath='root:foo' Type='Command+Par'/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<FOO ScpiPath='ROOT:FOO' Type='Command+Par'/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -96,9 +96,9 @@ void test_scpiinterfacexml::oneXMLCmd()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<foo ScpiPath='root:foo' Type=''/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<FOO ScpiPath='ROOT:FOO' Type=''/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -113,13 +113,13 @@ void test_scpiinterfacexml::oneElementNested()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<child Type='Node'>"
-                    "<child1 Type='Node'>"
-                        "<foo Type='Query' ScpiPath='root:child:child1:foo'/>"
-                    "</child1>"
-                "</child>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<CHILD Type='Node'>"
+                    "<CHILD1 Type='Node'>"
+                        "<FOO Type='Query' ScpiPath='ROOT:CHILD:CHILD1:FOO'/>"
+                    "</CHILD1>"
+                "</CHILD>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -135,20 +135,20 @@ void test_scpiinterfacexml::twoElementNestedDifferentPath()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<foo ScpiPath='root1:child1:child2:foo' Type='Query'/>"
-                    "</child2>"
-                "</child1>"
-            "</root1>"
-            "<root2 Type='Model,Node'>"
-                "<child3 Type='Node'>"
-                    "<child4 Type='Node'>"
-                        "<bar ScpiPath='root2:child3:child4:bar' Type='Query'/>"
-                    "</child4>"
-                "</child3>"
-            "</root2>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<FOO ScpiPath='ROOT1:CHILD1:CHILD2:FOO' Type='Query'/>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>"
+            "<ROOT2 Type='Model,Node'>"
+                "<CHILD3 Type='Node'>"
+                    "<CHILD4 Type='Node'>"
+                        "<BAR ScpiPath='ROOT2:CHILD3:CHILD4:BAR' Type='Query'/>"
+                    "</CHILD4>"
+                "</CHILD3>"
+            "</ROOT2>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -165,14 +165,14 @@ void test_scpiinterfacexml::twoElementNestedSamePath()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<foo ScpiPath='root1:child1:child2:foo' Type='Query'/>"
-                        "<bar ScpiPath='root1:child1:child2:bar' Type='Query'/>"
-                    "</child2>"
-                "</child1>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<FOO ScpiPath='ROOT1:CHILD1:CHILD2:FOO' Type='Query'/>"
+                        "<BAR ScpiPath='ROOT1:CHILD1:CHILD2:BAR' Type='Query'/>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -188,16 +188,16 @@ void test_scpiinterfacexml::twoElementNestedAlmostSamePath()
     QString xmlExport = createScpiString();
 
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<foo ScpiPath='root1:child1:child2:foo' Type='Query'/>"
-                    "</child2>"
-                    "<child3 Type='Node'>"
-                        "<bar ScpiPath='root1:child1:child3:bar' Type='Query'/>"
-                    "</child3>"
-                "</child1>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<FOO ScpiPath='ROOT1:CHILD1:CHILD2:FOO' Type='Query'/>"
+                    "</CHILD2>"
+                    "<CHILD3 Type='Node'>"
+                        "<BAR ScpiPath='ROOT1:CHILD1:CHILD3:BAR' Type='Query'/>"
+                    "</CHILD3>"
+                "</CHILD1>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -224,7 +224,9 @@ void test_scpiinterfacexml::oneElementNestedRemoveReAdd()
     QList<ScpiNodeInfo> scpiInfos;
     scpiInfos.append({QStringList() << "root" << "child" << "child1" << "foo", SCPI::isQuery});
     addScpiObjects(scpiInfos);
+    QCOMPARE(ScpiNode::getInstanceCount(), 5);
     m_scpiInterface->delSCPICmds("root:child:child1:foo");
+    QCOMPARE(ScpiNode::getInstanceCount(), 1);
 
     scpiInfos.clear(); // !!!
     scpiInfos.append({QStringList() << "root1" << "child" << "child1" << "bar", SCPI::isQuery});
@@ -233,13 +235,13 @@ void test_scpiinterfacexml::oneElementNestedRemoveReAdd()
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child Type='Node'>"
-                    "<child1 Type='Node'>"
-                        "<bar Type='Query' ScpiPath='root1:child:child1:bar'/>"
-                    "</child1>"
-                "</child>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD Type='Node'>"
+                    "<CHILD1 Type='Node'>"
+                        "<BAR Type='Query' ScpiPath='ROOT1:CHILD:CHILD1:BAR'/>"
+                    "</CHILD1>"
+                "</CHILD>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -257,13 +259,37 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirst()
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<bar ScpiPath='root1:child1:child2:bar' Type='Query'/>"
-                    "</child2>"
-                "</child1>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<BAR ScpiPath='ROOT1:CHILD1:CHILD2:BAR' Type='Query'/>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>";
+    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirstUpperCase()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "foo", SCPI::isQuery});
+    scpiInfos.append({QStringList() << "root1" << "child1" << "child2" << "bar", SCPI::isQuery});
+    addScpiObjects(scpiInfos);
+    m_scpiInterface->delSCPICmds("ROOT1:CHILD1:CHILD2:FOO");
+    QCOMPARE(ScpiNode::getInstanceCount(), 5);
+
+    QString xmlExport = createScpiString();
+    QString scpiModelXml =
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<BAR ScpiPath='ROOT1:CHILD1:CHILD2:BAR' Type='Query'/>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -281,14 +307,14 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveNonExistent()
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<foo ScpiPath='root1:child1:child2:foo' Type='Query'/>"
-                        "<bar ScpiPath='root1:child1:child2:bar' Type='Query'/>"
-                    "</child2>"
-                "</child1>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<FOO ScpiPath='ROOT1:CHILD1:CHILD2:FOO' Type='Query'/>"
+                        "<BAR ScpiPath='ROOT1:CHILD1:CHILD2:BAR' Type='Query'/>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -338,15 +364,15 @@ void test_scpiinterfacexml::twoElementNestedRemoveHalfUp()
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
-            "<root1 Type='Model,Node'>"
-                "<child1 Type='Node'>"
-                    "<child2 Type='Node'>"
-                        "<child4 Type='Node'>"
-                            "<bar ScpiPath='root1:child1:child2:child4:bar' Type='Query'/>"
-                        "</child4>"
-                    "</child2>"
-                "</child1>"
-            "</root1>";
+            "<ROOT1 Type='Model,Node'>"
+                "<CHILD1 Type='Node'>"
+                    "<CHILD2 Type='Node'>"
+                        "<CHILD4 Type='Node'>"
+                            "<BAR ScpiPath='ROOT1:CHILD1:CHILD2:CHILD4:BAR' Type='Query'/>"
+                        "</CHILD4>"
+                    "</CHILD2>"
+                "</CHILD1>"
+            "</ROOT1>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -366,9 +392,9 @@ void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFir
 
     QString xmlExport = createScpiString();
     QString scpiModelXml =
-            "<root Type='Model,Node'>"
-                "<child2 ScpiPath='root:child2' Type='Query'/>"
-            "</root>";
+            "<ROOT Type='Model,Node'>"
+                "<CHILD2 ScpiPath='ROOT:CHILD2' Type='Query'/>"
+            "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
     XmlDocumentCompare cmp;
@@ -386,7 +412,7 @@ void test_scpiinterfacexml::twoDifferentCase()
     QString xmlExport = createScpiString();
     QString scpiModelXml =
             "<ROOT Type='Model,Node'>"
-                "<child2 ScpiPath='ROOT:CHILD' Type='Query'/>"
+                "<CHILD ScpiPath='ROOT:CHILD' Type='Query'/>"
             "</ROOT>";
     const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
 
