@@ -1,17 +1,7 @@
 #include "test_scpiinterface.h"
 #include "scpi.h"
-#include "scpiobject.h"
+#include "scpitestobject.h"
 #include <QTest>
-
-class SCPITestObject : public cSCPIObject
-{
-public:
-    SCPITestObject(QString name, quint8 type) : cSCPIObject(name, type) { }
-    bool executeSCPI(const QString& sInput, QString& sOutput) override
-    {
-        return true;
-    }
-};
 
 QTEST_MAIN(test_scpiinterface)
 
