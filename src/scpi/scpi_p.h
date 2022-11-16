@@ -13,15 +13,15 @@ public:
     cSCPIPrivate(const QString& interfaceName);
     void insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject* pSCPIObject);
     void delSCPICmds(const QString& cmd);
-    cSCPIObject* getSCPIObject(const QString& input, bool caseSensitive = false);
+    cSCPIObject* getSCPIObject(const QString& input);
     void exportSCPIModelXML(QString &sxml);
 private:
     void addOrReplaceChild(ScpiNode* node, cSCPIObject *pSCPIObject);
     void addNodeAndChildrenToXml(ScpiNode* node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
-    bool foundNode(ScpiNode *parentNode, ScpiNode** scpiChildNode, QChar* pInput, bool caseSensitive);
+    bool foundNode(ScpiNode *parentNode, ScpiNode** scpiChildNode, QChar* pInput);
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);
-    static ScpiNode* createNode(const QString &name, quint8 type, cSCPIObject *scpiObject);
+    static ScpiNode* createNode(const QString &name, cSCPIObject *scpiObject);
     static void delNodeAndParents(ScpiNode* delNode);
     static bool hasStillChildren(ScpiNode* node);
     static QString scpiTypeToString(quint8 scpiType);

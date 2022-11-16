@@ -35,6 +35,7 @@ private slots:
     void oneElementNestedRemove();
     void oneElementNestedRemoveReAdd();
     void twoElementNestedSamePathRemoveFirst();
+    void twoElementNestedSamePathRemoveFirstUpperCase();
     void twoElementNestedSamePathRemoveNonExistent();
     void twoElementNestedSamePathRemoveParent();
     void twoElementNestedSamePathRemoveGrandParent();

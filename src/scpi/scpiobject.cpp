@@ -21,7 +21,7 @@ cSCPIObject::~cSCPIObject()
 
 const QString cSCPIObject::getName() const
 {
-    return d_ptr->m_sName;
+    return d_ptr->m_sName.toUpper();
 }
 
 

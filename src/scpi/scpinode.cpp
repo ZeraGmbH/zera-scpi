@@ -1,4 +1,5 @@
 #include "scpinode.h"
+#include "scpi.h"
 
 int ScpiNode::m_instanceCount = 0;
 
@@ -7,11 +8,10 @@ ScpiNode::ScpiNode()
     m_instanceCount++;
 }
 
-ScpiNode::ScpiNode(const QString& sNodeName, quint8 t, cSCPIObject* pSCPIObject) :
-    m_pScpiObject(pSCPIObject),
-    m_sNodeName(sNodeName),
-    m_nType(t)
+ScpiNode::ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject) :
+    m_pScpiObject(pSCPIObject)
 {
+    adjustScpiHeaders(scpiHeader);
     m_instanceCount++;
 }
 
@@ -34,17 +34,19 @@ void ScpiNode::setScpiObject(cSCPIObject *pScpiObject)
 
 quint8 ScpiNode::getType() const
 {
-    return m_nType;
+    if(m_pScpiObject)
+        return m_pScpiObject->getType();
+    return SCPI::isNode;
 }
 
-void ScpiNode::setType(quint8 type)
+const QString &ScpiNode::getFullHeader() const
 {
-    m_nType = type;
+    return m_sScpiHeaderFull;
 }
 
-const QString &ScpiNode::getName() const
+const QString &ScpiNode::getShortHeader() const
 {
-    return m_sNodeName;
+    return m_sScpiHeaderShort;
 }
 
 ScpiNode *ScpiNode::child(int row) const
@@ -85,4 +87,21 @@ void ScpiNode::removeRow(int row)
 int ScpiNode::getInstanceCount()
 {
     return m_instanceCount;
+}
+
+void ScpiNode::adjustScpiHeaders(QString scpiHeader)
+{
+    m_sScpiHeaderFull = scpiHeader.toUpper();
+    if(m_sScpiHeaderFull.length() < 4)
+        m_sScpiHeaderShort = m_sScpiHeaderFull;
+    else if(isLastShortAVowel())
+        m_sScpiHeaderShort = m_sScpiHeaderFull.left(3);
+    else {
+        m_sScpiHeaderShort = m_sScpiHeaderFull.left(4);
+    }
+}
+
+bool ScpiNode::isLastShortAVowel()
+{
+    return QString("AEIOU").contains(m_sScpiHeaderFull.mid(3, 1));
 }

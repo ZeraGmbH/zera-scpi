@@ -31,14 +31,14 @@ void cSCPI::delSCPICmds(cSCPICommand &cmd)
     delSCPICmds(cmd.getCommand());
 }
 
-cSCPIObject* cSCPI::getSCPIObject(const QString &input, bool caseSensitive) const
+cSCPIObject* cSCPI::getSCPIObject(const QString &input) const
 {
-    return d_ptr->getSCPIObject(input, caseSensitive);
+    return d_ptr->getSCPIObject(input);
 }
 
-cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input, bool caseSensitive) const
+cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input) const
 {
-    return this->getSCPIObject(input.getCommand(), caseSensitive);
+    return this->getSCPIObject(input.getCommand());
 }
 
 void cSCPI::exportSCPIModelXML(QString &sxml)

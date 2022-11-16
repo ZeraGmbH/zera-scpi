@@ -26,15 +26,15 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     cParse parser;
     QChar* pInput = (QChar*) cmd.data();
     do
-        delNodePath.append(parser.GetKeyword(&pInput));
+        delNodePath.append(parser.GetKeyword(&pInput).toUpper());
     while(*pInput  == ':');
     findAndDeleteNode(delNodePath);
 }
 
-cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input, bool caseSensitive)
+cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input)
 {
     ScpiNode *childNode = nullptr;
-    if(foundNode(&m_invisibleRootNode, &childNode, (QChar*) input.data(), caseSensitive))
+    if(foundNode(&m_invisibleRootNode, &childNode, (QChar*) input.data()))
         return childNode->getScpiObject();
     return nullptr;
 }
@@ -66,24 +66,22 @@ void cSCPIPrivate::addOrReplaceChild(ScpiNode *node, cSCPIObject *pSCPIObject)
     ScpiNode *childNode;
     for(int row=0; row<node->rowCount(); row++) {
         childNode = node->child(row);
-        if(childNode->getName() == sName) {
+        if(childNode->getFullHeader() == sName) {
             overwriteExisting = true;
             break;
         }
     }
-    if(overwriteExisting) {
+    if(overwriteExisting)
         childNode->setScpiObject(pSCPIObject);
-        childNode->setType(SCPI::isNode | pSCPIObject->getType());
-    }
     else
-        node->appendRow(createNode(pSCPIObject->getName(),pSCPIObject->getType(), pSCPIObject));
+        node->appendRow(createNode(pSCPIObject->getName(), pSCPIObject));
 }
 
 void cSCPIPrivate::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument& doc, QDomElement &rootElement, const QStringList parentNames)
 {
     for(int row = 0; row < node->rowCount(); row++) {
         ScpiNode *childNode = node->child(row);
-        QString childName = childNode->getName();
+        QString childName = childNode->getFullHeader();
 
         QDomElement cmdTag = doc.createElement(makeValidXmlTag(childName));
 
@@ -111,17 +109,18 @@ void cSCPIPrivate::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument& doc, QD
 ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
 {
     ScpiNode *parentNode = &m_invisibleRootNode;
-    for(const QString &parentName : parentNodePath) {
+    for(QString parentName : parentNodePath) {
+        parentName = parentName.toUpper();
         ScpiNode *child = nullptr;
         for(int row = 0; row < parentNode->rowCount(); row++) {
             ScpiNode *node = parentNode->child(row);
-            if(node->getName() == parentName) {
+            if(node->getFullHeader() == parentName) {
                 child = node;
                 break;
             }
         }
         if(!child) {
-            child  = createNode(parentName, SCPI::isNode, nullptr);
+            child  = createNode(parentName, nullptr);
             parentNode->appendRow(child);
         }
         parentNode = child;
@@ -137,7 +136,7 @@ void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
             ScpiNode *childNode = nullptr;
             for(int row=0; row<parentNode->rowCount(); row++) {
                 childNode = parentNode->child(row);
-                if(childNode->getName() == nodeName)
+                if(childNode->getFullHeader() == nodeName)
                     break;
                 else
                     childNode = nullptr;
@@ -151,41 +150,35 @@ void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
     }
 }
 
-bool cSCPIPrivate::foundNode(ScpiNode *parentNode, ScpiNode **scpiChildNode, QChar *pInput, bool caseSensitive)
+bool cSCPIPrivate::foundNode(ScpiNode *parentNode, ScpiNode **scpiChildNode, QChar *pInput)
 {
     bool found = false;
-    int nrows = parentNode->rowCount();
-    if( nrows > 0) { // keywords in next command level available
-        cSCPIString keyw = (m_Parser.GetKeyword(&pInput)); // we fetch a new keyword
-        if(!caseSensitive)
-            keyw = keyw.toUpper();
-        for(int row = 0; row < nrows; row++) {
-            ScpiNode *childNode = parentNode->child(row);
-            *scpiChildNode = childNode;
-            QString s = (*scpiChildNode)->getName();
-            if(!caseSensitive)
-                s = s.toUpper(); // (s) is a node name from command tree
-            if((found = (keyw == s))) {
-                if(*pInput == ':') { // in case input is not parsed completely
-                    ScpiNode* saveNode = *scpiChildNode;
-                    QChar* saveInput = pInput;
-                    found = found && foundNode(childNode, scpiChildNode, pInput, caseSensitive);
-                    if(!found) {
-                        *scpiChildNode = saveNode; // ifnot found we reset the childnode
-                        pInput = saveInput; // and input pointer
-                    }
+    QString searchHeader = m_Parser.GetKeyword(&pInput).toUpper();
+    for(int row = 0; row < parentNode->rowCount(); row++) {
+        ScpiNode *childNode = parentNode->child(row);
+        *scpiChildNode = childNode;
+        if(childNode->getShortHeader() == searchHeader ||
+                childNode->getFullHeader() == searchHeader) {
+            found = true;
+            if(*pInput == ':') { // in case input is not parsed completely
+                ScpiNode* saveNode = *scpiChildNode;
+                QChar* saveInput = pInput;
+                found = found && foundNode(childNode, scpiChildNode, pInput);
+                if(!found) {
+                    *scpiChildNode = saveNode; // ifnot found we reset the childnode
+                    pInput = saveInput; // and input pointer
                 }
             }
-            if(found)
-                break;
         }
+        if(found)
+            break;
     }
     return found;
 }
 
-ScpiNode *cSCPIPrivate::createNode(const QString &name, quint8 type, cSCPIObject *scpiObject)
+ScpiNode *cSCPIPrivate::createNode(const QString &name, cSCPIObject *scpiObject)
 {
-    return new ScpiNode(name, type, scpiObject);
+    return new ScpiNode(name, scpiObject);
 }
 
 void cSCPIPrivate::delNodeAndParents(ScpiNode *delNode)
