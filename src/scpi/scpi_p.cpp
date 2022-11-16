@@ -1,5 +1,4 @@
 #include "scpi_p.h"
-#include "scpistring.h"
 #include "scpinode.h"
 #include "scpi.h"
 #include <QDomDocument>
