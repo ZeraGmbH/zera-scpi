@@ -30,7 +30,7 @@ private:
     void adjustScpiHeaders(QString scpiHeader);
     bool isLastShortAVowel();
 
-    cSCPIObject* m_pScpiObject;
+    cSCPIObject* m_pScpiObject = nullptr;
     QString m_sScpiHeaderShort;
     QString m_sScpiHeaderFull;
 
