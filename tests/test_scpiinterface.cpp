@@ -25,6 +25,12 @@ void test_scpiinterface::mostSimpleAddFindAndLearnBehaviour()
     QCOMPARE(interface.getSCPIObject(QString("root:foo bar;secondCmd")), &obj);
 }
 
+void test_scpiinterface::findEmpty()
+{
+    cSCPI interface("dev");
+    QCOMPARE(interface.getSCPIObject(QString("root:foo")), nullptr);
+}
+
 void test_scpiinterface::addRoot()
 {
     cSCPI interface("dev");

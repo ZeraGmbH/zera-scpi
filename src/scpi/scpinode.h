@@ -33,10 +33,10 @@ public:
 
     static int getInstanceCount();
 private:
-    ScpiNode *child(int row) const;
-    int rowCount() const;
     void adjustScpiHeaders(QString scpiHeader);
     bool isLastShortAVowel();
+    ScpiNode *child(int row) const;
+    int rowCount() const;
     int row() const;
     void removeRow(int row);
 
@@ -45,8 +45,9 @@ private:
     QString m_sScpiHeaderFull;
 
     ScpiNode *m_parent = nullptr;
+
     int m_row = 0;
-    QList<ScpiNode*> m_rowItems;
+    QList<ScpiNode*> m_children;
 
     static int m_instanceCount;
 };
