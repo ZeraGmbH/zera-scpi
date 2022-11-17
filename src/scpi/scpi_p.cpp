@@ -16,7 +16,7 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject
     if(parentNodeNames.count() > 0 && parentNodeNames.at(0) != "")
         parentNode = findParentAndCreatePath(parentNodeNames);
     if(pSCPIObject)
-        addOrReplaceChild(parentNode, pSCPIObject);
+        ScpiNodeStaticFunctions::addOrReplaceChild(parentNode, pSCPIObject);
 }
 
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
@@ -33,7 +33,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input)
 {
     ScpiNode *childNode = nullptr;
-    if(foundNode(&m_invisibleRootNode, &childNode, (QChar*) input.data()))
+    if(ScpiNode::foundNode(&m_invisibleRootNode, &childNode, &m_Parser, (QChar*) input.data()))
         return childNode->getScpiObject();
     return nullptr;
 }
@@ -53,74 +53,19 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
     QDomElement modelsTag = modelDoc.createElement("MODELS");
     rootTag.appendChild(modelsTag);
 
-    addNodeAndChildrenToXml(&m_invisibleRootNode, modelDoc, modelsTag, QStringList());
+    ScpiNode::addNodeAndChildrenToXml(&m_invisibleRootNode, modelDoc, modelsTag, QStringList());
 
     sxml = modelDoc.toString();
-}
-
-void cSCPIPrivate::addOrReplaceChild(ScpiNode *node, cSCPIObject *pSCPIObject)
-{
-    bool overwriteExisting = false;
-    QString sName = pSCPIObject->getName();
-    ScpiNode *childNode;
-    for(int row=0; row<node->rowCount(); row++) {
-        childNode = node->child(row);
-        if(childNode->getFullHeader() == sName) {
-            overwriteExisting = true;
-            break;
-        }
-    }
-    if(overwriteExisting)
-        childNode->setScpiObject(pSCPIObject);
-    else
-        node->appendRow(createNode(pSCPIObject->getName(), pSCPIObject));
-}
-
-void cSCPIPrivate::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument& doc, QDomElement &rootElement, const QStringList parentNames)
-{
-    for(int row = 0; row < node->rowCount(); row++) {
-        ScpiNode *childNode = node->child(row);
-        QString childName = childNode->getFullHeader();
-
-        QDomElement cmdTag = doc.createElement(makeValidXmlTag(childName));
-
-        QStringList childNames = parentNames;
-        childNames.append(childName);
-        if(!isNodeTypeOnly(childNode))
-            cmdTag.setAttribute("ScpiPath", childNames.join(":"));
-        cSCPIObject::XmlKeyValueMap xmlAtributes;
-        if(childNode->getScpiObject())
-            xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
-        for(auto iter=xmlAtributes.constBegin(); iter!=xmlAtributes.constEnd(); ++iter)
-            cmdTag.setAttribute(iter.key(), iter.value());
-
-        QString typeInfo;
-        if(parentNames.isEmpty())
-            typeInfo = "Model,";
-        typeInfo += scpiTypeToString(childNode->getType());
-        cmdTag.setAttribute("Type", typeInfo);
-
-        rootElement.appendChild(cmdTag);
-        addNodeAndChildrenToXml(childNode, doc, cmdTag, childNames);
-    }
 }
 
 ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
 {
     ScpiNode *parentNode = &m_invisibleRootNode;
-    for(QString parentName : parentNodePath) {
-        parentName = parentName.toUpper();
-        ScpiNode *child = nullptr;
-        for(int row = 0; row < parentNode->rowCount(); row++) {
-            ScpiNode *node = parentNode->child(row);
-            if(node->getFullHeader() == parentName) {
-                child = node;
-                break;
-            }
-        }
+    for(const QString &parentName : parentNodePath) {
+        ScpiNode *child = parentNode->findChildFull(parentName.toUpper());
         if(!child) {
-            child  = createNode(parentName, nullptr);
-            parentNode->appendRow(child);
+            child  = ScpiNodeStaticFunctions::createNode(parentName, nullptr);
+            parentNode->add(child);
         }
         parentNode = child;
     }
@@ -132,107 +77,12 @@ void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
     if(nodePath.count() > 0 ) {
         ScpiNode *parentNode = &m_invisibleRootNode;
         for(const auto &nodeName: nodePath) {
-            ScpiNode *childNode = nullptr;
-            for(int row=0; row<parentNode->rowCount(); row++) {
-                childNode = parentNode->child(row);
-                if(childNode->getFullHeader() == nodeName)
-                    break;
-                else
-                    childNode = nullptr;
-            }
+            ScpiNode *childNode = parentNode->findChildFull(nodeName);
             parentNode = childNode;
             if(!parentNode)
                 break;
         }
         if(parentNode)
-            delNodeAndParents(parentNode);
+            ScpiNodeStaticFunctions::delNodeAndEmptyParents(parentNode);
     }
-}
-
-bool cSCPIPrivate::foundNode(ScpiNode *parentNode, ScpiNode **scpiChildNode, QChar *pInput)
-{
-    bool found = false;
-    QString searchHeader = m_Parser.GetKeyword(&pInput).toUpper();
-    for(int row = 0; row < parentNode->rowCount(); row++) {
-        ScpiNode *childNode = parentNode->child(row);
-        *scpiChildNode = childNode;
-        if(childNode->getShortHeader() == searchHeader ||
-                childNode->getFullHeader() == searchHeader) {
-            found = true;
-            if(*pInput == ':') { // in case input is not parsed completely
-                ScpiNode* saveNode = *scpiChildNode;
-                QChar* saveInput = pInput;
-                found = found && foundNode(childNode, scpiChildNode, pInput);
-                if(!found) {
-                    *scpiChildNode = saveNode; // ifnot found we reset the childnode
-                    pInput = saveInput; // and input pointer
-                }
-            }
-        }
-        if(found)
-            break;
-    }
-    return found;
-}
-
-ScpiNode *cSCPIPrivate::createNode(const QString &name, cSCPIObject *scpiObject)
-{
-    return new ScpiNode(name, scpiObject);
-}
-
-void cSCPIPrivate::delNodeAndParents(ScpiNode *delNode)
-{
-    while(delNode->parent()) {
-        int row = delNode->row();
-        ScpiNode *parent = delNode->parent();
-        parent->removeRow(row);
-        if(hasStillChildren(parent))
-            return;
-        delNode = parent;
-    }
-}
-
-bool cSCPIPrivate::hasStillChildren(ScpiNode *node)
-{
-    return node->rowCount() >= 1;
-}
-
-QString cSCPIPrivate::scpiTypeToString(quint8 scpiType)
-{
-    static const QString scpiNodeType[] = {
-        "Node",
-        "Query",
-        "Command",
-        "Command+Par"
-    };
-    QString typeInfo;
-    if(scpiType & SCPI::isNode)
-        typeInfo = appendTypeString(typeInfo, scpiNodeType[SCPI::Node]);
-    if(scpiType & SCPI::isQuery)
-        typeInfo = appendTypeString(typeInfo, scpiNodeType[SCPI::Query]);
-    if(scpiType & SCPI::isCmd)
-        typeInfo = appendTypeString(typeInfo, scpiNodeType[SCPI::Cmd]);
-    if(scpiType & SCPI::isCmdwP)
-        typeInfo = appendTypeString(typeInfo, scpiNodeType[SCPI::CmdwP]);
-    return typeInfo;
-}
-
-QString cSCPIPrivate::appendTypeString(QString typeInfo, const QString &infoAppend)
-{
-    if(typeInfo.length() > 0)
-        typeInfo += ",";
-    return typeInfo + infoAppend;
-}
-
-bool cSCPIPrivate::isNodeTypeOnly(ScpiNode *node)
-{
-    return node->getType() == SCPI::isNode;
-}
-
-QString cSCPIPrivate::makeValidXmlTag(QString xmlTag)
-{
-    xmlTag.replace("*", "");
-    if(xmlTag.count() > 0 && xmlTag[0].isNumber())
-        xmlTag = "N_" + xmlTag;
-    return xmlTag;
 }

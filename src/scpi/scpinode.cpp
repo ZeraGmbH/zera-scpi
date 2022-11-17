@@ -1,4 +1,5 @@
 #include "scpinode.h"
+#include "scpinodestaticfunctions.h"
 #include "scpi.h"
 
 int ScpiNode::m_instanceCount = 0;
@@ -49,6 +50,22 @@ const QString &ScpiNode::getShortHeader() const
     return m_sScpiHeaderShort;
 }
 
+ScpiNode *ScpiNode::findChildShort(QString shortHeader) const
+{
+    for(int row=0; row<rowCount(); ++row)
+        if(child(row)->getShortHeader() == shortHeader)
+            return child(row);
+    return nullptr;
+}
+
+ScpiNode *ScpiNode::findChildFull(QString fullHeader) const
+{
+    for(int row=0; row<rowCount(); ++row)
+        if(child(row)->getFullHeader() == fullHeader)
+            return child(row);
+    return nullptr;
+}
+
 ScpiNode *ScpiNode::child(int row) const
 {
     return m_rowItems[row];
@@ -57,6 +74,16 @@ ScpiNode *ScpiNode::child(int row) const
 ScpiNode *ScpiNode::parent() const
 {
     return m_parent;
+}
+
+void ScpiNode::removeChild(ScpiNode *child)
+{
+    removeRow(child->row());
+}
+
+bool ScpiNode::isEmpty()
+{
+    return rowCount() == 0;
 }
 
 int ScpiNode::rowCount() const
@@ -69,11 +96,40 @@ int ScpiNode::row() const
     return m_row;
 }
 
-void ScpiNode::appendRow(ScpiNode *item)
+void ScpiNode::add(ScpiNode *node)
 {
-    item->m_parent = this;
-    item->m_row = m_rowItems.count();
-    m_rowItems.append(item);
+    node->m_parent = this;
+    node->m_row = m_rowItems.count();
+    m_rowItems.append(node);
+}
+
+void ScpiNode::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
+{
+    for(int row = 0; row < node->rowCount(); row++) {
+        ScpiNode *childNode = node->child(row);
+        QString childName = childNode->getFullHeader();
+
+        QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
+
+        QStringList childNames = parentNames;
+        childNames.append(childName);
+        if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
+            cmdTag.setAttribute("ScpiPath", childNames.join(":"));
+        cSCPIObject::XmlKeyValueMap xmlAtributes;
+        if(childNode->getScpiObject())
+            xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
+        for(auto iter=xmlAtributes.constBegin(); iter!=xmlAtributes.constEnd(); ++iter)
+            cmdTag.setAttribute(iter.key(), iter.value());
+
+        QString typeInfo;
+        if(parentNames.isEmpty())
+            typeInfo = "Model,";
+        typeInfo += ScpiNodeStaticFunctions::scpiTypeToString(childNode->getType());
+        cmdTag.setAttribute("Type", typeInfo);
+
+        rootElement.appendChild(cmdTag);
+        addNodeAndChildrenToXml(childNode, doc, cmdTag, childNames);
+    }
 }
 
 void ScpiNode::removeRow(int row)
@@ -105,3 +161,30 @@ bool ScpiNode::isLastShortAVowel()
 {
     return QString("AEIOU").contains(m_sScpiHeaderFull.mid(3, 1));
 }
+
+bool ScpiNode::foundNode(ScpiNode *parentNode, ScpiNode **scpiChildNode, cParse *parser, QChar *pInput)
+{
+    bool found = false;
+    QString searchHeader = parser->GetKeyword(&pInput).toUpper();
+    for(int row = 0; row < parentNode->rowCount(); row++) {
+        ScpiNode *childNode = parentNode->child(row);
+        *scpiChildNode = childNode;
+        if(childNode->getShortHeader() == searchHeader ||
+                childNode->getFullHeader() == searchHeader) {
+            found = true;
+            if(*pInput == ':') { // in case input is not parsed completely
+                ScpiNode* saveNode = *scpiChildNode;
+                QChar* saveInput = pInput;
+                found = found && foundNode(childNode, scpiChildNode, parser, pInput);
+                if(!found) {
+                    *scpiChildNode = saveNode; // ifnot found we reset the childnode
+                    pInput = saveInput; // and input pointer
+                }
+            }
+        }
+        if(found)
+            break;
+    }
+    return found;
+}
+
