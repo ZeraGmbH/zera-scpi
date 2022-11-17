@@ -38,7 +38,7 @@ cSCPIObject* cSCPI::getSCPIObject(const QString &input) const
 
 cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input) const
 {
-    return this->getSCPIObject(input.getCommand());
+    return getSCPIObject(input.getCommand());
 }
 
 void cSCPI::exportSCPIModelXML(QString &sxml)
