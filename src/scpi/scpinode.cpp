@@ -18,8 +18,8 @@ ScpiNode::ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject) :
 
 ScpiNode::~ScpiNode()
 {
-    while(!m_rowItems.isEmpty())
-        delete m_rowItems.takeFirst();
+    while(!m_children.isEmpty())
+        delete m_children.takeFirst();
     m_instanceCount--;
 }
 
@@ -68,7 +68,7 @@ ScpiNode *ScpiNode::findChildFull(QString fullHeader) const
 
 ScpiNode *ScpiNode::child(int row) const
 {
-    return m_rowItems[row];
+    return m_children[row];
 }
 
 ScpiNode *ScpiNode::parent() const
@@ -88,7 +88,7 @@ bool ScpiNode::isEmpty()
 
 int ScpiNode::rowCount() const
 {
-    return m_rowItems.count();
+    return m_children.count();
 }
 
 int ScpiNode::row() const
@@ -99,8 +99,8 @@ int ScpiNode::row() const
 void ScpiNode::add(ScpiNode *node)
 {
     node->m_parent = this;
-    node->m_row = m_rowItems.count();
-    m_rowItems.append(node);
+    node->m_row = m_children.count();
+    m_children.append(node);
 }
 
 void ScpiNode::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
@@ -134,9 +134,9 @@ void ScpiNode::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument &doc, QDomEl
 
 void ScpiNode::removeRow(int row)
 {
-    delete m_rowItems.takeAt(row);
-    for(int row=0; row<m_rowItems.count(); ++row) {
-        m_rowItems.at(row)->m_row = row;
+    delete m_children.takeAt(row);
+    for(int row=0; row<m_children.count(); ++row) {
+        m_children.at(row)->m_row = row;
     }
 }
 
