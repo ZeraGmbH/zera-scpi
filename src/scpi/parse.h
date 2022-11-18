@@ -21,12 +21,12 @@ public:
       @b Searches for the next keyword starting from s.
       @param[in] s the string to search from
       */
-    const QString& GetKeyword(QChar** s);
+    const QString& GetKeyword(const QChar **s);
     /**
       @b Returns the next character starting from s ignoring whitespace.
       @param[in] s the characters to read from
       */
-    QChar GetChar(QChar** s); // read next character string
+    QChar GetChar(const QChar **s); // read next character string
     /**
       @b Sets the new delimiter characters from s for parsing and returns the old one.
       */

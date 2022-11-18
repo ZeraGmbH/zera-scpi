@@ -10,7 +10,7 @@ cParsePrivate::~cParsePrivate()
 {
 }
 
-const QString& cParsePrivate::GetKeyword(QChar** s)
+const QString& cParsePrivate::GetKeyword(const QChar** s)
 {
     bool escape = false;
     keyw ="";
@@ -33,7 +33,7 @@ const QString& cParsePrivate::GetKeyword(QChar** s)
     return keyw; // keyword without delimiter
 }
 
-QChar cParsePrivate::GetChar(QChar** s)
+QChar cParsePrivate::GetChar(const QChar** s)
 {
     ignoreWhitespace(s);
     return **s; // return = 0 or char != whitespace
@@ -53,7 +53,7 @@ const QString cParsePrivate::SetWhiteSpace(const QString s)
     return(r); // return old whitespace
 }
 
-void cParsePrivate::ignoreWhitespace(QChar** s)
+void cParsePrivate::ignoreWhitespace(const QChar** s)
 {
     for (;;) {
         if ((**s).isNull())

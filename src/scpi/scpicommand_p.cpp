@@ -44,8 +44,7 @@ QTextStream& operator >> (QTextStream& ts, cSCPICommandPrivate& cmd)
 void cSCPICommandPrivate::setCmdParamList()
 {
     cParse Parser;
-    QChar* pInput;
-    pInput = (QChar*) m_sCommand.data();
+    const QChar* pInput = m_sCommand.data();
     m_sCommandStr = "";
     QString keyw;
 

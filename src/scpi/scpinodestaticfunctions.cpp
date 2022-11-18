@@ -29,7 +29,7 @@ void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNode *delNode)
     }
 }
 
-ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *parser, QChar *pInput)
+ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *parser, const QChar *pInput)
 {
     QString searchHeader = parser->GetKeyword(&pInput).toUpper();
     ScpiNode *childNode = parentNode->findChildFull(searchHeader);
