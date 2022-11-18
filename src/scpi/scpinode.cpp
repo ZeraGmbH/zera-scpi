@@ -83,7 +83,7 @@ void ScpiNode::removeChild(ScpiNode *child)
 
 bool ScpiNode::isEmpty()
 {
-    return rowCount() == 0;
+    return m_children.isEmpty();
 }
 
 int ScpiNode::rowCount() const
@@ -160,31 +160,5 @@ void ScpiNode::adjustScpiHeaders(QString scpiHeader)
 bool ScpiNode::isLastShortAVowel()
 {
     return QString("AEIOU").contains(m_sScpiHeaderFull.mid(3, 1));
-}
-
-bool ScpiNode::foundNode(ScpiNode *parentNode, ScpiNode **scpiChildNode, cParse *parser, QChar *pInput)
-{
-    bool found = false;
-    QString searchHeader = parser->GetKeyword(&pInput).toUpper();
-    for(int row = 0; row < parentNode->rowCount(); row++) {
-        ScpiNode *childNode = parentNode->child(row);
-        *scpiChildNode = childNode;
-        if(childNode->getShortHeader() == searchHeader ||
-                childNode->getFullHeader() == searchHeader) {
-            found = true;
-            if(*pInput == ':') { // in case input is not parsed completely
-                ScpiNode* saveNode = *scpiChildNode;
-                QChar* saveInput = pInput;
-                found = found && foundNode(childNode, scpiChildNode, parser, pInput);
-                if(!found) {
-                    *scpiChildNode = saveNode; // ifnot found we reset the childnode
-                    pInput = saveInput; // and input pointer
-                }
-            }
-        }
-        if(found)
-            break;
-    }
-    return found;
 }
 

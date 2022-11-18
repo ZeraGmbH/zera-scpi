@@ -29,7 +29,6 @@ public:
     bool isEmpty();
     void add(ScpiNode *node);
     static void addNodeAndChildrenToXml(ScpiNode* node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
-    static bool foundNode(ScpiNode *parentNode, ScpiNode** scpiChildNode, cParse* parser, QChar* pInput);
 
     static int getInstanceCount();
 private:
