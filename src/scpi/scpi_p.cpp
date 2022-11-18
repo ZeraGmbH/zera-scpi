@@ -6,7 +6,8 @@
 #include <QList>
 
 cSCPIPrivate::cSCPIPrivate(const QString &interfaceName) :
-    m_interfaceName(interfaceName)
+    m_interfaceName(interfaceName),
+    m_invisibleRootNode(QString(), nullptr)
 {
 }
 
@@ -64,7 +65,7 @@ ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePat
     for(const QString &parentName : parentNodePath) {
         ScpiNode *child = parentNode->findChildFull(parentName.toUpper());
         if(!child) {
-            child  = ScpiNodeStaticFunctions::createNode(parentName, nullptr);
+            child = ScpiNodeStaticFunctions::createNode(parentName, nullptr);
             parentNode->add(child);
         }
         parentNode = child;

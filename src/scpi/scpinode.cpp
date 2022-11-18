@@ -4,11 +4,6 @@
 
 int ScpiNode::m_instanceCount = 0;
 
-ScpiNode::ScpiNode()
-{
-    m_instanceCount++;
-}
-
 ScpiNode::ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject) :
     m_pScpiObject(pSCPIObject)
 {
@@ -50,7 +45,7 @@ const QString &ScpiNode::getShortHeader() const
     return m_sScpiHeaderShort;
 }
 
-ScpiNode *ScpiNode::findChildShort(QString shortHeader) const
+ScpiNode *ScpiNode::findChildShort(const QString &shortHeader) const
 {
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
         if((*iter)->getShortHeader() == shortHeader) {
@@ -60,7 +55,7 @@ ScpiNode *ScpiNode::findChildShort(QString shortHeader) const
     return nullptr;
 }
 
-ScpiNode *ScpiNode::findChildFull(QString fullHeader) const
+ScpiNode *ScpiNode::findChildFull(const QString &fullHeader) const
 {
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
         if((*iter)->getFullHeader() == fullHeader) {
@@ -102,18 +97,16 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNode *childNode = *iter;
         QString childName = childNode->getFullHeader();
+        QStringList childNames = parentNames + QStringList(childName);
 
         QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
-
-        QStringList childNames = parentNames;
-        childNames.append(childName);
         if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
             cmdTag.setAttribute("ScpiPath", childNames.join(":"));
         cSCPIObject::XmlKeyValueMap xmlAtributes;
         if(childNode->getScpiObject())
             xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
-        for(auto iter=xmlAtributes.constBegin(); iter!=xmlAtributes.constEnd(); ++iter)
-            cmdTag.setAttribute(iter.key(), iter.value());
+        for(auto attIter=xmlAtributes.constBegin(); attIter!=xmlAtributes.constEnd(); ++attIter)
+            cmdTag.setAttribute(attIter.key(), attIter.value());
 
         QString typeInfo;
         if(parentNames.isEmpty())
@@ -129,7 +122,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
 void ScpiNode::removeRow(int row)
 {
     delete m_children.takeAt(row);
-    for(int row=0; row<m_children.count(); ++row) {
+    for(; row<m_children.count(); ++row) {
         m_children.at(row)->m_row = row;
     }
 }
@@ -155,4 +148,3 @@ bool ScpiNode::isLastShortAVowel()
 {
     return QString("AEIOU").contains(m_sScpiHeaderFull.mid(3, 1));
 }
-

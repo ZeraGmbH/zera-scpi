@@ -10,7 +10,6 @@
 class ScpiNode
 {
 public:
-    ScpiNode();
     ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject);
     virtual ~ScpiNode();
 
@@ -21,8 +20,8 @@ public:
     const QString &getFullHeader() const;
     const QString &getShortHeader() const;
 
-    ScpiNode *findChildShort(QString shortHeader) const;
-    ScpiNode *findChildFull(QString fullHeader) const;
+    ScpiNode *findChildShort(const QString &shortHeader) const;
+    ScpiNode *findChildFull(const QString &fullHeader) const;
     ScpiNode *parent() const;
     void removeChild(ScpiNode *child);
 
