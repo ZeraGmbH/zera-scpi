@@ -16,13 +16,13 @@ cParse::~cParse()
 }
 
 
-const QString &cParse::GetKeyword(QChar** s)
+const QString &cParse::GetKeyword(const QChar** s)
 {
     return d_ptr->GetKeyword(s);
 }
 
 
-QChar cParse::GetChar(QChar** s)
+QChar cParse::GetChar(const QChar** s)
 {
     return d_ptr->GetChar(s);
 }

@@ -24,7 +24,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 {
     QStringList delNodePath;
     cParse parser;
-    QChar* pInput = (QChar*) cmd.data();
+    const QChar* pInput = cmd.data();
     do
         delNodePath.append(parser.GetKeyword(&pInput).toUpper());
     while(*pInput  == ':');

@@ -15,11 +15,11 @@ public:
     /**
       @b read the next keyword from string
       */
-    const QString& GetKeyword(QChar** s);
+    const QString& GetKeyword(const QChar **s);
     /**
       @b read next character string
       */
-    QChar GetChar(QChar** s);
+    QChar GetChar(const QChar **s);
     /**
       @b Sets the new delimiter characters from s for parsing and returns the old one.
       */
@@ -41,7 +41,7 @@ private:
       @b the whitespace for the parser
       */
     QString whitespace;
-    void ignoreWhitespace(QChar **s);
+    void ignoreWhitespace(const QChar **s);
 };
 
 #endif // PARSE_P_H
