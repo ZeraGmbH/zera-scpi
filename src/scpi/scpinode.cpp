@@ -52,23 +52,22 @@ const QString &ScpiNode::getShortHeader() const
 
 ScpiNode *ScpiNode::findChildShort(QString shortHeader) const
 {
-    for(int row=0; row<rowCount(); ++row)
-        if(child(row)->getShortHeader() == shortHeader)
-            return child(row);
+    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
+        if((*iter)->getShortHeader() == shortHeader) {
+            return *iter;
+        }
+    }
     return nullptr;
 }
 
 ScpiNode *ScpiNode::findChildFull(QString fullHeader) const
 {
-    for(int row=0; row<rowCount(); ++row)
-        if(child(row)->getFullHeader() == fullHeader)
-            return child(row);
+    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
+        if((*iter)->getFullHeader() == fullHeader) {
+            return *iter;
+        }
+    }
     return nullptr;
-}
-
-ScpiNode *ScpiNode::child(int row) const
-{
-    return m_children[row];
 }
 
 ScpiNode *ScpiNode::parent() const
@@ -81,14 +80,9 @@ void ScpiNode::removeChild(ScpiNode *child)
     removeRow(child->row());
 }
 
-bool ScpiNode::isEmpty()
+bool ScpiNode::isEmpty() const
 {
     return m_children.isEmpty();
-}
-
-int ScpiNode::rowCount() const
-{
-    return m_children.count();
 }
 
 int ScpiNode::row() const
@@ -103,10 +97,10 @@ void ScpiNode::add(ScpiNode *node)
     m_children.append(node);
 }
 
-void ScpiNode::addNodeAndChildrenToXml(ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
+void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
 {
-    for(int row = 0; row < node->rowCount(); row++) {
-        ScpiNode *childNode = node->child(row);
+    for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
+        const ScpiNode *childNode = *iter;
         QString childName = childNode->getFullHeader();
 
         QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));

@@ -29,7 +29,7 @@ void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNode *delNode)
     }
 }
 
-ScpiNode *ScpiNodeStaticFunctions::findNode(ScpiNode *parentNode, cParse *parser, QChar *pInput)
+ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *parser, QChar *pInput)
 {
     QString searchHeader = parser->GetKeyword(&pInput).toUpper();
     ScpiNode *childNode = parentNode->findChildFull(searchHeader);
@@ -40,12 +40,12 @@ ScpiNode *ScpiNodeStaticFunctions::findNode(ScpiNode *parentNode, cParse *parser
     return childNode;
 }
 
-bool ScpiNodeStaticFunctions::isNodeTypeOnly(ScpiNode *node)
+bool ScpiNodeStaticFunctions::isNodeTypeOnly(const ScpiNode *node)
 {
     return node->getType() == SCPI::isNode;
 }
 
-QString ScpiNodeStaticFunctions::scpiTypeToString(quint8 scpiType)
+QString ScpiNodeStaticFunctions::scpiTypeToString(const quint8 scpiType)
 {
     static const QString scpiNodeType[] = {
         "Node",

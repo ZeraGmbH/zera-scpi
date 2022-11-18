@@ -26,16 +26,14 @@ public:
     ScpiNode *parent() const;
     void removeChild(ScpiNode *child);
 
-    bool isEmpty();
+    bool isEmpty() const;
     void add(ScpiNode *node);
-    static void addNodeAndChildrenToXml(ScpiNode* node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
+    static void addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
 
     static int getInstanceCount();
 private:
     void adjustScpiHeaders(QString scpiHeader);
     bool isLastShortAVowel();
-    ScpiNode *child(int row) const;
-    int rowCount() const;
     int row() const;
     void removeRow(int row);
 
