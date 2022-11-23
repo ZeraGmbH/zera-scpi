@@ -1,0 +1,37 @@
+------------------
+6320: adj-module
+
+# reset adjusted status
+calc:adj1:init UL1,250V;|*stb?
+calc:adj1:ostatus UL1,250V,0;|*stb?
+
+# adjust offset
+calc:adj1:init UL1,250V;|*stb?
+calc:adj1:offs UL1,250V,0.0;|*stb?
+calc:adj1:comp 1;|*stb?
+calc:adj1:ostatus UL1,250V,128;
+
+# write to ROM
+calc:adj1:stor 1;|*stb?
+
+# this and that
+calc:adj1:offs UL1,250V,-0.122;|*stb?
+calc:adj1:offs UL1,250V,1.000;|*stb?
+
+calc:adj1:init UL1,8V;|*stb?
+calc:adj1:offs UL1,8V,0.0;|*stb?
+calc:adj1:comp 1;|*stb?
+calc:adj1:ostatus UL1,8V,128;
+
+
+------------------
+6308: mt310s2d
+
+sens:m0:250V:corr:offset:node:0 0;0;
+sens:m0:250V:corr:offset:node:0 5196;0;
+sens:m0:250V:corr:compute;
+
+SENSE:m0:250V:REJECTION?
+
+sens:m0:250V:corr:offset:node:0 0;0;|*stb?
+
