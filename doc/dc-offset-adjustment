@@ -5,14 +5,30 @@
 calc:adj1:init UL1,250V;|*stb?
 calc:adj1:ostatus UL1,250V,0;|*stb?
 
-# adjust offset
+# adjust offset UL1
 calc:adj1:init UL1,250V;|*stb?
 calc:adj1:offs UL1,250V,0.0;|*stb?
 calc:adj1:comp 1;|*stb?
 calc:adj1:ostatus UL1,250V,128;
 
-# write to ROM
+# write to internal ROM
 calc:adj1:stor 1;|*stb?
+
+# adjust offset clamp IL3
+calc:adj1:init IL3,C100A;|*stb?
+calc:adj1:offs IL3,C100A,0.0;|*stb?
+calc:adj1:comp 1;|*stb?
+calc:adj1:ostatus IL3,C100A,128;|*stb?
+
+
+# adjust offset clamp IAUX
+calc:adj1:init IAUX,C100A;|*stb?
+calc:adj1:offs IAUX,C100A,0.0;|*stb?
+calc:adj1:comp 1;|*stb?
+calc:adj1:ostatus IAUX,C100A,128;|*stb?
+
+# write to Clamp ROM
+calc:adj1:stor 2;|*stb?
 
 # this and that
 calc:adj1:offs UL1,250V,-0.122;|*stb?
