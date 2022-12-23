@@ -19,6 +19,8 @@ public:
     ScpiFullCmdCheckerForTest();
     void addCommand(QStringList parentNodeNames, QString nodeName,
                     quint8 scpiType);
+    void addCommand(QString scpiNodePath,
+                    quint8 scpiType);
     bool matches(QString cmd);
 private:
     cSCPI m_scpiTree;

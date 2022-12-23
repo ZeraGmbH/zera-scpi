@@ -10,6 +10,7 @@ private slots:
     void noMatchOnEmpty();
     void checkCmdOnQuery();
     void matchQueryNoParams();
+    void testShortParams();
     void matchQueryOneParam();
     void matchQueryTwoParam();
     void noMatchQueryTypo();
