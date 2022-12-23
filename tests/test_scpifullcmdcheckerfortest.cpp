@@ -24,6 +24,13 @@ void test_scpifullcmdcheckerfortest::matchQueryNoParams()
     QCOMPARE(checker.matches("sens:test?"), true);
 }
 
+void test_scpifullcmdcheckerfortest::testShortParams()
+{
+    ScpiFullCmdCheckerForTest checker;
+    checker.addCommand("SENSE:TESTER", SCPI::isQuery);
+    QCOMPARE(checker.matches("sens:test?"), true);
+}
+
 void test_scpifullcmdcheckerfortest::matchQueryOneParam()
 {
     ScpiFullCmdCheckerForTest checker;
@@ -102,4 +109,3 @@ void test_scpifullcmdcheckerfortest::matchQueryCmdParam()
     QCOMPARE(checker.matches("sens:test"), false);
     QCOMPARE(checker.matches("sens:test?"), true);
 }
-

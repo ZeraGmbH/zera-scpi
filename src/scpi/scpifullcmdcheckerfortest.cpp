@@ -21,6 +21,15 @@ void ScpiFullCmdCheckerForTest::addCommand(QStringList parentNodeNames, QString 
     m_scpiTree.insertScpiCmd(parentNodeNames, new ScpiDummyEchoObject(nodeName, scpiType));
 }
 
+void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType)
+{
+    QStringList path = scpiNodePath.split(":", Qt::SkipEmptyParts);
+    if(path.count() > 0) {
+        QString nodeName = path.takeLast();
+        addCommand(path, nodeName, scpiType);
+    }
+}
+
 bool ScpiFullCmdCheckerForTest::matches(QString cmd)
 {
     cSCPIObject *object = m_scpiTree.getSCPIObject(cmd);
