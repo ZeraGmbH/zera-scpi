@@ -24,6 +24,8 @@ private slots:
 
     void matchQueryCmdNoParam();
     void matchQueryCmdParam();
+
+    void matchMultipleQueryNoParams();
 };
 
 #endif // TEST_SCPIFULLCMDCHECKERFORTEST_H
