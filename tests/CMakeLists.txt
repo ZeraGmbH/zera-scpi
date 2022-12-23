@@ -62,6 +62,7 @@ SETUP_TESTS(
     test_scpisingletonfactory
     test_scpiinterface
     test_scpiinterfacexml
+    test_scpifullcmdcheckerfortest
     test_xmldocumentcompare
     test_xmldocument
     test_xmlelemcompareattribs
