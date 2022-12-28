@@ -39,14 +39,22 @@ bool ScpiFullCmdCheckerForTest::matches(QString cmd)
         quint8 type = object->getType();
         cSCPICommand scpiCmd = cmd;
         int paramCount = scpiCmd.getParamCount();
-        if(scpiCmd.isQuery(paramCount) && (type & SCPI::isQuery) == 0)
+        if(scpiCmd.isQuery(paramCount) && (type & SCPI::isQuery) == 0) {
+            qWarning("Scpi query not supported!");
             match = false;
+        }
         if(scpiCmd.isCommand(paramCount)) {
-            if(paramCount == 0 && (type & SCPI::isCmd) == 0)
+            if(paramCount == 0 && (type & SCPI::isCmd) == 0) {
+                qWarning("Scpi command without params not supported!");
                 match = false;
-            if(paramCount > 0 && (type & SCPI::isCmdwP) == 0)
+            }
+            if(paramCount > 0 && (type & SCPI::isCmdwP) == 0) {
+                qWarning("Scpi command with params not supported!");
                 match = false;
+            }
         }
     }
+    else
+        qWarning("Scpi command '%s* not found!", qPrintable(cmd));
     return match;
 }
