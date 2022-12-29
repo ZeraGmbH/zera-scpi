@@ -32,14 +32,14 @@ void test_scpifullcmdcheckerfortest::testShortParams()
 void test_scpifullcmdcheckerfortest::matchQueryOneParam()
 {
     ScpiFullCmdCheckerForTest checker("SENSE:TESTER", SCPI::isQuery);
-    QCOMPARE(checker.matches("sens:test? one"), true);
+    QCOMPARE(checker.matches("sens:test? one"), true); // detected as no param !!!
     QCOMPARE(checker.matches("sens:test? one;"), true);
 }
 
 void test_scpifullcmdcheckerfortest::matchQueryTwoParam()
 {
     ScpiFullCmdCheckerForTest checker("SENSE:TESTER", SCPI::isQuery);
-    QCOMPARE(checker.matches("sens:test? one;two"), true);
+    QCOMPARE(checker.matches("sens:test? one;two"), true); // detected as one param !!!
     QCOMPARE(checker.matches("sens:test? one;two;"), true);
 }
 
@@ -104,4 +104,38 @@ void test_scpifullcmdcheckerfortest::matchMultipleQueryNoParams()
     checker.addCommand("SENSE:BAR", SCPI::isQuery);
     QCOMPARE(checker.matches("sens:foo?"), true);
     QCOMPARE(checker.matches("sens:bar?"), true);
+}
+
+void test_scpifullcmdcheckerfortest::checkOneParamOnQuery()
+{
+    ScpiFullCmdCheckerForTest checker("SENSE:FOO", SCPI::isQuery, 1);
+    QCOMPARE(checker.matches("sens:foo?"), false);
+    QCOMPARE(checker.matches("sens:foo? one;"), true);
+    QCOMPARE(checker.matches("sens:foo? one;two;"), false);
+}
+
+void test_scpifullcmdcheckerfortest::checkTwoParamsOnQuery()
+{
+    ScpiFullCmdCheckerForTest checker("SENSE:FOO", SCPI::isQuery, 2);
+    QCOMPARE(checker.matches("sens:foo?"), false);
+    QCOMPARE(checker.matches("sens:foo? one;"), false);
+    QCOMPARE(checker.matches("sens:foo? one;two;"), true);
+}
+
+void test_scpifullcmdcheckerfortest::checkOneParamOnCmd()
+{
+    ScpiFullCmdCheckerForTest checker("SENSE:FOO", SCPI::isCmdwP, 1);
+    QCOMPARE(checker.matches("sens:foo"), false);
+    QCOMPARE(checker.matches("sens:foo;"), true); // detected as empty param!!!
+    QCOMPARE(checker.matches("sens:foo one;"), true);
+    QCOMPARE(checker.matches("sens:foo one;two;"), false);
+}
+
+void test_scpifullcmdcheckerfortest::checkTwoParamsOnCmd()
+{
+    ScpiFullCmdCheckerForTest checker("SENSE:FOO", SCPI::isCmdwP, 2);
+    QCOMPARE(checker.matches("sens:foo"), false);
+    QCOMPARE(checker.matches("sens:foo;"), false); // detected as empty param!!!
+    QCOMPARE(checker.matches("sens:foo one;"), false);
+    QCOMPARE(checker.matches("sens:foo one;two;"), true);
 }
