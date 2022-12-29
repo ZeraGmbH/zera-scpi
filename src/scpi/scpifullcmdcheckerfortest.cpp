@@ -1,14 +1,19 @@
 #include "scpifullcmdcheckerfortest.h"
 
-ScpiDummyEchoObject::ScpiDummyEchoObject(const QString &name, quint8 type) :
-    cSCPIObject(name, type)
+ScpiParamCheckerDelegate::ScpiParamCheckerDelegate(const QString &name, quint8 type, int paramCountExpected) :
+    cSCPIObject(name, type),
+    m_paramCountExpected(paramCountExpected)
 {
 }
 
-bool ScpiDummyEchoObject::executeSCPI(const QString &sInput, QString &sOutput)
+bool ScpiParamCheckerDelegate::executeSCPI(const QString &input, QString &output)
 {
-    sOutput = sInput;
-    return true;
+    cSCPICommand cmd = input;
+    bool ok = m_paramCountExpected < 0 || m_paramCountExpected == cmd.getParamCount();
+    if(!ok)
+        qWarning("Invalid parameter count: Expected %i / received %i",
+                 m_paramCountExpected, cmd.getParamCount());
+    return ok;
 }
 
 ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest() :
@@ -16,18 +21,18 @@ ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest() :
 {
 }
 
-ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType) :
+ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected) :
     m_scpiTree("TestScpi")
 {
-    addCommand(scpiNodePath, scpiType);
+    addCommand(scpiNodePath, scpiType, paramCountExpected);
 }
 
-void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType)
+void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType, int paramCountExpected)
 {
     QStringList path = scpiNodePath.split(":", Qt::SkipEmptyParts);
     if(path.count() > 0) {
         QString nodeName = path.takeLast();
-        m_scpiTree.insertScpiCmd(path, new ScpiDummyEchoObject(nodeName, scpiType));
+        m_scpiTree.insertScpiCmd(path, new ScpiParamCheckerDelegate(nodeName, scpiType, paramCountExpected));
     }
 }
 
@@ -53,8 +58,13 @@ bool ScpiFullCmdCheckerForTest::matches(QString cmd)
                 match = false;
             }
         }
+        if(match) {
+            ScpiParamCheckerDelegate* scpiObject = static_cast<ScpiParamCheckerDelegate*>(object);
+            QString scpiOutput;
+            match = scpiObject->executeSCPI(cmd, scpiOutput);
+        }
     }
     else
-        qWarning("Scpi command '%s* not found!", qPrintable(cmd));
+        qWarning("Scpi command '%s not found!", qPrintable(cmd));
     return match;
 }

@@ -6,19 +6,21 @@
 
 // helper classes to test genereated commands - e.g zera-classes server tasks
 
-class ScpiDummyEchoObject : public cSCPIObject
+class ScpiParamCheckerDelegate : public cSCPIObject
 {
 public:
-    ScpiDummyEchoObject(const QString &name, quint8 type);
-    bool executeSCPI(const QString& sInput, QString& sOutput) override;
+    ScpiParamCheckerDelegate(const QString &name, quint8 type, int paramCountExpected);
+    bool executeSCPI(const QString& input, QString& output) override;
+private:
+    int m_paramCountExpected;
 };
 
 class ScpiFullCmdCheckerForTest
 {
 public:
     ScpiFullCmdCheckerForTest();
-    ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType);
-    void addCommand(QString scpiNodePath, quint8 scpiType);
+    ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
+    void addCommand(QString scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
     bool matches(QString cmd);
 private:
     cSCPI m_scpiTree;
