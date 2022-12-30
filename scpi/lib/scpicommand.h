@@ -4,7 +4,7 @@
 #include <QString>
 #include <QStringList>
 #include <QTextStream>
-#include "SCPI_global.h"
+#include "scpi_export.h"
 
 class cSCPICommandPrivate;
 

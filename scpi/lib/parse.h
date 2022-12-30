@@ -2,7 +2,7 @@
 #define PARSE_H
 
 #include <qstring.h>
-#include "SCPI_global.h"
+#include "scpi_export.h"
 
 class cParsePrivate;
 

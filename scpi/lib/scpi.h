@@ -22,7 +22,7 @@
 #include <QStringList>
 #include <QString>
 #include <QList>
-#include "SCPI_global.h"
+#include "scpi_export.h"
 #include "scpiobject.h"
 #include "scpicommand.h"
 

@@ -1,7 +1,7 @@
 #ifndef SCPIOBJECT_H
 #define SCPIOBJECT_H
 
-#include "SCPI_global.h"
+#include "scpi_export.h"
 #include <QMap>
 
 class cSCPIObjectPrivate;
