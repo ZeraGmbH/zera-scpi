@@ -1,0 +1,7 @@
+include(CMakeFindDependencyMacro)
+
+find_dependency(Qt5 COMPONENTS Core REQUIRED)
+find_dependency(SCPI REQUIRED)
+
+include("${CMAKE_CURRENT_LIST_DIR}/SCPITestlibTargets.cmake")
+

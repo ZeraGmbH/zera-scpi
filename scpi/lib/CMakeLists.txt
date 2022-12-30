@@ -1,4 +1,3 @@
-#sum up project Files
 file(GLOB SOURCES
     *.cpp
     )
@@ -18,7 +17,6 @@ target_link_libraries(SCPI
     Qt5::Xml
     )
 
-# announce headers - target perspective
 target_include_directories(SCPI
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
