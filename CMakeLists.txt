@@ -40,7 +40,8 @@ function(SETUP_TESTS)
         target_link_libraries(${_testname}
             PUBLIC
             Qt5::Test
-            helpers_xml
+            scpi-testlib
+            xml-compare-testlib
             scpi-tcp
             )
     endforeach()
