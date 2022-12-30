@@ -2,18 +2,8 @@
 #define SCPIFULLCMDCHECKERFORTEST_H
 
 #include "scpi.h"
-#include "scpiobject.h"
 
-// helper classes to test genereated commands - e.g zera-classes server tasks
-
-class ScpiParamCheckerDelegate : public cSCPIObject
-{
-public:
-    ScpiParamCheckerDelegate(const QString &name, quint8 type, int paramCountExpected);
-    bool executeSCPI(const QString& input, QString& output) override;
-private:
-    int m_paramCountExpected;
-};
+// helper class to test generated commands - used at e.g zera-classes / tests on server tasks
 
 class ScpiFullCmdCheckerForTest
 {
