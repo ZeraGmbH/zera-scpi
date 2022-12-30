@@ -1,4 +1,4 @@
-add_library(helpers_xml STATIC
+add_library(xml-compare-testlib STATIC
     xmldocument.cpp
     xmldocument.h
     xmldocumentcompare.cpp
@@ -19,12 +19,12 @@ add_library(helpers_xml STATIC
     xmlelemiterstrategytree.h
     )
 
-target_include_directories(helpers_xml
+target_include_directories(xml-compare-testlib
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
     )
 
-target_link_libraries(helpers_xml
+target_link_libraries(xml-compare-testlib
     PUBLIC
     Qt5::Core
     Qt5::Xml
