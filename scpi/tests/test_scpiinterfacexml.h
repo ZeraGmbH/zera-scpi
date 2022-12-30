@@ -5,16 +5,7 @@
 #include <QStringList>
 #include "scpi.h"
 #include "scpiobject.h"
-
-class SCPITestObject : public cSCPIObject
-{
-public:
-    SCPITestObject(QString name, quint8 type) : cSCPIObject(name, type) { }
-    bool executeSCPI(const QString& sInput, QString& sOutput) override
-    {
-        return true;
-    }
-};
+#include "scpitestobjectstub.h"
 
 class test_scpiinterfacexml : public QObject
 {
@@ -58,7 +49,7 @@ private:
     void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
     QString createScpiString();
 
-    QList<SCPITestObject*> m_perTestScpiObjects;
+    QList<SCPITestObjectStub*> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;
 };
 
