@@ -443,7 +443,7 @@ void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
-        SCPITestObject* tmpScpiObject = new SCPITestObject(nodePath.takeLast(), scpiNode.type);
+        SCPITestObjectStub* tmpScpiObject = new SCPITestObjectStub(nodePath.takeLast(), scpiNode.type);
         m_perTestScpiObjects.append(tmpScpiObject);
         m_scpiInterface->insertScpiCmd(nodePath, tmpScpiObject);
     }

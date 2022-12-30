@@ -27,7 +27,7 @@ void test_scpibenchmark::listInsertLayer(int layer, QStringList parentPath)
     for(int node=0; node<perLayerNodes; node++) {
         QString name = QString("node%1_%2").arg(layer).arg(node);
         if(layer == treeDepth-1) {
-            SCPITestObject* tmpScpiObject = new SCPITestObject(name, SCPI::isQuery);
+            SCPITestObjectStub* tmpScpiObject = new SCPITestObjectStub(name, SCPI::isQuery);
             m_perTestScpiObjects.append(tmpScpiObject);
             m_scpiInterface->insertScpiCmd(parentPath, tmpScpiObject);
             m_listObjectsAdded++;

@@ -2,7 +2,7 @@
 #define TEST_SCPIBENCHMARK_H
 
 #include "scpi.h"
-#include "scpitestobject.h"
+#include "scpitestobjectstub.h"
 #include <QObject>
 #include <QList>
 
@@ -20,7 +20,7 @@ private:
     void listInsertLayer(int layer, QStringList parentPath);
     void listSearchLayer(int layer, QStringList parentPath);
     void listRemoveLayer(int layer, QStringList parentPath);
-    QList<SCPITestObject*> m_perTestScpiObjects;
+    QList<SCPITestObjectStub*> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;
     int m_listObjectsAdded = 0;
 };
