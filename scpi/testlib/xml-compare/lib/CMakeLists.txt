@@ -30,18 +30,4 @@ target_link_libraries(helpers_xml
     Qt5::Xml
     )
 
-SETUP_TESTS(
-    test_scpibenchmark
-    test_scpisingletonfactory
-    test_scpiinterface
-    test_scpiinterfacexml
-    test_scpifullcmdcheckerfortest
-    test_xmldocumentcompare
-    test_xmldocument
-    test_xmlelemcompareattribs
-    test_xmlelemcomparetext
-    test_xmlelemiter
-    test_xmlelemiteratorlist
-    test_xmlelemiteratorsort
-    test_xmlelemiteratortree
-)
+

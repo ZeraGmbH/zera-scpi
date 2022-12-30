@@ -48,6 +48,5 @@ endfunction()
 
 add_subdirectory(scpi)
 add_subdirectory(scpi-tcp)
-add_subdirectory(tests)
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
