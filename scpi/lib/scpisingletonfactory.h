@@ -2,17 +2,16 @@
 #define SCPISINGLETONFACTORY_H
 
 #include <scpi.h>
-#include <QHash>
 #include <QString>
-#include <QSharedPointer>
+#include <memory>
 
 class ScpiSingletonFactory
 {
 public:
     static cSCPI* getScpiObj(QString name);
 private:
-    typedef QSharedPointer<cSCPI> scpiPtr;
-    static QHash<QString, scpiPtr> m_scpiHash;
+    typedef std::unique_ptr<cSCPI> scpiPtr;
+    static std::unordered_map<QString, scpiPtr> m_scpiHash;
 };
 
 #endif // SCPISINGLETONFACTORY_H
