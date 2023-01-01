@@ -4,6 +4,7 @@
 #include <scpi.h>
 #include <QString>
 #include <memory>
+#include <unordered_map>
 
 class ScpiSingletonFactory
 {
