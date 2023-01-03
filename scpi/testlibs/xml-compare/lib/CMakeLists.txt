@@ -30,4 +30,14 @@ target_link_libraries(xml-compare-testlib
     Qt5::Xml
     )
 
+export(TARGETS xml-compare-testlib NAMESPACE Zera:: FILE SCPITargets.cmake)
+install(TARGETS xml-compare-testlib
+    EXPORT SCPIExport
+    LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+    )
+
+install(
+    FILES ${HEADER}
+    DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xml-compare-testlib
+    )
 

@@ -1,9 +1,0 @@
-include(CMakeFindDependencyMacro)
-
-# dependencies
-find_dependency(Qt5 COMPONENTS Core REQUIRED)
-find_dependency(xiqnet)
-
-# targets file
-include("${CMAKE_CURRENT_LIST_DIR}/scpi-tcpTargets.cmake")
-

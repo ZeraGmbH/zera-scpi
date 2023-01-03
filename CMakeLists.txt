@@ -14,6 +14,7 @@ set(PROJECT_VERSION "${SCPI_VERSION_MAJOR}.${SCPI_VERSION_MINOR}.${SCPI_VERSION_
 include(FeatureSummary)
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
+include(GenerateExportHeader)
 
 find_package(Qt5 COMPONENTS Core Xml Test CONFIG REQUIRED)
 find_package(xiqnet REQUIRED)
@@ -22,7 +23,6 @@ enable_testing()
 
 # Inspired by
 # https://github.com/KDAB/kdabtv/blob/master/Qt-Widgets-and-more/UnitTests/Tests/CMakeLists.txt
-
 function(SETUP_TESTS)
     foreach(_testname ${ARGN})
         add_test(NAME ${_testname}
@@ -48,5 +48,23 @@ endfunction()
 
 add_subdirectory(scpi)
 add_subdirectory(scpi-tcp)
+
+write_basic_package_version_file(
+    SCPIConfigVersion.cmake
+    VERSION ${PACKAGE_VERSION}
+    COMPATIBILITY SameMajorVersion
+    )
+configure_file(SCPIConfig.cmake.in SCPIConfig.cmake @ONLY)
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/SCPIConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/SCPIConfigVersion.cmake"
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SCPI
+    )
+
+install(EXPORT SCPIExport
+    FILE SCPITargets.cmake
+    NAMESPACE Zera::
+    DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/SCPI
+    )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
