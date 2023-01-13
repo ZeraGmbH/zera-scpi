@@ -37,13 +37,11 @@ function(SETUP_TESTS)
             Qt5::Test
             scpi-testlib
             xml-compare-testlib
-            scpi-tcp
             )
     endforeach()
 endfunction()
 
 add_subdirectory(scpi)
-add_subdirectory(scpi-tcp)
 
 write_basic_package_version_file(
     SCPIConfigVersion.cmake
