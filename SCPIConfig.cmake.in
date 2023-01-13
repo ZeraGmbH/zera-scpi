@@ -1,7 +1,5 @@
 include(CMakeFindDependencyMacro)
 
 find_dependency(Qt5 COMPONENTS Core Xml Test CONFIG REQUIRED)
-find_dependency(xiqnet REQUIRED)
 
 include("${CMAKE_CURRENT_LIST_DIR}/SCPITargets.cmake")
-

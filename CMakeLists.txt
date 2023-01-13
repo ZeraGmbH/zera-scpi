@@ -17,7 +17,6 @@ include(CMakePackageConfigHelpers)
 include(GenerateExportHeader)
 
 find_package(Qt5 COMPONENTS Core Xml Test CONFIG REQUIRED)
-find_package(xiqnet REQUIRED)
 
 enable_testing()
 
