@@ -23,6 +23,7 @@ private slots:
     void addFindExactShortLongVowelI();
     void addFindExactShortLongVowelO();
     void addFindExactShortLongVowelU();
+    void addFindTwoWithSameShortButDifferentLong();
 };
 
 #endif // TEST_SCPIINTERFACE_H

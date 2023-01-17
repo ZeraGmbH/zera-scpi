@@ -9,7 +9,6 @@ ScpiNode *ScpiNodeStaticFunctions::createNode(const QString &name, cSCPIObject *
 
 void ScpiNodeStaticFunctions::addOrReplaceChild(ScpiNode *node, cSCPIObject *pSCPIObject)
 {
-    bool overwriteExisting = false;
     QString fullHeader = pSCPIObject->getName();
     ScpiNode *childNode = node->findChildFull(fullHeader);
     if(childNode)
@@ -33,11 +32,26 @@ ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *
 {
     QString searchHeader = parser->GetKeyword(&pInput).toUpper();
     ScpiNode *childNode = parentNode->findChildFull(searchHeader);
-    if(!childNode)
-        childNode = parentNode->findChildShort(searchHeader);
-    if(childNode && *pInput == ':') // in case input is not parsed completely
-        return findNode(childNode, parser, pInput);
-    return childNode;
+    if(childNode) {
+        if(*pInput == ':') // in case input is not parsed completely
+            return findNode(childNode, parser, pInput);
+        else
+            return childNode;
+    }
+    QList<ScpiNode*> shortChildren = parentNode->findAllChildrenShort(searchHeader);
+    if(!shortChildren.isEmpty()) {
+        if(*pInput == ':') { // in case input is not parsed completely
+            while(!shortChildren.isEmpty()) {
+                ScpiNode* shorChild = shortChildren.takeFirst();
+                childNode = findNode(shorChild, parser, pInput);
+                if(childNode)
+                    return childNode;
+            }
+        }
+        else // yes we mean it
+            return shortChildren.first();
+    }
+    return nullptr;
 }
 
 bool ScpiNodeStaticFunctions::isNodeTypeOnly(const ScpiNode *node)

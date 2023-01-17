@@ -6,6 +6,7 @@
 #include <QDomElement>
 #include <QDomDocument>
 #include <QStringList>
+#include <QList>
 
 class ScpiNode
 {
@@ -21,6 +22,7 @@ public:
     const QString &getShortHeader() const;
 
     ScpiNode *findChildShort(const QString &shortHeader) const;
+    QList<ScpiNode *> findAllChildrenShort(const QString &shortHeader) const;
     ScpiNode *findChildFull(const QString &fullHeader) const;
     ScpiNode *parent() const;
     void removeChild(ScpiNode *child);
