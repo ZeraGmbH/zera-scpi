@@ -55,6 +55,17 @@ ScpiNode *ScpiNode::findChildShort(const QString &shortHeader) const
     return nullptr;
 }
 
+QList<ScpiNode *> ScpiNode::findAllChildrenShort(const QString &shortHeader) const
+{
+    QList<ScpiNode *> found;
+    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
+        if((*iter)->getShortHeader() == shortHeader) {
+            found.append(*iter);
+        }
+    }
+    return found;
+}
+
 ScpiNode *ScpiNode::findChildFull(const QString &fullHeader) const
 {
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {

@@ -163,6 +163,17 @@ void test_scpiinterface::addFindExactShortLongVowelO()
 {
     cSCPI interface("dev");
     SCPITestObjectStub obj1("x", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "oooooo", &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("ooo:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("oooooo:x")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("oooo:x")), nullptr);
+    QCOMPARE(interface.getSCPIObject(QString("ooooo:x")), nullptr);
+}
+
+void test_scpiinterface::addFindExactShortLongVowelU()
+{
+    cSCPI interface("dev");
+    SCPITestObjectStub obj1("x", SCPI::isQuery);
     interface.insertScpiCmd(QStringList() << "uuuuuu", &obj1);
     QCOMPARE(interface.getSCPIObject(QString("uuu:x")), &obj1);
     QCOMPARE(interface.getSCPIObject(QString("uuuuuu:x")), &obj1);
@@ -170,7 +181,13 @@ void test_scpiinterface::addFindExactShortLongVowelO()
     QCOMPARE(interface.getSCPIObject(QString("uuuuu:x")), nullptr);
 }
 
-void test_scpiinterface::addFindExactShortLongVowelU()
+void test_scpiinterface::addFindTwoWithSameShortButDifferentLong()
 {
-
+    cSCPI interface("dev");
+    SCPITestObjectStub obj1("foo", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "configure" << "rng1", &obj1);
+    SCPITestObjectStub obj2("bar", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "configuration" << "rng2", &obj2);
+    QCOMPARE(interface.getSCPIObject(QString("conf:rng1:foo")), &obj1);
+    QCOMPARE(interface.getSCPIObject(QString("conf:rng2:bar")), &obj2);
 }
