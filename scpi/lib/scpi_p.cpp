@@ -93,5 +93,7 @@ QStringList cSCPIPrivate::removeEmptyNodes(const QStringList &parentNodeNames)
 {
     QStringList parentNodeNamesCleaned = parentNodeNames;
     parentNodeNamesCleaned.removeAll("");
+    if(parentNodeNamesCleaned.size() != parentNodeNames.size())
+        qWarning("SCPI: Removed empty parent node names in: '%s'", qPrintable(parentNodeNames.join(":")));
     return parentNodeNamesCleaned;
 }
