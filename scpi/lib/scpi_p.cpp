@@ -15,6 +15,10 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject
 {
     ScpiNode *parentNode = &m_invisibleRootNode;
     const QStringList parentNamesCleaned = removeEmptyNodes(parentNodeNames);
+    if(parentNamesCleaned.size() != parentNodeNames.size())
+        qWarning("SCPI: Removed empty parent node names in: '%s:%s'",
+                 qPrintable(parentNodeNames.join(":")),
+                 qPrintable(pSCPIObject->getName()));
     if(parentNamesCleaned.count() > 0)
         parentNode = findParentAndCreatePath(parentNamesCleaned);
     if(pSCPIObject)
@@ -93,7 +97,5 @@ QStringList cSCPIPrivate::removeEmptyNodes(const QStringList &parentNodeNames)
 {
     QStringList parentNodeNamesCleaned = parentNodeNames;
     parentNodeNamesCleaned.removeAll("");
-    if(parentNodeNamesCleaned.size() != parentNodeNames.size())
-        qWarning("SCPI: Removed empty parent node names in: '%s'", qPrintable(parentNodeNames.join(":")));
     return parentNodeNamesCleaned;
 }
