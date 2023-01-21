@@ -24,6 +24,8 @@ private slots:
     void addFindExactShortLongVowelO();
     void addFindExactShortLongVowelU();
     void addFindTwoWithSameShortButDifferentLong();
+    void emptyParentNodeCorrection();
+    void emptyParentNodeCorrectionMultiple();
 };
 
 #endif // TEST_SCPIINTERFACE_H

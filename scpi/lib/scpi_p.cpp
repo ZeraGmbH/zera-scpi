@@ -14,8 +14,9 @@ cSCPIPrivate::cSCPIPrivate(const QString &interfaceName) :
 void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject *pSCPIObject)
 {
     ScpiNode *parentNode = &m_invisibleRootNode;
-    if(parentNodeNames.count() > 0 && parentNodeNames.at(0) != "")
-        parentNode = findParentAndCreatePath(parentNodeNames);
+    const QStringList parentNamesCleaned = removeEmptyNodes(parentNodeNames);
+    if(parentNamesCleaned.count() > 0)
+        parentNode = findParentAndCreatePath(parentNamesCleaned);
     if(pSCPIObject)
         ScpiNodeStaticFunctions::addOrReplaceChild(parentNode, pSCPIObject);
 }
@@ -86,4 +87,11 @@ void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
         if(parentNode)
             ScpiNodeStaticFunctions::delNodeAndEmptyParents(parentNode);
     }
+}
+
+QStringList cSCPIPrivate::removeEmptyNodes(const QStringList &parentNodeNames)
+{
+    QStringList parentNodeNamesCleaned = parentNodeNames;
+    parentNodeNamesCleaned.removeAll("");
+    return parentNodeNamesCleaned;
 }

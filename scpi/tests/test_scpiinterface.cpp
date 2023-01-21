@@ -191,3 +191,19 @@ void test_scpiinterface::addFindTwoWithSameShortButDifferentLong()
     QCOMPARE(interface.getSCPIObject(QString("conf:rng1:foo")), &obj1);
     QCOMPARE(interface.getSCPIObject(QString("conf:rng2:bar")), &obj2);
 }
+
+void test_scpiinterface::emptyParentNodeCorrection()
+{
+    cSCPI interface("dev");
+    SCPITestObjectStub obj("foo", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "root" << "" << "child", &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:child:foo")), &obj);
+}
+
+void test_scpiinterface::emptyParentNodeCorrectionMultiple()
+{
+    cSCPI interface("dev");
+    SCPITestObjectStub obj("foo", SCPI::isQuery);
+    interface.insertScpiCmd(QStringList() << "" << "" << "root" << "" << "child", &obj);
+    QCOMPARE(interface.getSCPIObject(QString("root:child:foo")), &obj);
+}

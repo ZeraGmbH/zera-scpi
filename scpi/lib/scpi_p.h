@@ -18,6 +18,7 @@ public:
 private:
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);
+    QStringList removeEmptyNodes(const QStringList& parentNodeNames);
 
     ScpiNode m_invisibleRootNode;
     QString m_interfaceName;
