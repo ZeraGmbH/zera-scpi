@@ -6,8 +6,8 @@
 #include <QList>
 
 cSCPIPrivate::cSCPIPrivate(const QString &interfaceName) :
-    m_interfaceName(interfaceName),
-    m_invisibleRootNode(QString(), nullptr)
+    m_invisibleRootNode(QString(), nullptr),
+    m_interfaceName(interfaceName)
 {
 }
 
