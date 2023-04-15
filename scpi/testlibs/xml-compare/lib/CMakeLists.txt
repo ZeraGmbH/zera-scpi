@@ -1,27 +1,20 @@
+file(GLOB SOURCES
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+    )
+
+file(GLOB HEADER
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    )
+
 add_library(xml-compare-testlib STATIC
-    xmldocument.cpp
-    xmldocument.h
-    xmldocumentcompare.cpp
-    xmldocumentcompare.h
-    xmlelemcompareattribs.cpp
-    xmlelemcompareattribs.h
-    xmlelemcomparetext.cpp
-    xmlelemcomparetag.h
-    xmlelemcomparetag.cpp
-    xmlelemcomparetext.h
-    xmlelemiter.cpp
-    xmlelemiter.h
-    xmlelemiterstrategylist.cpp
-    xmlelemiterstrategylist.h
-    xmlelemiterstrategysort.cpp
-    xmlelemiterstrategysort.h
-    xmlelemiterstrategytree.cpp
-    xmlelemiterstrategytree.h
+    ${SOURCES}
+    ${HEADER}
     )
 
 target_include_directories(xml-compare-testlib
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/xml-compare-testlib>
     )
 
 target_link_libraries(xml-compare-testlib
