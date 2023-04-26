@@ -82,6 +82,8 @@ QString ScpiNodeStaticFunctions::scpiTypeToString(const quint8 scpiType)
 QString ScpiNodeStaticFunctions::makeValidXmlTag(QString xmlTag)
 {
     xmlTag.replace("*", "");
+    xmlTag.replace("+", "PLUS");
+    xmlTag.replace("-", "MINUS");
     if(xmlTag.count() > 0 && xmlTag[0].isNumber())
         xmlTag = "N_" + xmlTag;
     return xmlTag;
