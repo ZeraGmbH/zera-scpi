@@ -6,8 +6,8 @@
 #include "scpi.h"
 #include "scpi_p.h"
 
-cSCPI::cSCPI(QString interfaceName)
-    :d_ptr(new cSCPIPrivate(interfaceName))
+cSCPI::cSCPI()
+    :d_ptr(new cSCPIPrivate())
 {
 }
 
@@ -41,7 +41,7 @@ cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input) const
     return getSCPIObject(input.getCommand());
 }
 
-void cSCPI::exportSCPIModelXML(QString &sxml)
+void cSCPI::exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry)
 {
-    d_ptr->exportSCPIModelXML(sxml);
+    d_ptr->exportSCPIModelXML(sxml, modelListBaseEntry);
 }

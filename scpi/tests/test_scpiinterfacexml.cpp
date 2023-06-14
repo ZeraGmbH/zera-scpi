@@ -6,8 +6,10 @@
 
 QTEST_MAIN(test_scpiinterfacexml)
 
-QString xmlLead = "<!DOCTYPE SCPIModel><MODELLIST><DEVICE>dev</DEVICE><MODELS>";
-QString xmlTrail = "</MODELS></MODELLIST>";
+QString xmlLead = "<!DOCTYPE SCPIModel><MODELLIST>";
+QString xmlModelsLead = "<MODELS>";
+QString xmlModelsTrail = "</MODELS>";
+QString xmlTrail = "</MODELLIST>";
 
 void test_scpiinterfacexml::addEmptyRoot()
 {
@@ -17,7 +19,7 @@ void test_scpiinterfacexml::addEmptyRoot()
     QString scpiModelXml =
             "<ROOT Type='Model,Node'>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
@@ -31,7 +33,7 @@ void test_scpiinterfacexml::addEmptyRootNested()
             "<ROOT Type='Model,Node'>"
                 "<CHILD Type='Node'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
@@ -47,7 +49,7 @@ void test_scpiinterfacexml::oneQuery()
             "<ROOT Type='Model,Node'>"
                 "<FOO ScpiPath='ROOT:FOO' Type='Query'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -65,7 +67,7 @@ void test_scpiinterfacexml::oneCmd()
             "<ROOT Type='Model,Node'>"
                 "<FOO ScpiPath='ROOT:FOO' Type='Command'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -82,7 +84,7 @@ void test_scpiinterfacexml::oneCmdwP()
             "<ROOT Type='Model,Node'>"
                 "<FOO ScpiPath='ROOT:FOO' Type='Command+Par'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -99,7 +101,7 @@ void test_scpiinterfacexml::oneXMLCmd()
             "<ROOT Type='Model,Node'>"
                 "<FOO ScpiPath='ROOT:FOO' Type=''/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -120,7 +122,7 @@ void test_scpiinterfacexml::oneElementNested()
                     "</CHILD1>"
                 "</CHILD>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -149,7 +151,7 @@ void test_scpiinterfacexml::twoElementNestedDifferentPath()
                     "</CHILD4>"
                 "</CHILD3>"
             "</ROOT2>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -173,7 +175,7 @@ void test_scpiinterfacexml::twoElementNestedSamePath()
                     "</CHILD2>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -198,7 +200,7 @@ void test_scpiinterfacexml::twoElementNestedAlmostSamePath()
                     "</CHILD3>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -213,7 +215,7 @@ void test_scpiinterfacexml::oneElementNestedRemove()
     QCOMPARE(ScpiNode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
-    const QString xmlExpected = xmlLead + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -242,7 +244,7 @@ void test_scpiinterfacexml::oneElementNestedRemoveReAdd()
                     "</CHILD1>"
                 "</CHILD>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -266,7 +268,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirst()
                     "</CHILD2>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -290,7 +292,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveFirstUpperCase()
                     "</CHILD2>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -315,7 +317,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveNonExistent()
                     "</CHILD2>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -331,7 +333,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveParent()
     QCOMPARE(ScpiNode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
-    const QString xmlExpected = xmlLead + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -347,7 +349,7 @@ void test_scpiinterfacexml::twoElementNestedSamePathRemoveGrandParent()
     QCOMPARE(ScpiNode::getInstanceCount(), 1);
 
     QString xmlExport = createScpiString();
-    const QString xmlExpected = xmlLead + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -373,7 +375,7 @@ void test_scpiinterfacexml::twoElementNestedRemoveHalfUp()
                     "</CHILD2>"
                 "</CHILD1>"
             "</ROOT1>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -395,7 +397,7 @@ void test_scpiinterfacexml::threeElementAddRemoveFirstThirdWhichIsSecondAfterFir
             "<ROOT Type='Model,Node'>"
                 "<CHILD2 ScpiPath='ROOT:CHILD2' Type='Query'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
@@ -414,8 +416,39 @@ void test_scpiinterfacexml::twoDifferentCase()
             "<ROOT Type='Model,Node'>"
                 "<CHILD ScpiPath='ROOT:CHILD' Type='Query'/>"
             "</ROOT>";
-    const QString xmlExpected = xmlLead + scpiModelXml + xmlTrail;
+    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
 
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::oneModelListBaseEntry()
+{
+    m_scpiInterface->insertScpiCmd(QStringList() << "root", nullptr);
+    QMap<QString, QString> modelListBaseEntry;
+    modelListBaseEntry.insert("key", "value");
+    QString xmlExport = createScpiString(modelListBaseEntry);
+
+    QString scpiModelXml =
+            "<ROOT Type='Model,Node'>"
+            "</ROOT>";
+    const QString xmlExpected = xmlLead + "<key>value</key>" + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
+    XmlDocumentCompare cmp;
+    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
+}
+
+void test_scpiinterfacexml::twoModelListBaseEntries()
+{
+    m_scpiInterface->insertScpiCmd(QStringList() << "root", nullptr);
+    QMap<QString, QString> modelListBaseEntry;
+    modelListBaseEntry.insert("key1", "value1");
+    modelListBaseEntry.insert("key2", "value2");
+    QString xmlExport = createScpiString(modelListBaseEntry);
+
+    QString scpiModelXml =
+            "<ROOT Type='Model,Node'>"
+            "</ROOT>";
+    const QString xmlExpected = xmlLead + "<key1>value1</key1>" + "<key2>value2</key2>" + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
     XmlDocumentCompare cmp;
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
@@ -428,7 +461,7 @@ void test_scpiinterfacexml::iteminstanceCountInit()
 void test_scpiinterfacexml::init()
 {
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
-    m_scpiInterface = new cSCPI("dev");
+    m_scpiInterface = new cSCPI();
 }
 
 void test_scpiinterfacexml::cleanup()
@@ -449,10 +482,10 @@ void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
     }
 }
 
-QString test_scpiinterfacexml::createScpiString()
+QString test_scpiinterfacexml::createScpiString(QMap<QString, QString> modelListBaseEntry)
 {
     QString exportedXml;
-    m_scpiInterface->exportSCPIModelXML(exportedXml);
+    m_scpiInterface->exportSCPIModelXML(exportedXml, modelListBaseEntry);
     return exportedXml;
 }
 

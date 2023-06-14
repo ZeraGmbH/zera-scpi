@@ -35,6 +35,9 @@ private slots:
 
     void twoDifferentCase();
 
+    void oneModelListBaseEntry();
+    void twoModelListBaseEntries();
+
     void iteminstanceCountInit();
 
     void init();
@@ -47,7 +50,7 @@ private:
     };
 
     void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
-    QString createScpiString();
+    QString createScpiString(QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
 
     QList<SCPITestObjectStub*> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;

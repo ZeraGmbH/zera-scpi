@@ -1,13 +1,11 @@
 #include "scpifullcmdcheckerfortest.h"
 #include "scpiparamcheckerdelegate.h"
 
-ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest() :
-    m_scpiTree("TestScpi")
+ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest()
 {
 }
 
-ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected) :
-    m_scpiTree("TestScpi")
+ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected)
 {
     addCommand(scpiNodePath, scpiType, paramCountExpected);
 }

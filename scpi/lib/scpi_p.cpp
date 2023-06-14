@@ -5,9 +5,8 @@
 #include <QDomElement>
 #include <QList>
 
-cSCPIPrivate::cSCPIPrivate(const QString &interfaceName) :
-    m_invisibleRootNode(QString(), nullptr),
-    m_interfaceName(interfaceName)
+cSCPIPrivate::cSCPIPrivate() :
+    m_invisibleRootNode(QString(), nullptr)
 {
 }
 
@@ -46,17 +45,19 @@ cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input)
     return nullptr;
 }
 
-void cSCPIPrivate::exportSCPIModelXML(QString& sxml)
+void cSCPIPrivate::exportSCPIModelXML(QString& sxml, QMap<QString, QString> modelListBaseEntry)
 {
     QDomDocument modelDoc("SCPIModel");
 
     QDomElement rootTag = modelDoc.createElement("MODELLIST");
     modelDoc.appendChild(rootTag);
 
-    QDomElement deviceTag = modelDoc.createElement("DEVICE");
-    rootTag.appendChild( deviceTag );
-    QDomText t = modelDoc.createTextNode(m_interfaceName);
-    deviceTag.appendChild(t);
+    for(auto iter=modelListBaseEntry.constBegin(); iter!=modelListBaseEntry.constEnd(); iter++) {
+        QDomElement elem = modelDoc.createElement(iter.key());
+        rootTag.appendChild(elem);
+        QDomText domText = modelDoc.createTextNode(iter.value());
+        elem.appendChild(domText);
+    }
 
     QDomElement modelsTag = modelDoc.createElement("MODELS");
     rootTag.appendChild(modelsTag);

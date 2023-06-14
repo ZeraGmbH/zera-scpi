@@ -1,12 +1,11 @@
 #include "scpisingletonfactory.h"
 
-std::unordered_map<QString, ScpiSingletonFactory::scpiPtr> ScpiSingletonFactory::m_scpiHash;
+cSCPI* ScpiSingletonFactory::m_instance = nullptr;
 
-cSCPI* ScpiSingletonFactory::getScpiObj(QString name)
+cSCPI* ScpiSingletonFactory::getScpiObj()
 {
-    scpiPtr &entry = m_scpiHash[name];
-    if(!entry) {
-        entry = std::make_unique<cSCPI>(name);
+    if(!m_instance) {
+        m_instance = new cSCPI();
     }
-    return entry.get();
+    return m_instance;
 }
