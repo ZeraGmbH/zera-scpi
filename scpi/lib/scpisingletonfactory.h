@@ -9,10 +9,9 @@
 class ScpiSingletonFactory
 {
 public:
-    static cSCPI* getScpiObj(QString name);
+    static cSCPI* getScpiObj();
 private:
-    typedef std::unique_ptr<cSCPI> scpiPtr;
-    static std::unordered_map<QString, scpiPtr> m_scpiHash;
+    static cSCPI* m_instance;
 };
 
 #endif // SCPISINGLETONFACTORY_H

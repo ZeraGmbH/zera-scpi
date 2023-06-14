@@ -9,8 +9,6 @@ class test_scpisingletonfactory : public QObject
 private slots:
     void askOneOnce();
     void askOneTwice();
-    void askTwoOnce();
-    void askTwoTwice();
 };
 
 #endif

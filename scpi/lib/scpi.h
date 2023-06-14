@@ -22,6 +22,7 @@
 #include <QStringList>
 #include <QString>
 #include <QList>
+#include <QMap>
 #include "scpi_export.h"
 #include "scpiobject.h"
 #include "scpicommand.h"
@@ -52,7 +53,7 @@ class cSCPIPrivate;
 class SCPI_EXPORT cSCPI
 {
 public:
-    cSCPI(QString interfaceName);
+    cSCPI();
     virtual ~cSCPI();
 
     void insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject* pSCPIObject);
@@ -63,7 +64,7 @@ public:
     cSCPIObject* getSCPIObject(const QString& input) const;
     cSCPIObject* getSCPIObject(const cSCPICommand &input) const;
 
-    void exportSCPIModelXML(QString &sxml);
+    void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
 private:
     cSCPIPrivate *d_ptr;
 };

@@ -10,7 +10,7 @@ static const int treeDepth = 4;
 
 void test_scpibenchmark::initTestCase()
 {
-    m_scpiInterface = new cSCPI("dev");
+    m_scpiInterface = new cSCPI();
 }
 
 void test_scpibenchmark::cleanupTestCase()
