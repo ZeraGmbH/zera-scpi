@@ -16,7 +16,7 @@ include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
 include(GenerateExportHeader)
 
-find_package(Qt5 COMPONENTS Core Xml Test CONFIG REQUIRED)
+find_package(Qt5 COMPONENTS Core Xml Network Test CONFIG REQUIRED)
 
 enable_testing()
 
