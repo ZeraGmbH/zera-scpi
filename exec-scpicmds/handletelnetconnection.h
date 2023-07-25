@@ -10,8 +10,15 @@ class HandleTelnetConnection : public QObject
 public:
     HandleTelnetConnection(QObject *parent);
     void setConnection(QString hostName, quint16 port);
+    void sendCommand(QString cmd);
+
 signals:
     void OperationFinish(bool bError, QString strMessage);
+    void cmdFinish();
+
+private slots:
+    void onReceive();
+    void onDisconnect();
 
 private:
     QTcpSocket *m_TcpSocket;
