@@ -1,14 +1,14 @@
-#include "parsecmdsinfile.h"
+#include "commandparser.h"
 #include <QFile>
 #include <QTextStream>
 
-ParseCmdsInFile::ParseCmdsInFile(QObject *parent)
+CommandParser::CommandParser(QObject *parent)
     : QObject{parent}
 {
 
 }
 
-void ParseCmdsInFile::StartFileExecution(QString strFileName)
+void CommandParser::StartFileExecution(QString strFileName)
 {
     QFile executeFile(strFileName);
     if(executeFile.open(QIODevice::ReadOnly)) {
@@ -34,7 +34,7 @@ void ParseCmdsInFile::StartFileExecution(QString strFileName)
 
 }
 
-void ParseCmdsInFile::handleCombinedCmds(QString combCmd)
+void CommandParser::handleCombinedCmds(QString combCmd)
 {
     //we have this in scpiclient
 }
