@@ -1,14 +1,14 @@
-#ifndef HANDLETELNETCONNECTION_H
-#define HANDLETELNETCONNECTION_H
+#ifndef TCPHANDLER_H
+#define TCPHANDLER_H
 
 #include <QObject>
 #include <QTcpSocket>
 
-class HandleTelnetConnection : public QObject
+class TcpHandler : public QObject
 {
     Q_OBJECT
 public:
-    HandleTelnetConnection(QObject *parent);
+    TcpHandler(QObject *parent);
     void setConnection(QString hostName, quint16 port);
     void sendCommand(QString cmd);
 
@@ -24,4 +24,4 @@ private:
     QTcpSocket *m_TcpSocket;
 };
 
-#endif // HANDLETELNETCONNECTION_H
+#endif // TCPHANDLER_H

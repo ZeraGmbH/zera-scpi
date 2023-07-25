@@ -1,12 +1,12 @@
-#include "handletelnetconnection.h"
+#include "tcphandler.h"
 
-HandleTelnetConnection::HandleTelnetConnection(QObject *parent)
+TcpHandler::TcpHandler(QObject *parent)
     : QObject{parent}
 {
 
 }
 
-void HandleTelnetConnection::setConnection(QString hostName, quint16 port)
+void TcpHandler::setConnection(QString hostName, quint16 port)
 {
     m_TcpSocket->connectToHost(hostName, port);
     if(!m_TcpSocket->waitForConnected()) {
@@ -15,18 +15,18 @@ void HandleTelnetConnection::setConnection(QString hostName, quint16 port)
     }
     else {
         qInfo("IP connection %s:%i was opened successfully!", qPrintable(hostName), port);
-        connect(m_TcpSocket, &QTcpSocket::readyRead, this, &HandleTelnetConnection::onReceive);
-        connect(m_TcpSocket, &QTcpSocket::disconnected, this, &HandleTelnetConnection::onDisconnect);
+        connect(m_TcpSocket, &QTcpSocket::readyRead, this, &TcpHandler::onReceive);
+        connect(m_TcpSocket, &QTcpSocket::disconnected, this, &TcpHandler::onDisconnect);
         emit OperationFinish(false, "");
     }
 }
 
-void HandleTelnetConnection::sendCommand(QString cmd)
+void TcpHandler::sendCommand(QString cmd)
 {
 
 }
 
-void HandleTelnetConnection::onReceive()
+void TcpHandler::onReceive()
 {
     if(m_TcpSocket) {
         QString answer = m_TcpSocket->readAll();
@@ -42,7 +42,7 @@ void HandleTelnetConnection::onReceive()
     }
 }
 
-void HandleTelnetConnection::onDisconnect()
+void TcpHandler::onDisconnect()
 {
     qFatal("Server closed connection unexpected!");
 }
