@@ -1,13 +1,13 @@
-#ifndef PARSECMDSINFILE_H
-#define PARSECMDSINFILE_H
+#ifndef COMMANDPARSER_H
+#define COMMANDPARSER_H
 
 #include <QObject>
 
-class ParseCmdsInFile : public QObject
+class CommandParser : public QObject
 {
     Q_OBJECT
 public:
-    ParseCmdsInFile(QObject *parent = nullptr);
+    CommandParser(QObject *parent = nullptr);
     void StartFileExecution(QString strFileName);
 
 signals:
@@ -19,4 +19,4 @@ private:
     QList<QString> m_strCmdList;
 };
 
-#endif // PARSECMDSINFILE_H
+#endif // COMMANDPARSER_H
