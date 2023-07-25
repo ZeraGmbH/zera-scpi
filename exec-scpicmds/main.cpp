@@ -1,6 +1,9 @@
 #include <QObject>
 #include <QTimer>
 #include <QCommandLineParser>
+#include "commandparser.h"
+#include "tcphandler.h"
+
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +12,7 @@ int main(int argc, char *argv[])
     QCommandLineParser parser;
     parser.addHelpOption();
 
-    QCommandLineOption filePath("f", "path to the file", "filePath");
+    QCommandLineOption filePath("f", "path to the command file", "filePath");
     parser.addOption(filePath);
 
     QCommandLineOption ipAdr("i", "ip address", "ip address");
@@ -20,8 +23,8 @@ int main(int argc, char *argv[])
 
     parser.process(a);
 
-    QString strExecFile = parser.value(filePath);
-    if(strExecFile.isEmpty())
+    QString strCmdFile = parser.value(filePath);
+    if(strCmdFile.isEmpty())
         parser.showHelp(-1);
 
     QString ipadr = parser.value(ipAdr);
@@ -31,4 +34,12 @@ int main(int argc, char *argv[])
     QString port = parser.value(portNumb);
     if(port.isEmpty())
         parser.showHelp(-1);
+
+    //HandleTelnetConnection conn;
+    //conn.setConnection()
+
+    CommandParser cmdParser;
+    cmdParser.parseCmdFile(strCmdFile);
+
+    exit(0);
 }
