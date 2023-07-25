@@ -4,12 +4,13 @@
 #include <QObject>
 #include <QTcpSocket>
 
+
 class TcpHandler : public QObject
 {
     Q_OBJECT
 public:
     TcpHandler(QObject *parent);
-    void setConnection(QString hostName, quint16 port);
+    void connectTCP(QString hostName, quint16 port);
     void sendCommand(QString cmd);
 
 signals:

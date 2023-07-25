@@ -1,22 +1,25 @@
-#ifndef COMMANDPARSER_H
-#define COMMANDPARSER_H
+#ifndef PARSECMDSINFILE_H
+#define PARSECMDSINFILE_H
 
 #include <QObject>
+#include "tcphandler.h"
+
 
 class CommandParser : public QObject
 {
     Q_OBJECT
 public:
     CommandParser(QObject *parent = nullptr);
-    void StartFileExecution(QString strFileName);
+    void parseCmdFile(QString strFileName);
 
 signals:
     void done(int exitCode);
 
 private:
-    void handleCombinedCmds(QString combCmd);
+    void checkCmds();
+    void sendCmds();
 
-    QList<QString> m_strCmdList;
+    QList<QStringList> m_strCmdList;
 };
 
-#endif // COMMANDPARSER_H
+#endif // PARSECMDSINFILE_H

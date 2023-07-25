@@ -1,12 +1,13 @@
 #include "tcphandler.h"
 
+
 TcpHandler::TcpHandler(QObject *parent)
     : QObject{parent}
 {
 
 }
 
-void TcpHandler::setConnection(QString hostName, quint16 port)
+void TcpHandler::connectTCP(QString hostName, quint16 port)
 {
     m_TcpSocket->connectToHost(hostName, port);
     if(!m_TcpSocket->waitForConnected()) {
