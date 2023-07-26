@@ -1,10 +1,11 @@
 #include <QFile>
 #include <QTextStream>
+#include <QObject>
 #include "commandparser.h"
 
 
-CommandParser::CommandParser(QObject *parent)
-    : QObject{parent}
+CommandParser::CommandParser(TcpHandler &tcpHandler) :
+    m_tcpHandler(tcpHandler)
 {
 }
 
@@ -21,13 +22,16 @@ void CommandParser::parseCmdFile(QString strFileName)
         while (!textStream.atEnd()) {
             QString strLine = textStream.readLine().trimmed();
             if(!strLine.isEmpty() && !strLine.startsWith("#"))
-                m_strCmdList.append(strLine.split("|"));
+            {
+                QStringList cmds;
+                for (QString &cmd : strLine.split("|", Qt::SkipEmptyParts))
+                    cmds.append(cmd.trimmed());
+                m_strCmdList.append(cmds);
+            }
         }
         executeFile.close();
-
         // Check commands
-        checkCmds();
-
+        // checkCmds();
         // Send
         sendCmds();
     }
@@ -40,7 +44,20 @@ void CommandParser::parseCmdFile(QString strFileName)
 
 void CommandParser::checkCmds()
 {
-    // ... only ascii; no empty commands "| MEAS:VOLT:MAX 70;| öäüß |, ...
+    for (QStringList &line : m_strCmdList)
+    {
+        for (QString &cmd : line)
+        {
+            if (cmd.isEmpty())
+                ; // TODO handle error
+
+            // Check for ASCII characters and allowed symboles only
+            //bool containsNonASCII = myString.contains(QRegularExpression(QStringLiteral("[^\\x{0000}-\\x{007F}]"))); // a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
+
+            qInfo("%s", qPrintable(cmd));
+        }
+        qInfo("");
+    }
 }
 
 void CommandParser::sendCmds()
@@ -48,9 +65,6 @@ void CommandParser::sendCmds()
     for (QStringList &line : m_strCmdList)
     {
         for (QString &cmd : line)
-        {
-            qInfo("%s", qPrintable(cmd));
-        }
-        qInfo("");
+            m_tcpHandler.sendCommand(cmd);
     }
 }

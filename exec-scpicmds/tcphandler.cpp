@@ -1,46 +1,43 @@
 #include "tcphandler.h"
 
 
-TcpHandler::TcpHandler(QObject *parent)
-    : QObject{parent}
+TcpHandler::TcpHandler()
 {
 
 }
 
-void TcpHandler::connectTCP(QString hostName, quint16 port)
+bool TcpHandler::connectTCP(QString hostName, quint16 port)
 {
-    m_TcpSocket->connectToHost(hostName, port);
-    if(!m_TcpSocket->waitForConnected()) {
-        QString strError = QStringLiteral("IP connection %i:%2 could not be opened!").arg(hostName).arg(port);
-        emit OperationFinish(true, strError);
+    m_tcpSocket.connectToHost(hostName, port);
+
+    if(!m_tcpSocket.waitForConnected()) {
+        return false;
     }
-    else {
-        qInfo("IP connection %s:%i was opened successfully!", qPrintable(hostName), port);
-        connect(m_TcpSocket, &QTcpSocket::readyRead, this, &TcpHandler::onReceive);
-        connect(m_TcpSocket, &QTcpSocket::disconnected, this, &TcpHandler::onDisconnect);
-        emit OperationFinish(false, "");
+    else
+    {
+        connect(&m_tcpSocket, &QTcpSocket::disconnected, this, &TcpHandler::onDisconnect);
+        if(m_tcpSocket.state() != QAbstractSocket::ConnectedState)
+            return false;
+        return true;
     }
 }
 
 void TcpHandler::sendCommand(QString cmd)
 {
+    qInfo("-->  %s ", qPrintable(cmd));
+    qint64 res = m_tcpSocket.write(cmd.toLocal8Bit() + "\n");
+    m_tcpSocket.waitForBytesWritten();
 
+    if (cmd.endsWith("?"))
+        onReceive();
 }
 
 void TcpHandler::onReceive()
 {
-    if(m_TcpSocket) {
-        QString answer = m_TcpSocket->readAll();
-        answer.replace("\n", "");
-        bool error = answer.contains(",ERROR", Qt::CaseInsensitive);
-        qInfo("<--  %s ", qPrintable(answer));
-        if(!error)
-            emit cmdFinish();
-        else {
-            qInfo("Abort on external error!");
-            //emit kill(-1);
-        }
-    }
+    m_tcpSocket.waitForReadyRead(1000);
+    QString answer = m_tcpSocket.readAll();
+    answer.replace("\n", "");
+    qInfo("<--  %s ", qPrintable(answer));
 }
 
 void TcpHandler::onDisconnect()
