@@ -9,7 +9,7 @@ class CommandParser : public QObject
 {
     Q_OBJECT
 public:
-    CommandParser(QObject *parent = nullptr);
+    CommandParser(TcpHandler& tcpHandler);
     void parseCmdFile(QString strFileName);
 
 signals:
@@ -20,6 +20,7 @@ private:
     void sendCmds();
 
     QList<QStringList> m_strCmdList;
+    TcpHandler& m_tcpHandler;
 };
 
 #endif // PARSECMDSINFILE_H
