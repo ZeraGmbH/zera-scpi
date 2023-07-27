@@ -12,6 +12,7 @@ public:
     TcpHandler();
     bool connectTCP(QString hostName, quint16 port);
     void sendCommand(QString cmd);
+    void disconnectFromHost();
 
 signals:
     void cmdFinish();

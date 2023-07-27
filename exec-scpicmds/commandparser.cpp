@@ -35,11 +35,8 @@ void CommandParser::parseCmdFile(QString strFileName)
         // Send
         sendCmds();
     }
-    else {
+    else
         qInfo("Execution file %s could not be opened!", qPrintable(strFileName));
-        //emit done(-1);
-    }
-
 }
 
 void CommandParser::checkCmds()
@@ -67,4 +64,5 @@ void CommandParser::sendCmds()
         for (QString &cmd : line)
             m_tcpHandler.sendCommand(cmd);
     }
+    m_tcpHandler.disconnectFromHost();
 }
