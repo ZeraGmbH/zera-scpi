@@ -1,0 +1,10 @@
+# ------------------
+# 6308: mt310s2d
+
+sens:m0:250V:corr:offset:node:0 0;0;
+sens:m0:250V:corr:offset:node:0 5196;0;
+sens:m0:250V:corr:compute;
+
+SENSE:m0:250V:REJECTION?
+
+sens:m0:250V:corr:offset:node:0 0;0;|*stb?
