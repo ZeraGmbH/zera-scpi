@@ -25,11 +25,20 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 void TcpHandler::sendCommand(QString cmd)
 {
     qInfo("-->  %s ", qPrintable(cmd));
-    qint64 res = m_tcpSocket.write(cmd.toLocal8Bit() + "\n");
+    m_tcpSocket.write(cmd.toLocal8Bit() + "\n");
     m_tcpSocket.waitForBytesWritten();
 
     if (cmd.endsWith("?"))
         onReceive();
+}
+
+void TcpHandler::disconnectFromHost()
+{
+    m_tcpSocket.disconnect();
+    m_tcpSocket.close();
+    if(m_tcpSocket.state() == QAbstractSocket::UnconnectedState || m_tcpSocket.waitForDisconnected())
+        qInfo("disconnected");
+    m_tcpSocket.deleteLater();
 }
 
 void TcpHandler::onReceive()
