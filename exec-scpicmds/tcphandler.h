@@ -11,18 +11,19 @@ class TcpHandler : public QObject
 public:
     TcpHandler();
     bool connectTCP(QString hostName, quint16 port);
-    void sendCommand(QString cmd);
+    void sendCommand(QString combinedCmd);
     void disconnectFromHost();
 
 signals:
     void cmdFinish();
 
 private slots:
-    void onReceive();
+    int onReceive();
     void onDisconnect();
 
 private:
     QTcpSocket m_tcpSocket;
+    QString m_receiveBuffer;
 };
 
 #endif // TCPHANDLER_H

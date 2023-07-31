@@ -21,12 +21,8 @@ void CommandParser::parseCmdFile(QString strFileName)
 
         while (!textStream.atEnd()) {
             QString strLine = textStream.readLine().trimmed();
-            if(!strLine.isEmpty() && !strLine.startsWith("#"))
-            {
-                QStringList cmds;
-                for (QString &cmd : strLine.split("|", Qt::SkipEmptyParts))
-                    cmds.append(cmd.trimmed());
-                m_strCmdList.append(cmds);
+            if(!strLine.isEmpty() && !strLine.startsWith("#")) {
+                m_cmds.append(strLine);
             }
         }
         executeFile.close();
@@ -59,10 +55,7 @@ void CommandParser::checkCmds()
 
 void CommandParser::sendCmds()
 {
-    for (QStringList &line : m_strCmdList)
-    {
-        for (QString &cmd : line)
-            m_tcpHandler.sendCommand(cmd);
-    }
+    for (QString &cmd : m_cmds)
+        m_tcpHandler.sendCommand(cmd);
     m_tcpHandler.disconnectFromHost();
 }

@@ -21,6 +21,7 @@ private:
 
     QList<QStringList> m_strCmdList;
     TcpHandler& m_tcpHandler;
+    QStringList m_cmds;
 };
 
 #endif // PARSECMDSINFILE_H
