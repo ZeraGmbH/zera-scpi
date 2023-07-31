@@ -1,5 +1,5 @@
 #include "tcphandler.h"
-
+#include <QDateTime>
 
 TcpHandler::TcpHandler()
 {
@@ -22,14 +22,20 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
     }
 }
 
-void TcpHandler::sendCommand(QString cmd)
+void TcpHandler::sendCommand(QString combinedCmd)
 {
-    qInfo("-->  %s ", qPrintable(cmd));
-    m_tcpSocket.write(cmd.toLocal8Bit() + "\n");
+    qInfo("-->  %s ", qPrintable(combinedCmd));
+    m_tcpSocket.write(combinedCmd.toLocal8Bit() + "\n");
     m_tcpSocket.waitForBytesWritten();
 
-    if (cmd.endsWith("?"))
-        onReceive();
+    int numAnsw = 0;
+    for(auto &cmd : combinedCmd.split("|")) {
+        if (cmd.trimmed().endsWith("?"))
+            numAnsw ++;
+    }
+    while(numAnsw > 0) {
+        numAnsw -=onReceive();
+    }
 }
 
 void TcpHandler::disconnectFromHost()
@@ -41,12 +47,20 @@ void TcpHandler::disconnectFromHost()
     m_tcpSocket.deleteLater();
 }
 
-void TcpHandler::onReceive()
+int TcpHandler::onReceive()
 {
-    m_tcpSocket.waitForReadyRead(1000);
-    QString answer = m_tcpSocket.readAll();
-    answer.replace("\n", "");
-    qInfo("<--  %s ", qPrintable(answer));
+    int numAnsw = 0;
+    m_tcpSocket.waitForReadyRead(1000000);
+    m_receiveBuffer.append(m_tcpSocket.readAll());
+    while(m_receiveBuffer.contains("\n")) {
+        numAnsw ++;
+        QString answer = m_receiveBuffer.left(m_receiveBuffer.indexOf("\n"));
+        m_receiveBuffer.remove(0, answer.length()+1);
+        QDateTime now = QDateTime::currentDateTime();
+        QString strOut = QStringLiteral("[%1]: %2").arg(now.toString("HH:mm:ss"),answer);
+        qInfo("%s", qPrintable(strOut));
+    }
+    return numAnsw;
 }
 
 void TcpHandler::onDisconnect()
