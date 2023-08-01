@@ -24,6 +24,8 @@ private slots:
 private:
     QTcpSocket m_tcpSocket;
     QString m_receiveBuffer;
+    QList<bool> m_cmdIsQuery;
+    int m_indexAnswers;
 };
 
 #endif // TCPHANDLER_H
