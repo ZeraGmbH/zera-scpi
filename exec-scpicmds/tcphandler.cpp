@@ -25,16 +25,30 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 void TcpHandler::sendCommand(QString combinedCmd)
 {
     qInfo("-->  %s ", qPrintable(combinedCmd));
-    m_tcpSocket.write(combinedCmd.toLocal8Bit() + "\n");
+    QStringList cmdsSplitted = combinedCmd.split("|");
+    int numAnsw = cmdsSplitted.size();
+    QString combinedCmdWithQueries;
+    m_indexAnswers = 0;
+    m_cmdIsQuery.clear();
+
+    for(auto &cmd : cmdsSplitted) {
+        if (cmd.trimmed().endsWith("?") ) {
+            m_cmdIsQuery.append(true);
+            combinedCmdWithQueries.append(cmd + "|");
+        }
+        else if (cmd.trimmed().endsWith(";")) {
+            m_cmdIsQuery.append(false);
+            cmd.append("|*OPC?|");
+            combinedCmdWithQueries.append(cmd);
+        }
+    }
+    if(combinedCmdWithQueries.endsWith("|"))
+        combinedCmdWithQueries.remove(combinedCmdWithQueries.length()-1, 1);
+    m_tcpSocket.write(combinedCmdWithQueries.toLocal8Bit() + "\n");
     m_tcpSocket.waitForBytesWritten();
 
-    int numAnsw = 0;
-    for(auto &cmd : combinedCmd.split("|")) {
-        if (cmd.trimmed().endsWith("?"))
-            numAnsw ++;
-    }
     while(numAnsw > 0) {
-        numAnsw -=onReceive();
+        numAnsw -= onReceive();
     }
 }
 
@@ -50,15 +64,18 @@ void TcpHandler::disconnectFromHost()
 int TcpHandler::onReceive()
 {
     int numAnsw = 0;
-    m_tcpSocket.waitForReadyRead(1000000);
+    m_tcpSocket.waitForReadyRead(3000);
     m_receiveBuffer.append(m_tcpSocket.readAll());
     while(m_receiveBuffer.contains("\n")) {
         numAnsw ++;
         QString answer = m_receiveBuffer.left(m_receiveBuffer.indexOf("\n"));
         m_receiveBuffer.remove(0, answer.length()+1);
-        QDateTime now = QDateTime::currentDateTime();
-        QString strOut = QStringLiteral("[%1]: %2").arg(now.toString("HH:mm:ss"),answer);
-        qInfo("%s", qPrintable(strOut));
+        if(m_cmdIsQuery[m_indexAnswers]) {
+            QDateTime now = QDateTime::currentDateTime();
+            QString strOut = QStringLiteral("[%1]: %2").arg(now.toString("HH:mm:ss"),answer);
+            qInfo("%s", qPrintable(strOut));
+        }
+        m_indexAnswers ++;
     }
     return numAnsw;
 }
