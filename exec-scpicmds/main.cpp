@@ -27,21 +27,21 @@ int main(int argc, char *argv[])
     QString cmdFile = parser.value(cmdFileOption);
     if(cmdFile.isEmpty())
     {
-        qInfo("Please specify a cmd file!");
+        fprintf(stderr, "Please specify a cmd file!\n");
         parser.showHelp(-1);
     }
 
     QString ipAddress = parser.value(ipAddressOption);
     if(ipAddress.isEmpty())
     {
-        qInfo("Please specify an IP-address!");
+        fprintf(stderr, "Please specify an IP-address!\n");
         parser.showHelp(-1);
     }
 
     quint16 portNumber = parser.value(portNumberOption).toUInt();
     if(portNumber <= 0 || portNumber > 65535)
     {
-        qInfo("The port number needs to be within range 1..65535!");
+        fprintf(stderr, "The port number needs to be within range 1..65535!\n");
         parser.showHelp(-1);
     }
 
@@ -53,12 +53,12 @@ int main(int argc, char *argv[])
     }
     else
     {
-        qInfo("IP connection %s:%i could not be opened!", qPrintable(ipAddress), portNumber);
-        exit(1);
+        fprintf(stderr, "IP connection %s:%i could not be opened!\n", qPrintable(ipAddress), portNumber);
+        return ENXIO;
     }
 
     CommandParser cmdParser(tcpHandler);
     cmdParser.parseCmdFile(cmdFile);
 
-    exit(0);
+    return a.exec();
 }

@@ -57,7 +57,6 @@ void TcpHandler::disconnectFromHost()
     m_tcpSocket.close();
     if(m_tcpSocket.state() == QAbstractSocket::UnconnectedState || m_tcpSocket.waitForDisconnected())
         qInfo("TCP connection was closed!");
-    m_tcpSocket.deleteLater();
 }
 
 int TcpHandler::onReceive()
