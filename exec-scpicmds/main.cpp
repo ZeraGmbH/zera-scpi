@@ -49,7 +49,7 @@ int main(int argc, char *argv[])
     TcpHandler tcpHandler;
     if (tcpHandler.connectTCP(ipAddress, portNumber))
     {
-        qInfo("IP connection %s:%i was opened successfully!", qPrintable(ipAddress), portNumber);
+        qInfo("TCP connection to %s:%i was opened successfully!", qPrintable(ipAddress), portNumber);
     }
     else
     {
