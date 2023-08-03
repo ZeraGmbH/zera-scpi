@@ -2,7 +2,7 @@
 #define LOGGING_H
 
 #include <QObject>
-//#include <memory>
+
 
 enum class LoggingColor
 {
