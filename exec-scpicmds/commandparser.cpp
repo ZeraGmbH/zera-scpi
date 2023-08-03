@@ -2,6 +2,7 @@
 #include <QTextStream>
 #include <QObject>
 #include "commandparser.h"
+#include "logging.h"
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
@@ -32,7 +33,7 @@ void CommandParser::parseCmdFile(QString strFileName)
         sendCmds();
     }
     else
-        qInfo("Execution file %s could not be opened!", qPrintable(strFileName));
+        Logging::LogMsg(QString("Command file \"%1\" could not be opened!").arg(strFileName), LoggingColor::RED);
 }
 
 void CommandParser::checkCmds()
