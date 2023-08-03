@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include "tcphandler.h"
+#include "messagedata.h"
 
 
 class CommandParser : public QObject
@@ -16,12 +17,11 @@ signals:
     void done(int exitCode);
 
 private:
-    void checkCmds();
+    bool cmdsAreValid();
     void sendCmds();
 
-    QList<QStringList> m_strCmdList;
     TcpHandler& m_tcpHandler;
-    QStringList m_cmds;
+    QList<std::shared_ptr<MessageData>> m_msgs;
 };
 
 #endif // PARSECMDSINFILE_H

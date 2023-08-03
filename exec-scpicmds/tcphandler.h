@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QTcpSocket>
+#include "messagedata.h"
 
 
 class TcpHandler : public QObject
@@ -11,20 +12,19 @@ class TcpHandler : public QObject
 public:
     TcpHandler();
     bool connectTCP(QString hostName, quint16 port);
-    void sendCommand(QString combinedCmd);
+    void sendMessage(MessageData &msg);
     void disconnectFromHost();
 
 signals:
     void cmdFinish();
 
 private slots:
-    int onReceive();
+    int receiveAnswers(MessageData &msg);
     void onDisconnect();
 
 private:
     QTcpSocket m_tcpSocket;
     QString m_receiveBuffer;
-    QList<bool> m_cmdIsQuery;
     int m_indexAnswers;
 };
 
