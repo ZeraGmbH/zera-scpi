@@ -1,5 +1,5 @@
 #include "tcphandler.h"
-#include <QDateTime>
+#include "logging.h"
 
 TcpHandler::TcpHandler()
 {
@@ -24,7 +24,7 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 
 void TcpHandler::sendCommand(QString combinedCmd)
 {
-    qInfo("-->  %s ", qPrintable(combinedCmd));
+    Logging::LogMsg(QString("--> %1").arg(combinedCmd));
     QStringList cmdsSplitted = combinedCmd.split("|");
     int numAnsw = cmdsSplitted.size();
     m_indexAnswers = 0;
@@ -56,7 +56,7 @@ void TcpHandler::disconnectFromHost()
     m_tcpSocket.disconnect();
     m_tcpSocket.close();
     if(m_tcpSocket.state() == QAbstractSocket::UnconnectedState || m_tcpSocket.waitForDisconnected())
-        qInfo("TCP connection was closed!");
+        Logging::LogMsg(QString("TCP connection was closed."));
 }
 
 int TcpHandler::onReceive()
@@ -68,11 +68,8 @@ int TcpHandler::onReceive()
         numAnsw ++;
         QString answer = m_receiveBuffer.left(m_receiveBuffer.indexOf("\n"));
         m_receiveBuffer.remove(0, answer.length()+1);
-        if(m_cmdIsQuery[m_indexAnswers]) {
-            QDateTime now = QDateTime::currentDateTime();
-            QString strOut = QStringLiteral("[%1]: %2").arg(now.toString("HH:mm:ss"),answer);
-            qInfo("%s", qPrintable(strOut));
-        }
+        if(m_cmdIsQuery[m_indexAnswers])
+            Logging::LogMsg(QString("  <- [%1] %2").arg(QString::number(m_indexAnswers + 1), answer));
         m_indexAnswers ++;
     }
     return numAnsw;
@@ -80,5 +77,5 @@ int TcpHandler::onReceive()
 
 void TcpHandler::onDisconnect()
 {
-    qFatal("Server closed connection unexpected!");
+    Logging::LogMsg(QString("Server closed connection unexpected!"), LoggingColor::RED);
 }

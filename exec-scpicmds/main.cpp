@@ -2,6 +2,7 @@
 #include <QCommandLineParser>
 #include "commandparser.h"
 #include "tcphandler.h"
+#include "logging.h"
 
 
 int main(int argc, char *argv[])
@@ -27,21 +28,21 @@ int main(int argc, char *argv[])
     QString cmdFile = parser.value(cmdFileOption);
     if(cmdFile.isEmpty())
     {
-        fprintf(stderr, "Please specify a cmd file!\n");
+        Logging::LogMsg(QString("Please specify a command file!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
     QString ipAddress = parser.value(ipAddressOption);
     if(ipAddress.isEmpty())
     {
-        fprintf(stderr, "Please specify an IP-address!\n");
+        Logging::LogMsg(QString("Please specify an IP-address!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
     quint16 portNumber = parser.value(portNumberOption).toUInt();
     if(portNumber <= 0 || portNumber > 65535)
     {
-        fprintf(stderr, "The port number needs to be within range 1..65535!\n");
+        Logging::LogMsg(QString("The port number needs to be within range 1..65535!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
@@ -49,12 +50,12 @@ int main(int argc, char *argv[])
     TcpHandler tcpHandler;
     if (tcpHandler.connectTCP(ipAddress, portNumber))
     {
-        qInfo("TCP connection to %s:%i was opened successfully!", qPrintable(ipAddress), portNumber);
+        Logging::LogMsg(QString("TCP connection to %1:%2 was opened successfully.").arg(ipAddress, QString::number(portNumber)));
     }
     else
     {
-        fprintf(stderr, "IP connection %s:%i could not be opened!\n", qPrintable(ipAddress), portNumber);
-        return ENXIO;
+        Logging::LogMsg(QString("TCP connection to %1:%2 could not be opened!").arg(ipAddress, QString::number(portNumber)), LoggingColor::RED);
+        exit(1);
     }
 
     CommandParser cmdParser(tcpHandler);
