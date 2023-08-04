@@ -83,5 +83,10 @@ int main(int argc, char *argv[])
     cmdParser.parseCmdFile(cmdFile, handleErroneousMessages);
     tcpHandler.disconnectFromHost();
 
+    // Wait some time to print all logging outputs
+    QTimer::singleShot(1000, &a, [&]() {
+        a.exit();
+    });
+
     return a.exec();
 }
