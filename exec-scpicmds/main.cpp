@@ -22,6 +22,10 @@ int main(int argc, char *argv[])
     QCommandLineOption portNumberOption("p", "Port number.", "PORT_NUMBER");
     parser.addOption(portNumberOption);
 
+    QCommandLineOption ignoreErroneousCommandsOption("e", "Ignore erroneous commands. For debugging only! 0 = False, 1 = True (default).", "EXEC_ERR_CMDS");
+    ignoreErroneousCommandsOption.setDefaultValue("0");
+    parser.addOption(ignoreErroneousCommandsOption);
+
     parser.process(a);
 
     // Read and check command line arguments
@@ -46,6 +50,8 @@ int main(int argc, char *argv[])
         parser.showHelp(-1);
     }
 
+    bool ignoreErroneousCommands = (parser.value(ignoreErroneousCommandsOption).toUInt() != 0);
+
     // Prepare for and perform the task itself
     TcpHandler tcpHandler;
     if (tcpHandler.connectTCP(ipAddress, portNumber))
@@ -59,7 +65,7 @@ int main(int argc, char *argv[])
     }
 
     CommandParser cmdParser(tcpHandler);
-    cmdParser.parseCmdFile(cmdFile);
+    cmdParser.parseCmdFile(cmdFile, ignoreErroneousCommands);
 
     return a.exec();
 }
