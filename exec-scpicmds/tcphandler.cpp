@@ -24,7 +24,8 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 
 void TcpHandler::sendMessage(MessageData &msg)
 {
-    Logging::logMsg(QString("--> %1").arg(msg.m_oriMsg));
+    QString lineStr = QString::number(msg.m_fileLineNumber).rightJustified(2, '0');
+    Logging::logMsg(QString("--> [L%1] %2").arg(lineStr,  msg.m_oriMsg));
 
     QString msgPartPos;
     int posNum = 1;
@@ -33,7 +34,7 @@ void TcpHandler::sendMessage(MessageData &msg)
         msgPartPos = msgPartPos.leftJustified(cmd->m_posInMsg - 1, ' ');
         msgPartPos += QString("[%1]").arg(QString::number(posNum++));
     }
-    Logging::logMsg(QString("    %1").arg(msgPartPos), LoggingColor::GREEN);
+    Logging::logMsg(QString("%1%2").arg(QString("").leftJustified(lineStr.length() + 8), msgPartPos), LoggingColor::GREEN);
 
     int numAnsw = msg.m_cmds.count();
     m_indexAnswers = 0;

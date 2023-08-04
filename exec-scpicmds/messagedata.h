@@ -37,6 +37,7 @@ public:
     QString m_oriMsg;
     int m_fileLineNumber;
     QString m_testRules;
+    bool m_isValid;
     QList<std::shared_ptr<CommandData>> m_cmds;
     int m_cmdCountStrWidth;
 

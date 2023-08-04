@@ -30,7 +30,7 @@ QString Logging::colorString(QString strMsg, LoggingColor color)
             colorPost = QStringLiteral("\033[0;0m");
             break;
         case LoggingColor::YELLOW:
-            colorPre = QStringLiteral("\033[1;33m");
+            colorPre = QStringLiteral("\033[0;33m");
             colorPost = QStringLiteral("\033[0;0m");
         }
     }
@@ -46,7 +46,7 @@ QString Logging::colorString(QString strMsg, LoggingColor color)
 void Logging::logMsg(QString strMsg, LoggingColor color)
 {
     QString strOut = QStringLiteral("[%1]: %2")
-            .arg(QDateTime::currentDateTime().toString("HH:mm:ss:zzz"), colorString(strMsg, color));
+            .arg(QDateTime::currentDateTime().toString("HH:mm:ss.zzz"), colorString(strMsg, color));
 
     qInfo("%s", qPrintable(strOut));
 }
