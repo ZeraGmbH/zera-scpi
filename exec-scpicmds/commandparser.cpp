@@ -11,7 +11,7 @@ CommandParser::CommandParser(TcpHandler &tcpHandler) :
 {
 }
 
-void CommandParser::parseCmdFile(QString strFileName, bool ignoreErroneousCommands)
+void CommandParser::parseCmdFile(QString strFileName, int handleErroneousMessages)
 {
     QFile cmdFile(strFileName);
 
@@ -49,21 +49,45 @@ void CommandParser::parseCmdFile(QString strFileName, bool ignoreErroneousComman
         }
         cmdFile.close();
 
-        // Check commands
-        Logging::logMsg(QString("Checking commands..."));
-        if (cmdsAreValid()) {
+        // Check messages
+        Logging::logMsg(QString("Checking messages..."));
+        bool msgsValid = msgsAreValid();
+        if (msgsValid)
+            Logging::logMsg(QString("... All messages look fine."), LoggingColor::GREEN);
+        else
+            Logging::logMsg(QString("... Invalid messages(s) found!"), LoggingColor::RED);
 
-            Logging::logMsg(QString("... All commands look fine."), LoggingColor::GREEN);
-            sendCmds();
-        }
-        else {
-            if (ignoreErroneousCommands) {
-                Logging::logMsg(QString("... There are erroneous commands. Trying to execute them anyway."), LoggingColor::YELLOW);
-                sendCmds();
+        switch (handleErroneousMessages)
+        {
+        case 0:
+        default:
+            if (!msgsValid)
+                Logging::logMsg(QString("... -> No messages will get executed."), LoggingColor::YELLOW);
+            else
+                sendMsgs();
+            break;
+
+        case 1:
+            if (!msgsValid)
+                Logging::logMsg(QString("... -> Trying to execute them anyway."), LoggingColor::YELLOW);
+            sendMsgs();
+            break;
+
+        case 2:
+            if (!msgsValid) {
+                Logging::logMsg(QString("... -> Removing invalid messages and executing the rest."), LoggingColor::YELLOW);
+                removeInvalidMsgs(false);
             }
-            else {
-                Logging::logMsg(QString("... Invalid command(s) found!"), LoggingColor::RED);
+            sendMsgs();
+            break;
+
+        case 3:
+            if (!msgsValid) {
+                Logging::logMsg(QString("... -> Removing invalid messages (silently) and executing the rest."), LoggingColor::YELLOW);
+                removeInvalidMsgs(true);
             }
+            sendMsgs();
+            break;
         }
     }
     else
@@ -75,33 +99,57 @@ void CommandParser::parseCmdFile(QString strFileName, bool ignoreErroneousComman
     m_msgs.clear();
 }
 
-bool CommandParser::cmdsAreValid()
+bool CommandParser::msgsAreValid()
 {
-    bool cmsAreValid = true;
+    bool msgsAreValid = true;
 
     for (auto &msg : m_msgs) {
+        msg->m_isValid = true;
         for (auto &cmd : msg->m_cmds) {
             if (cmd->m_cmdType == CommandType::EMPTY)
             {
                 Logging::logMsg(QString(" > Empty command found in line %1:%2!").arg(QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
-                cmsAreValid = false;
+                msg->m_isValid = false;
+                msgsAreValid = false;
             }
             else if (cmd->m_cmdType == CommandType::UNKNOWN)
             {
                 Logging::logMsg(QString(" > Command \"%1\" of unknown type found in line %2:%3! Is there a missing \";\"?").arg(cmd->m_cmdTrimmed, QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
-                cmsAreValid = false;
+                msg->m_isValid = false;
+                msgsAreValid = false;
             }
             // Check for ASCII characters and allowed symboles only
             //bool containsNonASCII = myString.contains(QRegularExpression(QStringLiteral("[^\\x{0000}-\\x{007F}]"))); // a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
         }
     }
 
-    return cmsAreValid;
+    return msgsAreValid;
 }
 
-void CommandParser::sendCmds()
+void CommandParser::sendMsgs()
 {
+    if (!m_msgs.isEmpty())
+        Logging::logMsg(QString("Sending messages..."), LoggingColor::BLUE);
+    else
+        Logging::logMsg(QString("No messages to send."), LoggingColor::BLUE);
+
     for (auto &msg : m_msgs)
         m_tcpHandler.sendMessage(*msg);
-    m_tcpHandler.disconnectFromHost();
+}
+
+
+void CommandParser::removeInvalidMsgs(bool silent)
+{
+    int i = 0;
+    while (i < m_msgs.length()) {
+        auto &msg = m_msgs[i];
+        if (!msg->m_isValid) {
+            if (!silent)
+                Logging::logMsg(QString(" Remove invalid message [L%1] \"%2\"").arg(QString::number(msg->m_fileLineNumber).rightJustified(2, '0'), msg->m_oriMsg), LoggingColor::YELLOW);
+            m_msgs.removeAt(i);
+        }
+        else {
+            i++;
+        }
+    }
 }

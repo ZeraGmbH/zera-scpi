@@ -11,14 +11,15 @@ class CommandParser : public QObject
     Q_OBJECT
 public:
     CommandParser(TcpHandler& tcpHandler);
-    void parseCmdFile(QString strFileName, bool ignoreErroneousCommands);
+    void parseCmdFile(QString strFileName, int handleErroneousMessages);
 
 signals:
     void done(int exitCode);
 
 private:
-    bool cmdsAreValid();
-    void sendCmds();
+    bool msgsAreValid();
+    void sendMsgs();
+    void removeInvalidMsgs(bool silent);
 
     TcpHandler& m_tcpHandler;
     QList<std::shared_ptr<MessageData>> m_msgs;

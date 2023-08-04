@@ -22,9 +22,14 @@ int main(int argc, char *argv[])
     QCommandLineOption portNumberOption("p", "Port number.", "PORT_NUMBER");
     parser.addOption(portNumberOption);
 
-    QCommandLineOption ignoreErroneousCommandsOption("e", "Ignore erroneous commands. For debugging only! 0 = False, 1 = True (default).", "EXEC_ERR_CMDS");
-    ignoreErroneousCommandsOption.setDefaultValue("0");
-    parser.addOption(ignoreErroneousCommandsOption);
+    QCommandLineOption handleErroneousMessagesOption("e", "Handling of erroneous messages.\n"
+                                                          "0 = No execution at all (default).\n"
+                                                          "1 = Force execution (for debugging only!).\n"
+                                                          "2 = Remove erroneous messages and execute the rest.\n"
+                                                          "3 = Remove erroneous messages (silently) and execute the rest.",
+                                                     "HANDLE_ERR_MSGS");
+    handleErroneousMessagesOption.setDefaultValue("0");
+    parser.addOption(handleErroneousMessagesOption);
 
     parser.process(a);
 
@@ -50,7 +55,9 @@ int main(int argc, char *argv[])
         parser.showHelp(-1);
     }
 
-    bool ignoreErroneousCommands = (parser.value(ignoreErroneousCommandsOption).toUInt() != 0);
+    int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt();
+    if (handleErroneousMessages < 0 || handleErroneousMessages > 3)
+        handleErroneousMessages = 0;
 
     // Prepare for and perform the task itself
     TcpHandler tcpHandler;
@@ -65,7 +72,8 @@ int main(int argc, char *argv[])
     }
 
     CommandParser cmdParser(tcpHandler);
-    cmdParser.parseCmdFile(cmdFile, ignoreErroneousCommands);
+    cmdParser.parseCmdFile(cmdFile, handleErroneousMessages);
+    tcpHandler.disconnectFromHost();
 
     return a.exec();
 }
