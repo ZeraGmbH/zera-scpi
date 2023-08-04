@@ -6,6 +6,11 @@ TcpHandler::TcpHandler()
 
 }
 
+void TcpHandler::setReceiveTimeout(unsigned int ms)
+{
+    m_timeout = ms;
+}
+
 bool TcpHandler::connectTCP(QString hostName, quint16 port)
 {
     m_tcpSocket.connectToHost(hostName, port);
@@ -52,7 +57,14 @@ void TcpHandler::sendMessage(MessageData &msg)
     m_tcpSocket.waitForBytesWritten();
 
     while(numAnsw > 0) {
-        numAnsw -= receiveAnswers(msg);
+        int numRecvAnsw = receiveAnswers(msg);
+        if (numRecvAnsw >= 0) {
+            numAnsw -= numRecvAnsw;
+        }
+        else {
+            Logging::logMsg(QString("Waiting for response timed out."), LoggingColor::RED);
+            break;
+        }
     }
 }
 
@@ -67,7 +79,8 @@ void TcpHandler::disconnectFromHost()
 int TcpHandler::receiveAnswers(MessageData &msg)
 {
     int numAnsw = 0;
-    m_tcpSocket.waitForReadyRead(3000);
+    if (!m_tcpSocket.waitForReadyRead(m_timeout))
+        return -1;
     m_receiveBuffer.append(m_tcpSocket.readAll());
     while(m_receiveBuffer.contains("\n")) {
         numAnsw++;

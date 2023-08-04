@@ -11,7 +11,7 @@ CommandParser::CommandParser(TcpHandler &tcpHandler) :
 {
 }
 
-void CommandParser::parseCmdFile(QString strFileName, int handleErroneousMessages)
+void CommandParser::parseCmdFile(QString strFileName, unsigned int handleErroneousMessages)
 {
     QFile cmdFile(strFileName);
 

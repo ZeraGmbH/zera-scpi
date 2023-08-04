@@ -11,7 +11,7 @@ class CommandParser : public QObject
     Q_OBJECT
 public:
     CommandParser(TcpHandler& tcpHandler);
-    void parseCmdFile(QString strFileName, int handleErroneousMessages);
+    void parseCmdFile(QString strFileName, unsigned int handleErroneousMessages);
 
 signals:
     void done(int exitCode);

@@ -11,6 +11,7 @@ class TcpHandler : public QObject
     Q_OBJECT
 public:
     TcpHandler();
+    void setReceiveTimeout(unsigned int ms);
     bool connectTCP(QString hostName, quint16 port);
     void sendMessage(MessageData &msg);
     void disconnectFromHost();
@@ -24,6 +25,7 @@ private slots:
 
 private:
     QTcpSocket m_tcpSocket;
+    unsigned int m_timeout;
     QString m_receiveBuffer;
     int m_indexAnswers;
 };
