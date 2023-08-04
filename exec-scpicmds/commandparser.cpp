@@ -50,25 +50,25 @@ void CommandParser::parseCmdFile(QString strFileName, bool ignoreErroneousComman
         cmdFile.close();
 
         // Check commands
-        Logging::LogMsg(QString("Checking commands..."));
+        Logging::logMsg(QString("Checking commands..."));
         if (cmdsAreValid()) {
 
-            Logging::LogMsg(QString("... All commands look fine."), LoggingColor::GREEN);
+            Logging::logMsg(QString("... All commands look fine."), LoggingColor::GREEN);
             sendCmds();
         }
         else {
             if (ignoreErroneousCommands) {
-                Logging::LogMsg(QString("... There are erroneous commands. Trying to execute them anyway."), LoggingColor::RED);
+                Logging::logMsg(QString("... There are erroneous commands. Trying to execute them anyway."), LoggingColor::YELLOW);
                 sendCmds();
             }
             else {
-                Logging::LogMsg(QString("... Invalid command(s) found!"), LoggingColor::RED);
+                Logging::logMsg(QString("... Invalid command(s) found!"), LoggingColor::RED);
             }
         }
     }
     else
     {
-        Logging::LogMsg(QString("Command file \"%1\" could not be opened!").arg(strFileName), LoggingColor::RED);
+        Logging::logMsg(QString("Command file \"%1\" could not be opened!").arg(strFileName), LoggingColor::RED);
     }
 
     // Cleanup
@@ -83,12 +83,12 @@ bool CommandParser::cmdsAreValid()
         for (auto &cmd : msg->m_cmds) {
             if (cmd->m_cmdType == CommandType::EMPTY)
             {
-                Logging::LogMsg(QString(" > Empty command found in line %1:%2!").arg(QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
+                Logging::logMsg(QString(" > Empty command found in line %1:%2!").arg(QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
                 cmsAreValid = false;
             }
             else if (cmd->m_cmdType == CommandType::UNKNOWN)
             {
-                Logging::LogMsg(QString(" > Command \"%1\" of unknown type found in line %2:%3! Is there a missing \";\"?").arg(cmd->m_cmdTrimmed, QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
+                Logging::logMsg(QString(" > Command \"%1\" of unknown type found in line %2:%3! Is there a missing \";\"?").arg(cmd->m_cmdTrimmed, QString::number(msg->m_fileLineNumber), QString::number(cmd->m_posInMsg)), LoggingColor::RED);
                 cmsAreValid = false;
             }
             // Check for ASCII characters and allowed symboles only

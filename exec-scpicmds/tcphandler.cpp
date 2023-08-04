@@ -24,7 +24,7 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 
 void TcpHandler::sendMessage(MessageData &msg)
 {
-    Logging::LogMsg(QString("--> %1").arg(msg.m_oriMsg));
+    Logging::logMsg(QString("--> %1").arg(msg.m_oriMsg));
 
     QString msgPartPos;
     int posNum = 1;
@@ -33,7 +33,7 @@ void TcpHandler::sendMessage(MessageData &msg)
         msgPartPos = msgPartPos.leftJustified(cmd->m_posInMsg - 1, ' ');
         msgPartPos += QString("[%1]").arg(QString::number(posNum++));
     }
-    Logging::LogMsg(QString("    %1").arg(msgPartPos), LoggingColor::GREEN);
+    Logging::logMsg(QString("    %1").arg(msgPartPos), LoggingColor::GREEN);
 
     int numAnsw = msg.m_cmds.count();
     m_indexAnswers = 0;
@@ -60,7 +60,7 @@ void TcpHandler::disconnectFromHost()
     m_tcpSocket.disconnect();
     m_tcpSocket.close();
     if(m_tcpSocket.state() == QAbstractSocket::UnconnectedState || m_tcpSocket.waitForDisconnected())
-        Logging::LogMsg(QString("TCP connection was closed."));
+        Logging::logMsg(QString("TCP connection was closed."));
 }
 
 int TcpHandler::receiveAnswers(MessageData &msg)
@@ -74,10 +74,10 @@ int TcpHandler::receiveAnswers(MessageData &msg)
         m_receiveBuffer.remove(0, answer.length() + 1);
         if (m_indexAnswers < msg.m_cmds.count()) {
             if (msg.m_cmds[m_indexAnswers]->m_cmdType == CommandType::QUERY)
-                Logging::LogMsg(QString(" <-[%1] %2").arg(QString::number(m_indexAnswers + 1).rightJustified(msg.m_cmdCountStrWidth, '0'), answer));
+                Logging::logMsg(QString(" <-[%1] %2").arg(QString::number(m_indexAnswers + 1).rightJustified(msg.m_cmdCountStrWidth, '0'), answer));
         }
         else {
-            Logging::LogMsg(QString(" <-[%1] %2 -> Out of expected answer range (1-%3)!").arg(QString::number(m_indexAnswers + 1), answer, QString::number(msg.m_cmds.count())), LoggingColor::RED);
+            Logging::logMsg(QString(" <-[%1] %2 -> Out of expected answer range (1-%3)!").arg(QString::number(m_indexAnswers + 1), answer, QString::number(msg.m_cmds.count())), LoggingColor::RED);
         }
         m_indexAnswers++;
     }
@@ -86,5 +86,5 @@ int TcpHandler::receiveAnswers(MessageData &msg)
 
 void TcpHandler::onDisconnect()
 {
-    Logging::LogMsg(QString("Server closed connection unexpected!"), LoggingColor::RED);
+    Logging::logMsg(QString("Server closed connection unexpected!"), LoggingColor::RED);
 }

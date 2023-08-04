@@ -10,6 +10,7 @@ enum class LoggingColor
     RED,
     GREEN,
     BLUE,
+    YELLOW,
 };
 
 
@@ -17,16 +18,9 @@ class Logging : public QObject
 {
     Q_OBJECT
 public:
-    enum Color {
-        LOG_COLOUR_NONE = 0,
-        LOG_COLOUR_RED,
-        LOG_COLOUR_GREEN,
-        LOG_COLOUR_BLUE,
-        };
-
     explicit Logging(QObject *parent = nullptr);
-    static QString ColorString(QString strMsg, LoggingColor color = LoggingColor::NONE);
-    static void LogMsg(QString strMsg, LoggingColor color = LoggingColor::NONE);
+    static QString colorString(QString strMsg, LoggingColor color = LoggingColor::NONE);
+    static void logMsg(QString strMsg, LoggingColor color = LoggingColor::NONE);
 
 signals:
 
