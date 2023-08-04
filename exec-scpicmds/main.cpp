@@ -1,4 +1,5 @@
 #include <QObject>
+#include <QTimer>
 #include <QCommandLineParser>
 #include "commandparser.h"
 #include "tcphandler.h"
@@ -31,6 +32,10 @@ int main(int argc, char *argv[])
     handleErroneousMessagesOption.setDefaultValue("0");
     parser.addOption(handleErroneousMessagesOption);
 
+    QCommandLineOption receiveTimeoutOption("t", "Receive timeout [ms] (default = 3000). 0 = blocking.", "RECV_TIMEOUT");
+    receiveTimeoutOption.setDefaultValue("3000");
+    parser.addOption(receiveTimeoutOption);
+
     parser.process(a);
 
     // Read and check command line arguments
@@ -55,12 +60,15 @@ int main(int argc, char *argv[])
         parser.showHelp(-1);
     }
 
-    int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt();
+    unsigned int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt();
     if (handleErroneousMessages < 0 || handleErroneousMessages > 3)
         handleErroneousMessages = 0;
 
+    unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt();
+
     // Prepare for and perform the task itself
     TcpHandler tcpHandler;
+    tcpHandler.setReceiveTimeout(receiveTimeout);
     if (tcpHandler.connectTCP(ipAddress, portNumber))
     {
         Logging::logMsg(QString("TCP connection to %1:%2 was opened successfully.").arg(ipAddress, QString::number(portNumber)));
