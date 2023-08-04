@@ -32,21 +32,21 @@ int main(int argc, char *argv[])
     QString cmdFile = parser.value(cmdFileOption);
     if(cmdFile.isEmpty())
     {
-        Logging::LogMsg(QString("Please specify a command file!"), LoggingColor::RED);
+        Logging::logMsg(QString("Please specify a command file!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
     QString ipAddress = parser.value(ipAddressOption);
     if(ipAddress.isEmpty())
     {
-        Logging::LogMsg(QString("Please specify an IP-address!"), LoggingColor::RED);
+        Logging::logMsg(QString("Please specify an IP-address!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
     quint16 portNumber = parser.value(portNumberOption).toUInt();
     if(portNumber <= 0 || portNumber > 65535)
     {
-        Logging::LogMsg(QString("The port number needs to be within range 1..65535!"), LoggingColor::RED);
+        Logging::logMsg(QString("The port number needs to be within range 1..65535!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
@@ -56,11 +56,11 @@ int main(int argc, char *argv[])
     TcpHandler tcpHandler;
     if (tcpHandler.connectTCP(ipAddress, portNumber))
     {
-        Logging::LogMsg(QString("TCP connection to %1:%2 was opened successfully.").arg(ipAddress, QString::number(portNumber)));
+        Logging::logMsg(QString("TCP connection to %1:%2 was opened successfully.").arg(ipAddress, QString::number(portNumber)));
     }
     else
     {
-        Logging::LogMsg(QString("TCP connection to %1:%2 could not be opened!").arg(ipAddress, QString::number(portNumber)), LoggingColor::RED);
+        Logging::logMsg(QString("TCP connection to %1:%2 could not be opened!").arg(ipAddress, QString::number(portNumber)), LoggingColor::RED);
         exit(1);
     }
 
