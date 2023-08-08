@@ -11,7 +11,18 @@ CommandParser::CommandParser(TcpHandler &tcpHandler) :
 {
 }
 
-void CommandParser::parseCmdFile(QString strFileName, unsigned int handleErroneousMessages)
+
+void CommandParser::setHandleErroneousMessages(unsigned int handleErroneousMessages)
+{
+    m_handleErroneousMessages = handleErroneousMessages;
+}
+
+void CommandParser::setCheckErrorQueue(bool checkErrorQueue)
+{
+    m_checkErrorQueue = checkErrorQueue;
+}
+
+void CommandParser::parseCmdFile(QString strFileName)
 {
     QFile cmdFile(strFileName);
 
@@ -25,7 +36,7 @@ void CommandParser::parseCmdFile(QString strFileName, unsigned int handleErroneo
             QString line = textStream.readLine().trimmed();
             fileLineNumber++;
             if(!line.isEmpty() && !line.startsWith("#")) {
-                QString& msg = line; // Just to make clear, this line is a messages
+                QString& msg = line; // Just to make clear, this line is a message
                 qsizetype lastCmdPos = 0;
 
                 auto msgData = std::make_shared<MessageData>();
@@ -57,7 +68,7 @@ void CommandParser::parseCmdFile(QString strFileName, unsigned int handleErroneo
         else
             Logging::logMsg(QString("... Invalid messages(s) found!"), LoggingColor::RED);
 
-        switch (handleErroneousMessages)
+        switch (m_handleErroneousMessages)
         {
         case 0:
         default:
@@ -129,12 +140,31 @@ bool CommandParser::msgsAreValid()
 void CommandParser::sendMsgs()
 {
     if (!m_msgs.isEmpty())
+    {
         Logging::logMsg(QString("Sending messages..."), LoggingColor::BLUE);
-    else
-        Logging::logMsg(QString("No messages to send."), LoggingColor::BLUE);
 
-    for (auto &msg : m_msgs)
-        m_tcpHandler.sendMessage(*msg);
+        // Initially clear target's error queue
+        if (m_checkErrorQueue) {
+            m_tcpHandler.sendMessageRaw("SYSTEM:ERROR:ALL?\n");
+            QStringList answers = m_tcpHandler.receiveAnswersRaw(1); // Ignore result, just for sync
+        }
+
+        for (auto &msg : m_msgs) {
+            m_tcpHandler.sendMessage(*msg);
+
+            if (m_checkErrorQueue) {
+                // Check target's error queue after current message //XXX what happens if in the cmd file itself there's a system:error:*? command?
+                m_tcpHandler.sendMessageRaw("SYSTEM:ERROR:ALL?\n");
+                QStringList answers = m_tcpHandler.receiveAnswersRaw(1);
+                if (answers.length() == 1 && answers[0] != "+0,No error")
+                    Logging::logMsg(QString("Message produced error(s) \"%1\".").arg(answers[0]), LoggingColor::RED);
+            }
+        }
+    }
+    else
+    {
+        Logging::logMsg(QString("No messages to send."), LoggingColor::BLUE);
+    }
 }
 
 

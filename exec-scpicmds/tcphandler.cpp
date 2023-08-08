@@ -68,6 +68,12 @@ void TcpHandler::sendMessage(MessageData &msg)
     }
 }
 
+void TcpHandler::sendMessageRaw(QString msg)
+{
+    m_tcpSocket.write(msg.toLocal8Bit());
+    m_tcpSocket.waitForBytesWritten();
+}
+
 void TcpHandler::disconnectFromHost()
 {
     m_tcpSocket.disconnect();
@@ -96,6 +102,33 @@ int TcpHandler::receiveAnswers(MessageData &msg)
         m_indexAnswers++;
     }
     return numAnsw;
+}
+
+QStringList TcpHandler::receiveAnswersRaw(unsigned int answersCnt)
+{
+    int numAnsw = 0;
+    QString receiveBuffer;
+    QStringList answers;
+
+
+    while(true) {
+        if (!m_tcpSocket.waitForReadyRead(m_timeout))
+            break;
+
+        receiveBuffer.append(m_tcpSocket.readAll());
+
+        if (receiveBuffer.contains("\n")) {
+            QString answer = receiveBuffer.left(receiveBuffer.indexOf("\n"));
+            receiveBuffer.remove(0, answer.length() + 1);
+            answers.append(answer);
+            numAnsw++;
+
+            if (numAnsw == answersCnt)
+                break;
+        }
+    }
+
+    return answers;
 }
 
 void TcpHandler::onDisconnect()
