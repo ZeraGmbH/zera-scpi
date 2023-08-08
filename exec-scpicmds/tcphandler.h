@@ -14,10 +14,11 @@ public:
     void setReceiveTimeout(unsigned int ms);
     bool connectTCP(QString hostName, quint16 port);
     void sendMessage(MessageData &msg);
+    void sendMessageRaw(QString msg);
+    QStringList receiveAnswersRaw(unsigned int answersCnt);
     void disconnectFromHost();
 
 signals:
-    void cmdFinish();
 
 private slots:
     int receiveAnswers(MessageData &msg);

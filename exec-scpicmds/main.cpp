@@ -1,6 +1,7 @@
 #include <QObject>
 #include <QTimer>
 #include <QCommandLineParser>
+#include <QThread>
 #include "commandparser.h"
 #include "tcphandler.h"
 #include "logging.h"
@@ -31,6 +32,13 @@ int main(int argc, char *argv[])
                                                      "HANDLE_ERR_MSGS");
     handleErroneousMessagesOption.setDefaultValue("0");
     parser.addOption(handleErroneousMessagesOption);
+
+    QCommandLineOption checkErrorQueueOption("c", "Check targets error queue after sending (executing) the message.\n"
+                                                  "0 = False\n"
+                                                  "1 = True.",
+                                             "CHECK_ERROR_QUEUE");
+    checkErrorQueueOption.setDefaultValue("0");
+    parser.addOption(checkErrorQueueOption);
 
     QCommandLineOption receiveTimeoutOption("t", "Receive timeout [ms] (default = 3000). 0 = blocking.", "RECV_TIMEOUT");
     receiveTimeoutOption.setDefaultValue("3000");
@@ -66,6 +74,8 @@ int main(int argc, char *argv[])
 
     unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt();
 
+    unsigned int checkErrorQueue = (parser.value(checkErrorQueueOption).toUInt() != 0);
+
     // Prepare for and perform the task itself
     TcpHandler tcpHandler;
     tcpHandler.setReceiveTimeout(receiveTimeout);
@@ -80,7 +90,10 @@ int main(int argc, char *argv[])
     }
 
     CommandParser cmdParser(tcpHandler);
-    cmdParser.parseCmdFile(cmdFile, handleErroneousMessages);
+    cmdParser.setHandleErroneousMessages(handleErroneousMessages);
+    cmdParser.setCheckErrorQueue(checkErrorQueue);
+    cmdParser.parseCmdFile(cmdFile);
+
     tcpHandler.disconnectFromHost();
 
     // Wait some time to print all logging outputs
