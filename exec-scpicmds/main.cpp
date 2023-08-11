@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     }
 
     unsigned int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt();
-    if (handleErroneousMessages < 0 || handleErroneousMessages > 3)
+    if (handleErroneousMessages > 3)
         handleErroneousMessages = 0;
 
     unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt();
@@ -77,8 +77,7 @@ int main(int argc, char *argv[])
     unsigned int checkErrorQueue = (parser.value(checkErrorQueueOption).toUInt() != 0);
 
     // Prepare for and perform the task itself
-    TcpHandler tcpHandler;
-    tcpHandler.setReceiveTimeout(receiveTimeout);
+    TcpHandler tcpHandler(receiveTimeout);
     if (tcpHandler.connectTCP(ipAddress, portNumber))
     {
         Logging::logMsg(QString("TCP connection to %1:%2 was opened successfully.").arg(ipAddress, QString::number(portNumber)));

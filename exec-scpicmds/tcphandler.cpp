@@ -1,14 +1,9 @@
 #include "tcphandler.h"
 #include "logging.h"
 
-TcpHandler::TcpHandler()
+TcpHandler::TcpHandler(unsigned int ms) :
+    m_timeout(ms)
 {
-
-}
-
-void TcpHandler::setReceiveTimeout(unsigned int ms)
-{
-    m_timeout = ms;
 }
 
 bool TcpHandler::connectTCP(QString hostName, quint16 port)
