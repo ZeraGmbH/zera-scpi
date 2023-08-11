@@ -10,8 +10,7 @@ class TcpHandler : public QObject
 {
     Q_OBJECT
 public:
-    TcpHandler();
-    void setReceiveTimeout(unsigned int ms);
+    TcpHandler(unsigned int ms);
     bool connectTCP(QString hostName, quint16 port);
     void sendMessage(MessageData &msg);
     void sendMessageRaw(QString msg);
