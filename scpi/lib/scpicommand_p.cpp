@@ -69,7 +69,8 @@ void cSCPICommandPrivate::setCmdParamList()
         keyw = Parser.GetKeyword(&pInput);
         if (*pInput == ';')
         {
-            m_sParamList.append(keyw);
+            if (!keyw.isEmpty())
+                m_sParamList.append(keyw);
             pInput++;
         }
     } while (*pInput != 0);
