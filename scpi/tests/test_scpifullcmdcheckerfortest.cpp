@@ -59,7 +59,7 @@ void test_scpifullcmdcheckerfortest::checkCmdWithParamOnCmdNoParam()
 {
     ScpiFullCmdCheckerForTest checker("SENSE:TESTER", SCPI::isCmd);
     QCOMPARE(checker.matches("sens:test one;"), false);
-    QCOMPARE(checker.matches("sens:test;"), false); // detected as empty param!!!
+    QCOMPARE(checker.matches("sens:test;"), true);
 }
 
 void test_scpifullcmdcheckerfortest::matchCmdNoParams()
@@ -126,7 +126,7 @@ void test_scpifullcmdcheckerfortest::checkOneParamOnCmd()
 {
     ScpiFullCmdCheckerForTest checker("SENSE:FOO", SCPI::isCmdwP, 1);
     QCOMPARE(checker.matches("sens:foo"), false);
-    QCOMPARE(checker.matches("sens:foo;"), true); // detected as empty param!!!
+    QCOMPARE(checker.matches("sens:foo;"), false);
     QCOMPARE(checker.matches("sens:foo one;"), true);
     QCOMPARE(checker.matches("sens:foo one;two;"), false);
 }
