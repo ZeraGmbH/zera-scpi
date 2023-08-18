@@ -1,12 +1,13 @@
 file(GLOB SOURCES
     *.cpp
     )
+list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 file(GLOB HEADER
     *.h
     )
 
-add_library(execScpiCmdslib SHARED
+add_library(execScpiCmdslib STATIC
     ${SOURCES}
     ${HEADER}
     )
