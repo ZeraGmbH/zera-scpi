@@ -22,6 +22,11 @@ void CommandParser::setCheckErrorQueue(bool checkErrorQueue)
     m_checkErrorQueue = checkErrorQueue;
 }
 
+void CommandParser::setLoopNum(quint8 numLoops)
+{
+    m_numLoops = numLoops;
+}
+
 void CommandParser::parseCmdFile(QString strFileName)
 {
     QFile cmdFile(strFileName);
@@ -75,13 +80,13 @@ void CommandParser::parseCmdFile(QString strFileName)
             if (!msgsValid)
                 Logging::logMsg(QString("... -> No messages will get executed."), LoggingColor::YELLOW);
             else
-                sendMsgs();
+                loopAndSendMsgs();
             break;
 
         case 1:
             if (!msgsValid)
                 Logging::logMsg(QString("... -> Trying to execute them anyway."), LoggingColor::YELLOW);
-            sendMsgs();
+            loopAndSendMsgs();
             break;
 
         case 2:
@@ -89,7 +94,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                 Logging::logMsg(QString("... -> Removing invalid messages and executing the rest."), LoggingColor::YELLOW);
                 removeInvalidMsgs(false);
             }
-            sendMsgs();
+            loopAndSendMsgs();
             break;
 
         case 3:
@@ -97,7 +102,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                 Logging::logMsg(QString("... -> Removing invalid messages (silently) and executing the rest."), LoggingColor::YELLOW);
                 removeInvalidMsgs(true);
             }
-            sendMsgs();
+            loopAndSendMsgs();
             break;
         }
     }
@@ -164,6 +169,16 @@ void CommandParser::sendMsgs()
     else
     {
         Logging::logMsg(QString("No messages to send."), LoggingColor::BLUE);
+    }
+}
+
+void CommandParser::loopAndSendMsgs()
+{
+    if(m_numLoops > 0)
+        Logging::logMsg(QString("The file will be executed %1 time(s)").arg(m_numLoops), LoggingColor::GREEN);
+    while(m_numLoops > 0) {
+        sendMsgs();
+        m_numLoops --;
     }
 }
 
