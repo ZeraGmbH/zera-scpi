@@ -44,6 +44,10 @@ int main(int argc, char *argv[])
     receiveTimeoutOption.setDefaultValue("3000");
     parser.addOption(receiveTimeoutOption);
 
+    QCommandLineOption loopFile("l", "number of loops.", "NUMBER_OF_LOOPS");
+    loopFile.setDefaultValue("1");
+    parser.addOption(loopFile);
+
     parser.process(a);
 
     // Read and check command line arguments
@@ -73,8 +77,8 @@ int main(int argc, char *argv[])
         handleErroneousMessages = 0;
 
     unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt();
-
     unsigned int checkErrorQueue = (parser.value(checkErrorQueueOption).toUInt() != 0);
+    unsigned int LoopsNumber = parser.value(loopFile).toUInt();
 
     // Prepare for and perform the task itself
     TcpHandler tcpHandler(receiveTimeout);
@@ -91,6 +95,7 @@ int main(int argc, char *argv[])
     CommandParser cmdParser(tcpHandler);
     cmdParser.setHandleErroneousMessages(handleErroneousMessages);
     cmdParser.setCheckErrorQueue(checkErrorQueue);
+    cmdParser.setLoopNum(LoopsNumber);
     cmdParser.parseCmdFile(cmdFile);
 
     tcpHandler.disconnectFromHost();
