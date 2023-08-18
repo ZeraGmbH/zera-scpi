@@ -1,10 +1,12 @@
 file(GLOB SOURCES
-    *.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodetree/*.cpp
     )
 list(REMOVE_ITEM SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp)
 
 file(GLOB HEADER
-    *.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/*.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodetree/*.h
     )
 
 add_library(execScpiCmdslib STATIC
@@ -21,6 +23,7 @@ target_link_libraries(execScpiCmdslib
 target_include_directories(execScpiCmdslib
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nodetree>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
     $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/execScpiCmdslib>
     )
