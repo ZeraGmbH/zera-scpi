@@ -10,14 +10,6 @@ IfNode::~IfNode()
 {
 }
 
-void IfNode::exec(std::function<void(INode*)> *f)
-{
-    if (m_cond)
-        m_ifNodes.exec(f);
-    else
-        m_elseNodes.exec(f);
-}
-
 void IfNode::append(INode *node)
 {
     if (m_inIfBranch)
@@ -34,6 +26,14 @@ bool IfNode::remove(INode *node)
     removed = removed || m_ifNodes.remove(node);
     removed = removed || m_elseNodes.remove(node);
     return removed;
+}
+
+bool IfNode::prune()
+{
+    bool pruned = false;
+    pruned = pruned || m_ifNodes.prune();
+    pruned = pruned || m_elseNodes.prune();
+    return pruned;
 }
 
 void IfNode::clear()
@@ -54,12 +54,18 @@ bool IfNode::hasLeaves()
     return m_ifNodes.hasLeaves() || m_elseNodes.hasLeaves();
 }
 
-void IfNode::traverse(std::function<void(INode*)> f)
+void IfNode::traverse(std::function<void(INode*)> &f)
+{
+    m_ifNodes.traverse(f);
+    m_elseNodes.traverse(f);
+}
+
+void IfNode::exec(std::function<void(INode*)> &f)
 {
     if (m_cond)
-        m_ifNodes.traverse(f);
+        m_ifNodes.exec(f);
     else
-        m_elseNodes.traverse(f);
+        m_elseNodes.exec(f);
 }
 
 void IfNode::switchToElseBranch()

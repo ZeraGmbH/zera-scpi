@@ -7,7 +7,7 @@ class INode
 {
 public:
     virtual ~INode() = default;
-    virtual void exec(std::function<void(INode*)> *f = nullptr) = 0; // Execute f not only for each leaf, but also with special logic (e.g. execute it several times in a loop)
+    virtual void exec(std::function<void(INode*)> &f) = 0; // Execute f
 };
 
 #endif // INODE_H

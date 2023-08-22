@@ -11,13 +11,14 @@ class IfNode : public ICtrNode
 public:
     IfNode(bool cond);
     ~IfNode();
-    void exec(std::function<void(INode*)> *f = nullptr) override;
     void append(INode *node) override;
     bool remove(INode* node) override;
+    bool prune() override;
     void clear() override;
     bool isEmpty() override;
     bool hasLeaves() override;
-    void traverse(std::function<void(INode*)> f) override;
+    void traverse(std::function<void(INode*)> &f) override;
+    void exec(std::function<void(INode*)> &f) override;
     void switchToElseBranch();
 
 private:

@@ -44,6 +44,11 @@ bool NodeTree::remove(INode* node)
     return m_curCtr->remove(node);
 }
 
+bool NodeTree::prune()
+{
+    return m_curCtr->prune();
+}
+
 void NodeTree::clear()
 {
     m_root->clear();
@@ -59,14 +64,14 @@ bool NodeTree::hasLeaves()
     return m_root->hasLeaves();
 }
 
-void NodeTree::exec(std::function<void(INode*)> *f)
-{
-    m_root->exec(f);
-}
-
-void NodeTree::traverse(std::function<void(INode*)> f)
+void NodeTree::traverse(std::function<void(INode*)> &f)
 {
     m_root->traverse(f);
+}
+
+void NodeTree::exec(std::function<void(INode*)> &f)
+{
+    m_root->exec(f);
 }
 
 CtrNode* NodeTree::getRoot()

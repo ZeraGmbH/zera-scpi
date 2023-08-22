@@ -12,13 +12,15 @@ class CtrNode : public ICtrNode
 public:
     CtrNode();
     ~CtrNode();
-    void exec(std::function<void(INode*)> *f = nullptr) override;
     void append(INode *node) override;
     bool remove(INode *node) override;
+    bool prune() override;
     void clear() override;
     bool isEmpty() override;
     bool hasLeaves() override;
-    void traverse(std::function<void(INode*)> f) override;
+    void traverse(std::function<void(INode*)> &f) override;
+    void exec(std::function<void(INode*)> &f) override;
+    static bool isContainer(INode *node);
 
     struct iterator
     {
@@ -56,7 +58,11 @@ public:
 
     iterator begin() {
         auto m_nodesLinear = new std::vector<INode*>;
-        this->traverse([m_nodesLinear] (INode *node) { m_nodesLinear->push_back(node); }); // Collect nodes
+        std::function<void (INode *)> f = [m_nodesLinear] (INode *node) {
+            if (!isContainer(node))
+                m_nodesLinear->push_back(node);
+        };
+        this->traverse(f); // Collect leaf nodes
 
         if (m_nodesLinear->size() > 0)
             return iterator(m_nodesLinear);

@@ -10,12 +10,6 @@ LoopNode::~LoopNode()
 {
 }
 
-void LoopNode::exec(std::function<void(INode*)> *f)
-{
-    for (int i = 0; i < m_cnt; i++)
-        m_nodes.exec(f);
-}
-
 void LoopNode::append(INode *node)
 {
     m_nodes.append(node);
@@ -24,6 +18,11 @@ void LoopNode::append(INode *node)
 bool LoopNode::remove(INode *node)
 {
     return m_nodes.remove(node);
+}
+
+bool LoopNode::prune()
+{
+    return m_nodes.prune();
 }
 
 void LoopNode::clear()
@@ -41,7 +40,13 @@ bool LoopNode::hasLeaves()
     return m_nodes.hasLeaves();
 }
 
-void LoopNode::traverse(std::function<void(INode*)> f)
+void LoopNode::traverse(std::function<void(INode*)> &f)
 {
     m_nodes.traverse(f);
+}
+
+void LoopNode::exec(std::function<void(INode*)> &f)
+{
+    for (int i = 0; i < m_cnt; i++)
+        m_nodes.exec(f);
 }

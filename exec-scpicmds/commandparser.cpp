@@ -231,7 +231,7 @@ void CommandParser::sendMsgs(unsigned int iterNo)
             }
         };
 
-        m_tree.exec(&f);
+        m_tree.exec(f);
     }
     else
     {
@@ -261,4 +261,6 @@ void CommandParser::removeInvalidMsgs(bool silent)
             root.remove(&it);
         }
     }
+
+    root.prune();
 }
