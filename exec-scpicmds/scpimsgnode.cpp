@@ -7,10 +7,9 @@ ScpiMsgNode::ScpiMsgNode(std::shared_ptr<MessageData> msg) :
 {
 }
 
-void ScpiMsgNode::exec(std::function<void(INode*)> *f)
+void ScpiMsgNode::exec(std::function<void(INode*)> &f)
 {
-    if (f != nullptr)
-        (*f)(this);
+    f(this);
 }
 
 std::shared_ptr<MessageData> ScpiMsgNode::getMsgData()
