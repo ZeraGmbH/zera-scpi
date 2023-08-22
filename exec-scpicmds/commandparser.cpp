@@ -22,7 +22,7 @@ void CommandParser::setCheckErrorQueue(bool checkErrorQueue)
     m_checkErrorQueue = checkErrorQueue;
 }
 
-void CommandParser::setLoopNum(quint8 numLoops)
+void CommandParser::setLoopNumber(quint8 numLoops)
 {
     m_numLoops = numLoops;
 }
