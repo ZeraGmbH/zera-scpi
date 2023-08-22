@@ -13,14 +13,23 @@ enum class LoggingColor
     YELLOW,
 };
 
+enum class LoggingStyle
+{
+    NONE = 0,
+    BOLD,
+    ITALIC,
+    UNDERLINE,
+    STRIKETHROUGH,
+};
+
 
 class Logging : public QObject
 {
     Q_OBJECT
 public:
     explicit Logging(QObject *parent = nullptr);
-    static QString colorString(QString strMsg, LoggingColor color = LoggingColor::NONE);
-    static void logMsg(QString strMsg, LoggingColor color = LoggingColor::NONE);
+    static QString colorString(QString strMsg, LoggingColor color = LoggingColor::NONE, LoggingStyle style = LoggingStyle::NONE);
+    static void logMsg(QString strMsg, LoggingColor color = LoggingColor::NONE, LoggingStyle style = LoggingStyle::NONE);
 
 signals:
 
