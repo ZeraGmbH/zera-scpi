@@ -6,9 +6,16 @@
 #include "commandparser.h"
 #include "logging.h"
 #include "inode.h"
+#include "loopnode.h"
+#include "ifnode.h"
 #include "scpimsgnode.h"
 
-#include <iostream>
+
+enum class ContainerType
+{
+    LOOP = 0,
+    IF,
+};
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
@@ -34,6 +41,8 @@ void CommandParser::setLoopNumber(quint8 numLoops)
 void CommandParser::parseCmdFile(QString strFileName)
 {
     QFile cmdFile(strFileName);
+    std::stack<IfNode *> ifnodes;
+    std::stack<ContainerType> ctrTypes;
 
     if(cmdFile.open(QIODevice::ReadOnly)) {
         // Read lines and split into single commands (per line)
@@ -45,26 +54,72 @@ void CommandParser::parseCmdFile(QString strFileName)
             QString line = textStream.readLine().trimmed();
             fileLineNumber++;
             if(!line.isEmpty() && !line.startsWith("#")) {
-                QString& msg = line; // Just to make clear, this line is a message
-                qsizetype lastCmdPos = 0;
+                if (line.startsWith(">"))
+                {
+                    line = line.remove(0, 1).trimmed();
 
-                auto msgData = std::make_shared<MessageData>();
-                msgData->m_oriMsg = msg;
-                msgData->m_fileLineNumber = fileLineNumber;
-
-                // Iterate over all message parts (commands) in message
-                for(auto &cmd : msg.split("|")) {
-                    auto cmdData = std::make_shared<CommandData>();
-                    cmdData->m_cmd = cmd;
-                    cmdData->m_cmdTrimmed = cmd.trimmed();
-                    cmdData->m_cmdType = CommandData::determineCommandType(cmd);
-                    cmdData->m_posInMsg = lastCmdPos + 1;
-                    lastCmdPos = msg.indexOf("|", lastCmdPos) + 1;
-                    cmdData->m_testRule = ""; // TODO implement (as a list of rules?)
-                    msgData->m_cmds.append(cmdData);
+                    QStringList fields = line.split(QRegExp("\\s+"));
+                    if (fields[0].toUpper() == "LOOP")
+                    {
+                        if (fields.size() - 1 == 0) // 0 arguments
+                        {
+                            // Endless loop (only makes sense when BREAK is implemented
+                        }
+                        else if (fields.size() - 1 == 1) // 1 argument
+                        {
+                            m_tree.enterContainer(new LoopNode(fields[1].toUInt()));
+                            ctrTypes.push(ContainerType::LOOP);
+                        }
+                    }
+                    if (fields[0].toUpper() == "IF")
+                    {
+                        if (fields.size() - 1 == 1)
+                        {
+                            IfNode *ifnode = new IfNode(fields[1].toInt() != 0);
+                            m_tree.enterContainer(ifnode);
+                            ifnodes.push(ifnode);
+                            ctrTypes.push(ContainerType::IF);
+                        }
+                        else
+                        {
+                            // TODO print error message
+                        }
+                    }
+                    if (fields[0].toUpper() == "ELSE")
+                    {
+                        ifnodes.top()->switchToElseBranch();
+                    }
+                    else if (fields[0].toUpper() == "END")
+                    {
+                        m_tree.leaveContainer();
+                        if (ctrTypes.top() == ContainerType::IF)
+                            ifnodes.pop();
+                        ctrTypes.pop();
+                    }
                 }
-                msgData->m_cmdCountStrWidth = QString::number(msgData->m_cmds.count()).length();
-                m_tree.append(new ScpiMsgNode(msgData));
+                else
+                {
+                    QString& msg = line; // Just to make clear, this line is a message
+                    qsizetype lastCmdPos = 0;
+
+                    auto msgData = std::make_shared<MessageData>();
+                    msgData->m_oriMsg = msg;
+                    msgData->m_fileLineNumber = fileLineNumber;
+
+                    // Iterate over all message parts (commands) in message
+                    for(auto &cmd : msg.split("|")) {
+                        auto cmdData = std::make_shared<CommandData>();
+                        cmdData->m_cmd = cmd;
+                        cmdData->m_cmdTrimmed = cmd.trimmed();
+                        cmdData->m_cmdType = CommandData::determineCommandType(cmd);
+                        cmdData->m_posInMsg = lastCmdPos + 1;
+                        lastCmdPos = msg.indexOf("|", lastCmdPos) + 1;
+                        cmdData->m_testRule = ""; // TODO implement (as a list of rules?)
+                        msgData->m_cmds.append(cmdData);
+                    }
+                    msgData->m_cmdCountStrWidth = QString::number(msgData->m_cmds.count()).length();
+                    m_tree.append(new ScpiMsgNode(msgData));
+                }
             }
         }
         cmdFile.close();
