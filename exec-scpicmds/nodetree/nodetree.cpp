@@ -39,7 +39,37 @@ void NodeTree::append(INode* node)
     m_curCtr->append(node);
 }
 
-void NodeTree::exec()
+bool NodeTree::remove(INode* node)
 {
-    m_root->exec();
+    return m_curCtr->remove(node);
+}
+
+void NodeTree::clear()
+{
+    m_root->clear();
+}
+
+bool NodeTree::isEmpty()
+{
+    return m_root->isEmpty();
+}
+
+bool NodeTree::hasLeaves()
+{
+    return m_root->hasLeaves();
+}
+
+void NodeTree::exec(std::function<void(INode*)> *f)
+{
+    m_root->exec(f);
+}
+
+void NodeTree::traverse(std::function<void(INode*)> f)
+{
+    m_root->traverse(f);
+}
+
+CtrNode* NodeTree::getRoot()
+{
+    return m_root;
 }

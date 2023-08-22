@@ -1,5 +1,5 @@
-#ifndef LOOPNODE
-#define LOOPNODE
+#ifndef LOOPNODE_H
+#define LOOPNODE_H
 
 #include <vector>
 #include "ictrnode.h"
@@ -10,12 +10,16 @@ class LoopNode : public ICtrNode
 public:
     LoopNode(int cnt);
     ~LoopNode();
-    void exec() override;
+    void exec(std::function<void(INode*)> *f = nullptr) override;
     void append(INode *node) override;
-
+    bool remove(INode *node) override;
+    void clear() override;
+    bool isEmpty() override;
+    bool hasLeaves() override;
+    void traverse(std::function<void(INode*)> f) override;
 private:
     int m_cnt = 0;
     CtrNode m_nodes;
 };
 
-#endif // LOOPNODE
+#endif // LOOPNODE_H
