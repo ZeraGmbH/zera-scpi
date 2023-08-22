@@ -2,15 +2,19 @@
 #include <QTextStream>
 #include <QObject>
 #include <memory>
+#include <functional>
 #include "commandparser.h"
 #include "logging.h"
+#include "inode.h"
+#include "scpimsgnode.h"
+
+#include <iostream>
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
     m_tcpHandler(tcpHandler)
 {
 }
-
 
 void CommandParser::setHandleErroneousMessages(unsigned int handleErroneousMessages)
 {
@@ -56,11 +60,11 @@ void CommandParser::parseCmdFile(QString strFileName)
                     cmdData->m_cmdType = CommandData::determineCommandType(cmd);
                     cmdData->m_posInMsg = lastCmdPos + 1;
                     lastCmdPos = msg.indexOf("|", lastCmdPos) + 1;
-                    cmdData->m_testRule = ""; // TODO
+                    cmdData->m_testRule = ""; // TODO implement (as a list of rules?)
                     msgData->m_cmds.append(cmdData);
                 }
                 msgData->m_cmdCountStrWidth = QString::number(msgData->m_cmds.count()).length();
-                m_msgs.append(msgData);
+                m_tree.append(new ScpiMsgNode(msgData));
             }
         }
         cmdFile.close();
@@ -112,14 +116,16 @@ void CommandParser::parseCmdFile(QString strFileName)
     }
 
     // Cleanup
-    m_msgs.clear();
+    m_tree.clear();
 }
 
 bool CommandParser::msgsAreValid()
 {
     bool msgsAreValid = true;
 
-    for (auto &msg : m_msgs) {
+    for (auto &it : *m_tree.getRoot()) {
+        std::shared_ptr<MessageData> msg = dynamic_cast<ScpiMsgNode&>(it).getMsgData();
+
         msg->m_isValid = true;
         for (auto &cmd : msg->m_cmds) {
             if (cmd->m_cmdType == CommandType::EMPTY)
@@ -142,11 +148,14 @@ bool CommandParser::msgsAreValid()
     return msgsAreValid;
 }
 
-void CommandParser::sendMsgs()
+void CommandParser::sendMsgs(unsigned int iterNo)
 {
-    if (!m_msgs.isEmpty())
+    if (m_tree.hasLeaves())
     {
-        Logging::logMsg(QString("Sending messages..."), LoggingColor::BLUE);
+        if (m_numLoops == 1)
+            Logging::logMsg(QString("Sending messages..."), LoggingColor::BLUE);
+        else
+            Logging::logMsg(QString("Sending messages (#%1/%2)...").arg(iterNo + 1).arg(m_numLoops), LoggingColor::BLUE);
 
         // Initially clear target's error queue
         if (m_checkErrorQueue) {
@@ -154,17 +163,20 @@ void CommandParser::sendMsgs()
             QStringList answers = m_tcpHandler.receiveAnswersRaw(1); // Ignore result, just for sync
         }
 
-        for (auto &msg : m_msgs) {
-            m_tcpHandler.sendMessage(*msg);
+        std::function<void (INode *)> f = [this] (INode *node) {
+            ScpiMsgNode *n = dynamic_cast<ScpiMsgNode*>(node);
+            m_tcpHandler.sendMessage(*n->getMsgData());
 
             if (m_checkErrorQueue) {
-                // Check target's error queue after current message //XXX what happens if in the cmd file itself there's a system:error:*? command?
+                // Check target's error queue after current message // TODO Check what happens if in the cmd file itself there's a system:error:*? command?
                 m_tcpHandler.sendMessageRaw("SYSTEM:ERROR:ALL?\n");
                 QStringList answers = m_tcpHandler.receiveAnswersRaw(1);
                 if (answers.length() == 1 && answers[0] != "+0,No error")
                     Logging::logMsg(QString("Message produced error(s) \"%1\".").arg(answers[0]), LoggingColor::RED);
             }
-        }
+        };
+
+        m_tree.exec(&f);
     }
     else
     {
@@ -174,27 +186,24 @@ void CommandParser::sendMsgs()
 
 void CommandParser::loopAndSendMsgs()
 {
-    if(m_numLoops > 0)
-        Logging::logMsg(QString("The file will be executed %1 time(s)").arg(m_numLoops), LoggingColor::GREEN);
-    while(m_numLoops > 0) {
-        sendMsgs();
-        m_numLoops --;
-    }
-}
+    if(m_numLoops == 0)
+        Logging::logMsg(QString("The file will be executed 0 times (option -l 0)!").arg(m_numLoops), LoggingColor::GREEN);
+    else if(m_numLoops > 1)
+        Logging::logMsg(QString("The file will be executed %1 times.").arg(m_numLoops), LoggingColor::GREEN);
 
+    for (unsigned int curIter = 0; curIter < m_numLoops; curIter++)
+        sendMsgs(curIter);
+}
 
 void CommandParser::removeInvalidMsgs(bool silent)
 {
-    int i = 0;
-    while (i < m_msgs.length()) {
-        auto &msg = m_msgs[i];
+    CtrNode &root = *m_tree.getRoot();
+    for (auto &it : root) {
+        std::shared_ptr<MessageData> msg = dynamic_cast<ScpiMsgNode&>(it).getMsgData();
         if (!msg->m_isValid) {
             if (!silent)
                 Logging::logMsg(QString(" Remove invalid message [L%1] \"%2\"").arg(QString::number(msg->m_fileLineNumber).rightJustified(2, '0'), msg->m_oriMsg), LoggingColor::YELLOW);
-            m_msgs.removeAt(i);
-        }
-        else {
-            i++;
+            root.remove(&it);
         }
     }
 }
