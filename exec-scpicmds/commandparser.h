@@ -13,7 +13,7 @@ public:
     CommandParser(TcpHandler& tcpHandler);
     void setHandleErroneousMessages(unsigned int handleErroneousMessages);
     void setCheckErrorQueue(bool checkErrorQueue);
-    void setLoopNum(quint8 numLoops);
+    void setLoopNumber(quint8 numLoops);
     void parseCmdFile(QString strFileName);
 
 signals:

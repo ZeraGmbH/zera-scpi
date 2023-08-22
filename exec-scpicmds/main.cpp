@@ -44,41 +44,58 @@ int main(int argc, char *argv[])
     receiveTimeoutOption.setDefaultValue("3000");
     parser.addOption(receiveTimeoutOption);
 
-    QCommandLineOption loopFile("l", "number of loops.", "NUMBER_OF_LOOPS");
+    QCommandLineOption loopFile("l", "Number of repetitions executing of file.", "NUMBER_OF_LOOPS");
     loopFile.setDefaultValue("1");
     parser.addOption(loopFile);
 
+    // Parse command line arguments
     parser.process(a);
 
     // Read and check command line arguments
+    bool ok = false;
+
     QString cmdFile = parser.value(cmdFileOption);
-    if(cmdFile.isEmpty())
-    {
+    if(cmdFile.isEmpty()) {
         Logging::logMsg(QString("Please specify a command file!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
     QString ipAddress = parser.value(ipAddressOption);
-    if(ipAddress.isEmpty())
-    {
-        Logging::logMsg(QString("Please specify an IP-address!"), LoggingColor::RED);
+    if(ipAddress.isEmpty()) {
+        Logging::logMsg(QString("Please specify an IP-address (option -i)!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
-    quint16 portNumber = parser.value(portNumberOption).toUInt();
-    if(portNumber <= 0 || portNumber > 65535)
+    quint16 portNumber = parser.value(portNumberOption).toUInt(&ok);
+    if(!ok || portNumber <= 0 || portNumber > 65535)
     {
-        Logging::logMsg(QString("The port number needs to be within range 1..65535!"), LoggingColor::RED);
+        Logging::logMsg(QString("The port number (option -p) needs to be within range 1..65535!"), LoggingColor::RED);
         parser.showHelp(-1);
     }
 
-    unsigned int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt();
-    if (handleErroneousMessages > 3)
-        handleErroneousMessages = 0;
+    unsigned int handleErroneousMessages = parser.value(handleErroneousMessagesOption).toUInt(&ok);
+    if (!ok || handleErroneousMessages > 3) {
+        Logging::logMsg(QString("The handling of erroneous messages (option -e) need to be in range 0..3!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
 
-    unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt();
-    unsigned int checkErrorQueue = (parser.value(checkErrorQueueOption).toUInt() != 0);
-    unsigned int LoopsNumber = parser.value(loopFile).toUInt();
+    unsigned int receiveTimeout = parser.value(receiveTimeoutOption).toUInt(&ok);
+    if (!ok) {
+        Logging::logMsg(QString("Receive timeout (option -t) needs to be a positive integer!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
+
+    unsigned int checkErrorQueue = (parser.value(checkErrorQueueOption).toUInt(&ok) != 0);
+    if (!ok) {
+        Logging::logMsg(QString("Check target error queue (option -c) needs to be an integer with 0 = disabled, >0 enabled!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
+
+    unsigned int loopNumber = parser.value(loopFile).toUInt(&ok);
+    if (!ok) {
+        Logging::logMsg(QString("Number of repetitions (option -l) needs to be an integer >= 0!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
 
     // Prepare for and perform the task itself
     TcpHandler tcpHandler(receiveTimeout);
@@ -95,7 +112,7 @@ int main(int argc, char *argv[])
     CommandParser cmdParser(tcpHandler);
     cmdParser.setHandleErroneousMessages(handleErroneousMessages);
     cmdParser.setCheckErrorQueue(checkErrorQueue);
-    cmdParser.setLoopNum(LoopsNumber);
+    cmdParser.setLoopNumber(loopNumber);
     cmdParser.parseCmdFile(cmdFile);
 
     tcpHandler.disconnectFromHost();
