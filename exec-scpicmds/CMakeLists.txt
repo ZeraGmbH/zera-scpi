@@ -9,6 +9,15 @@ file(GLOB HEADER
     ${CMAKE_CURRENT_SOURCE_DIR}/nodetree/*.h
     )
 
+file(GLOB SOURCES_NODETREE
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodetree/*.cpp
+    )
+
+file(GLOB HEADER_NODETREE
+    ${CMAKE_CURRENT_SOURCE_DIR}/nodetree/*.h
+    )
+
+
 add_library(execScpiCmdslib STATIC
     ${SOURCES}
     ${HEADER}
@@ -30,6 +39,23 @@ target_include_directories(execScpiCmdslib
 
 set_target_properties(execScpiCmdslib PROPERTIES VERSION ${PROJECT_VERSION})
 set_target_properties(execScpiCmdslib PROPERTIES SOVERSION ${SCPI_VERSION_MAJOR})
+
+
+add_library(execScpiCmdsNodeTreelib STATIC
+    ${SOURCES_NODETREE}
+    ${HEADER_NODETREE}
+    )
+
+target_include_directories(execScpiCmdsNodeTreelib
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nodetree>
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>
+    $<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/execScpiCmdsNodeTreelib>
+    )
+
+set_target_properties(execScpiCmdsNodeTreelib PROPERTIES VERSION ${PROJECT_VERSION})
+set_target_properties(execScpiCmdsNodeTreelib PROPERTIES SOVERSION ${SCPI_VERSION_MAJOR})
+
 
 # configure *ConfigVersion.cmake
 include(CMakePackageConfigHelpers)
@@ -56,6 +82,7 @@ add_executable(execScpiCmds
 target_link_libraries(execScpiCmds
     PUBLIC
     execScpiCmdslib
+    execScpiCmdsNodeTreelib
 )
 
 install(TARGETS execScpiCmds
