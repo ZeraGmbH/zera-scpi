@@ -25,7 +25,7 @@ bool TcpHandler::connectTCP(QString hostName, quint16 port)
 void TcpHandler::sendMessage(MessageData &msg)
 {
     QString lineStr = QString::number(msg.m_fileLineNumber).rightJustified(2, '0');
-    Logging::logMsg(QString("--> [L%1] %2").arg(lineStr,  msg.m_oriMsg));
+    Logging::logMsg(QString("==> [L%1] %2").arg(lineStr,  msg.m_oriMsg), LoggingColor::NONE, LoggingStyle::BOLD);
 
     QString msgPartPos;
     int posNum = 1;

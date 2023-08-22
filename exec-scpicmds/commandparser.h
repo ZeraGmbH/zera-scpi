@@ -1,9 +1,10 @@
-#ifndef PARSECMDSINFILE_H
-#define PARSECMDSINFILE_H
+#ifndef COMMANDPARSER_H
+#define COMMANDPARSER_H
 
 #include <QObject>
 #include "tcphandler.h"
 #include "messagedata.h"
+#include "nodetree.h"
 
 
 class CommandParser : public QObject
@@ -21,15 +22,15 @@ signals:
 
 private:
     bool msgsAreValid();
-    void sendMsgs();
+    void sendMsgs(unsigned int iterNo = 0);
     void loopAndSendMsgs();
     void removeInvalidMsgs(bool silent);
 
     unsigned int m_handleErroneousMessages = 0;
-    bool m_checkErrorQueue = 0;
+    bool m_checkErrorQueue = false;
     TcpHandler& m_tcpHandler;
-    QList<std::shared_ptr<MessageData>> m_msgs;
-    quint8 m_numLoops;
+    quint8 m_numLoops = 1;
+    NodeTree m_tree;
 };
 
-#endif // PARSECMDSINFILE_H
+#endif // COMMANDPARSER_H
