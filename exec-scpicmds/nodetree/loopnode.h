@@ -8,7 +8,7 @@
 class LoopNode : public ICtrNode
 {
 public:
-    LoopNode(int cnt);
+    LoopNode(ICtrNode *parent, int cnt);
     ~LoopNode();
     void append(INode *node) override;
     bool remove(INode *node) override;
@@ -18,9 +18,11 @@ public:
     bool hasLeaves() override;
     void traverse(std::function<void(INode*)> &f) override;
     void exec(std::function<void(INode*)> &f) override;
+    void breakExec() override;
 private:
     int m_cnt = 0;
     CtrNode m_nodes;
+    bool m_break = false;
 };
 
 #endif // LOOPNODE_H

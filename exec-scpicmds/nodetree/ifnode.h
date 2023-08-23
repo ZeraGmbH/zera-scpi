@@ -9,7 +9,7 @@
 class IfNode : public ICtrNode
 {
 public:
-    IfNode(bool cond);
+    IfNode(ICtrNode *parent, bool cond);
     ~IfNode();
     void append(INode *node) override;
     bool remove(INode* node) override;
@@ -19,6 +19,7 @@ public:
     bool hasLeaves() override;
     void traverse(std::function<void(INode*)> &f) override;
     void exec(std::function<void(INode*)> &f) override;
+    void breakExec() override;
     void switchToElseBranch();
 
 private:

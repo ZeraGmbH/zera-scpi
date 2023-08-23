@@ -1,8 +1,8 @@
 #include "ifnode.h"
 
 
-IfNode::IfNode(bool cond) :
-    m_cond(cond)
+IfNode::IfNode(ICtrNode *parent, bool cond) :
+    ICtrNode(parent), m_cond(cond), m_ifNodes(parent), m_elseNodes(parent)
 {
 }
 
@@ -66,6 +66,13 @@ void IfNode::exec(std::function<void(INode*)> &f)
         m_ifNodes.exec(f);
     else
         m_elseNodes.exec(f);
+}
+
+void IfNode::breakExec()
+{
+    // We just break both, so we don't nned to check, which one is the active one.
+    m_ifNodes.breakExec();
+    m_elseNodes.breakExec();
 }
 
 void IfNode::switchToElseBranch()

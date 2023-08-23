@@ -7,6 +7,7 @@
 class ICtrNode : public INode
 {
 public:
+    ICtrNode(ICtrNode *parent) : INode(parent) {};
     virtual ~ICtrNode() = default;
     virtual void append(INode* node) = 0; // Append node to current container.
     virtual void clear() = 0; // Recursively clear container.
@@ -15,6 +16,7 @@ public:
     virtual bool remove(INode* node) = 0; // Find and remove all items with given address and return is at least one got found.
     virtual bool prune() = 0; // Remove empty container nodes recursively.
     virtual void traverse(std::function<void(INode*)> &f) = 0; // Traverse the tree (containers and leaves).
+    virtual void breakExec() = 0; // Breaks the execution of the containers child nodes.
 };
 
 #endif // ICTRNODE_H

@@ -6,11 +6,12 @@
 #include <cstddef>
 #include <functional>
 #include "ictrnode.h"
+#include "icmdnode.h"
 
 class CtrNode : public ICtrNode
 {
 public:
-    CtrNode();
+    CtrNode(ICtrNode *parent);
     ~CtrNode();
     void append(INode *node) override;
     bool remove(INode *node) override;
@@ -20,6 +21,7 @@ public:
     bool hasLeaves() override;
     void traverse(std::function<void(INode*)> &f) override;
     void exec(std::function<void(INode*)> &f) override;
+    void breakExec() override;
     static bool isContainer(INode *node);
 
     struct iterator
@@ -59,7 +61,7 @@ public:
     iterator begin() {
         auto m_nodesLinear = new std::vector<INode*>;
         std::function<void (INode *)> f = [m_nodesLinear] (INode *node) {
-            if (!isContainer(node))
+            if (!isContainer(node) && !dynamic_cast<ICmdNode*>(node))
                 m_nodesLinear->push_back(node);
         };
         this->traverse(f); // Collect leaf nodes
@@ -77,6 +79,7 @@ public:
 private:
     std::vector<INode*> m_nodes;
     bool m_isEmpty = true;
+    bool m_break = false;
 };
 
 #endif // CTRNODE_H

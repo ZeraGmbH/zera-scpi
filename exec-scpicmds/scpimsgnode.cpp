@@ -2,8 +2,8 @@
 #include "scpimsgnode.h"
 
 
-ScpiMsgNode::ScpiMsgNode(std::shared_ptr<MessageData> msg) :
-    m_msg(msg)
+ScpiMsgNode::ScpiMsgNode(ICtrNode *parent, std::shared_ptr<MessageData> msg) :
+    m_msg(msg), INode(parent)
 {
 }
 
