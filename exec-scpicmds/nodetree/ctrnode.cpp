@@ -2,7 +2,7 @@
 #include "ctrnode.h"
 
 
-CtrNode::CtrNode()
+CtrNode::CtrNode(ICtrNode *parent) : ICtrNode(parent)
 {
 }
 
@@ -113,8 +113,17 @@ void CtrNode::traverse(std::function<void(INode*)> &f)
 
 void CtrNode::exec(std::function<void(INode*)> &f)
 {
-    for (auto &it : m_nodes)
+    m_break = false;
+    for (auto &it : m_nodes) {
+        if (m_break)
+            break;
         it->exec(f);
+    }
+}
+
+void CtrNode::breakExec()
+{
+    m_break = true;
 }
 
 bool CtrNode::isContainer(INode *node)

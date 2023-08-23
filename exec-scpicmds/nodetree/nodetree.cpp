@@ -4,9 +4,9 @@
 #include "nodetree.h"
 
 
-NodeTree::NodeTree()
+NodeTree::NodeTree(ICtrNode *parent) : ICtrNode(parent)
 {
-    m_root = new CtrNode();
+    m_root = new CtrNode(parent);
     m_curCtr = m_root;
     m_parentCtr = m_root;
 }
@@ -18,10 +18,10 @@ NodeTree::~NodeTree()
 
 void NodeTree::enterContainer(ICtrNode *ctr)
 {
-    m_curCtr = ctr;
-    m_parentCtr->append(m_curCtr);
-    m_parentCtr = m_curCtr;
-    m_ctrs.push(m_curCtr);
+    m_curCtr = ctr; // Set new container node as current container.
+    m_parentCtr->append(m_curCtr); // Add current container node as sibling to the parent node.
+    m_parentCtr = m_curCtr; // Make the parent point to the current container node for the next recursion step.
+    m_ctrs.push(m_curCtr); // Extend path
 }
 
 void NodeTree::leaveContainer()
@@ -32,6 +32,11 @@ void NodeTree::leaveContainer()
     else
         m_curCtr = m_root;
     m_parentCtr = m_curCtr;
+}
+
+ICtrNode *NodeTree::getCurrentContainer()
+{
+    return m_parentCtr;
 }
 
 void NodeTree::append(INode* node)
@@ -72,6 +77,11 @@ void NodeTree::traverse(std::function<void(INode*)> &f)
 void NodeTree::exec(std::function<void(INode*)> &f)
 {
     m_root->exec(f);
+}
+
+void NodeTree::breakExec()
+{
+    m_break = true;
 }
 
 CtrNode* NodeTree::getRoot()

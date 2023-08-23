@@ -7,6 +7,7 @@
 #include "logging.h"
 #include "inode.h"
 #include "loopnode.h"
+#include "breaknode.h"
 #include "ifnode.h"
 #include "scpimsgnode.h"
 
@@ -19,7 +20,7 @@ enum class ContainerType
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
-    m_tcpHandler(tcpHandler)
+    m_tcpHandler(tcpHandler), m_tree(nullptr)
 {
 }
 
@@ -67,15 +68,23 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
                         else if (fields.size() - 1 == 1) // 1 argument
                         {
-                            m_tree.enterContainer(new LoopNode(fields[1].toUInt()));
+                            m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), fields[1].toUInt()));
                             ctrTypes.push(ContainerType::LOOP);
                         }
                     }
-                    if (fields[0].toUpper() == "IF")
+                    else if (fields[0].toUpper() == "BREAK")
                     {
-                        if (fields.size() - 1 == 1)
+                        // TODO check if there are nodes in the BREAK's parent tree as they are unreachable
+                        if (fields.size() - 1 == 0) // 0 arguments
                         {
-                            IfNode *ifnode = new IfNode(fields[1].toInt() != 0);
+                            m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
+                        }
+                    }
+                    else if (fields[0].toUpper() == "IF")
+                    {
+                        if (fields.size() - 1 == 1) // 1 argument
+                        {
+                            IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(),fields[1].toInt() != 0);
                             m_tree.enterContainer(ifnode);
                             ifnodes.push(ifnode);
                             ctrTypes.push(ContainerType::IF);
@@ -85,7 +94,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                             // TODO print error message
                         }
                     }
-                    if (fields[0].toUpper() == "ELSE")
+                    else if (fields[0].toUpper() == "ELSE")
                     {
                         ifnodes.top()->switchToElseBranch();
                     }
@@ -118,7 +127,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                         msgData->m_cmds.append(cmdData);
                     }
                     msgData->m_cmdCountStrWidth = QString::number(msgData->m_cmds.count()).length();
-                    m_tree.append(new ScpiMsgNode(msgData));
+                    m_tree.append(new ScpiMsgNode(m_tree.getCurrentContainer(), msgData));
                 }
             }
         }
