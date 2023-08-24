@@ -8,6 +8,7 @@
 #include "inode.h"
 #include "loopnode.h"
 #include "breaknode.h"
+#include "exitnode.h"
 #include "ifnode.h"
 #include "scpimsgnode.h"
 
@@ -78,6 +79,13 @@ void CommandParser::parseCmdFile(QString strFileName)
                         if (fields.size() - 1 == 0) // 0 arguments
                         {
                             m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
+                        }
+                    }
+                    else if (fields[0].toUpper() == "EXIT")
+                    {
+                        if (fields.size() - 1 == 0) // 0 arguments
+                        {
+                            m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
                         }
                     }
                     else if (fields[0].toUpper() == "IF")
