@@ -10,14 +10,8 @@
 #include "breaknode.h"
 #include "exitnode.h"
 #include "ifnode.h"
+#include "setnode.h"
 #include "scpimsgnode.h"
-
-
-enum class ContainerType
-{
-    LOOP = 0,
-    IF,
-};
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
@@ -42,6 +36,12 @@ void CommandParser::setLoopNumber(quint8 numLoops)
 
 void CommandParser::parseCmdFile(QString strFileName)
 {
+    enum class ContainerType
+    {
+        LOOP = 0,
+        IF,
+    };
+
     QFile cmdFile(strFileName);
     std::stack<IfNode *> ifnodes;
     std::stack<ContainerType> ctrTypes;
@@ -59,9 +59,105 @@ void CommandParser::parseCmdFile(QString strFileName)
                 if (line.startsWith(">"))
                 {
                     line = line.remove(0, 1).trimmed();
-
                     QStringList fields = line.split(QRegExp("\\s+"));
-                    if (fields[0].toUpper() == "LOOP")
+
+                    if (fields[0].toUpper() == "VAR") // TODO check for not allowing keywords (also such that might get used in the future) as variale names
+                    {
+                        if (fields.size() - 1 == 3) { // 3 arguments{
+                            // TODO check if 1st argument is a valid name and it does not exist yet
+                            // TODO check if 2nd argument is one of valid strings (like INT, FLOAT, STRING)
+                            // TODO check if 3rd argument?
+                            if (fields[2].toUpper() == "INT")
+                                gc.addVar(new Variable(fields[1], VariableType::INT, new int(fields[3].toInt())));
+                            else if (fields[2].toUpper() == "FLOAT")
+                                gc.addVar(new Variable(fields[1], VariableType::FLOAT, new float(fields[3].toFloat())));
+                            else if (fields[2].toUpper() == "BOOL")
+                                gc.addVar(new Variable(fields[1], VariableType::BOOL, new bool(fields[3].toInt() != 0)));
+                            else if (fields[2].toUpper() == "STRING")
+                                gc.addVar(new Variable(fields[1], VariableType::STRING, new QString(fields[3])));
+                            else
+                                ; // TODO print error message
+                        }
+                        else {
+                            // TODO print error message
+                        }
+                    }
+                    else if (fields[0].toUpper() == "SET") // TODO split up this whole block into smaller functions
+                    {
+                        if (fields.size() - 1 == 2) { // 2 arguments
+                            // TODO check if 1st argument is a valid and existing variable name
+                            // TODO check if 2nd argument can be interpreted to the variables corresponding type
+                            bool ok = false;
+                            Variable *lVar = nullptr;
+                            if ((lVar = gc.getVar(fields[1])) != nullptr) { // Variable found
+
+                                // TODO and now check if the second parameter also is a variable. if not, evaluate the static expression; but if so,
+                                Variable *rVar = nullptr;
+                                if ((rVar = gc.getVar(fields[2])) != nullptr) { // Variable found
+                                    m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *rVar));
+                                }
+                                else {
+                                    Variable *constVal = nullptr;
+
+                                    switch (lVar->getType()) {
+                                    case INT: {
+                                        int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
+                                        if (ok)
+                                            constVal = new Variable("", VariableType::INT, new int(tmp));
+                                            //lVar->setValue(new int(tmp));
+                                        else
+                                            ; // TODO print error message
+                                        break;
+                                    }
+                                    case FLOAT: {
+                                        float tmp = fields[2].toFloat(&ok);
+                                        if (ok)
+                                            constVal = new Variable("", VariableType::FLOAT, new float(tmp));
+                                            //lVar->setValue(new float(tmp));
+                                        break;
+                                    }
+                                    case BOOL: {
+                                        if (fields[2].toUpper() == "TRUE") // TODO       toInt(&ok); // here and on other locations: don't use int for bools, but TRUE and FALSE string... (toUpper())
+                                            constVal = new Variable("", VariableType::BOOL, new bool(true));
+                                            //lVar->setValue(new bool(true));
+                                        else if (fields[2].toUpper() == "FALSE")
+                                            constVal = new Variable("", VariableType::BOOL, new bool(true));
+                                            //lVar->setValue(new bool(false));
+                                        else
+                                            ; // TODO print error message
+                                        break;
+                                    }
+                                    case STRING: {
+                                        constVal = new Variable("", VariableType::STRING, new QString(fields[2]));
+                                        //lVar->setValue(new QString(fields[2]));
+                                        break;
+                                    }
+                                    }
+
+                                    if (constVal != nullptr)
+                                        m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *constVal));
+                                }
+                            }
+                            else {
+                                ; // TODO print error message (variable not found)
+                            }
+
+                            if (fields[2].toUpper() == "INT")
+                                gc.addVar(new Variable(fields[1], VariableType::INT, new int(fields[3].toInt())));
+                            else if (fields[2].toUpper() == "FLOAT")
+                                gc.addVar(new Variable(fields[1], VariableType::FLOAT, new float(fields[3].toFloat())));
+                            else if (fields[2].toUpper() == "BOOL")
+                                gc.addVar(new Variable(fields[1], VariableType::BOOL, new bool(fields[3].toInt() != 0)));
+                            else if (fields[2].toUpper() == "STRING")
+                                gc.addVar(new Variable(fields[1], VariableType::STRING, new QString(fields[3])));
+                            else
+                                ; // TODO print error message
+                        }
+                        else {
+                            // TODO print error message (wrong number of arguments)
+                        }
+                    }
+                    else if (fields[0].toUpper() == "LOOP")
                     {
                         if (fields.size() - 1 == 0) // 0 arguments
                         {

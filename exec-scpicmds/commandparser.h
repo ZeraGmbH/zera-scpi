@@ -5,6 +5,8 @@
 #include "tcphandler.h"
 #include "messagedata.h"
 #include "nodetree.h"
+#include "variable.h"
+#include "context.h"
 
 
 class CommandParser : public QObject
@@ -31,6 +33,7 @@ private:
     TcpHandler& m_tcpHandler;
     quint8 m_numLoops = 1;
     NodeTree m_tree;
+    Context gc; // global context
 };
 
 #endif // COMMANDPARSER_H
