@@ -15,7 +15,6 @@ public:
     void exec(std::function<void(INode*)> &f);
 
 private:
-    //Context &m_context;
     Variable &m_lValue;
     Variable &m_rValue;
 };

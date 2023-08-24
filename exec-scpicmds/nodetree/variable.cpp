@@ -53,6 +53,20 @@ QString Variable::toString()
 {
     switch (m_type) {
     case INT:
+        return QString::number(*((int*)m_value));
+    case FLOAT:
+        return QString::number(*((float*)m_value));
+    case BOOL:
+        return QString((*((bool*)m_value)) ? "TRUE" : "FALSE");
+    case STRING:
+        return *((QString*)m_value);
+    }
+}
+
+QString Variable::toFullString()
+{
+    switch (m_type) {
+    case INT:
         return QString("%1(%2)=%3").arg(m_name, qPrintable("INT"), QString::number(*((int*)m_value)));
     case FLOAT:
         return QString("%1(%2)=%3").arg(m_name, qPrintable("FLOAT"), QString::number(*((float*)m_value)));

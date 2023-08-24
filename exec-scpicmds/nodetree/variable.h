@@ -25,6 +25,7 @@ public:
     void setValue(void *value);
     void deleteValue();
     QString toString();
+    QString toFullString();
 
 private:
     QString m_name;
