@@ -13,7 +13,7 @@ bool Context::addVar(Variable *var)
     }
 }
 
-Variable* Context::getVar(QString name)
+Variable* Context::getVar(std::string name)
 {
     for (auto var: m_vars) {
         if (var->getName() == name)
@@ -27,7 +27,7 @@ std::vector<Variable*>& Context::getVars()
     return m_vars;
 }
 
-bool Context::varExists(QString varName)
+bool Context::varExists(std::string varName)
 {
     return (getVar(varName) != nullptr);
 }

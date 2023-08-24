@@ -44,11 +44,6 @@ add_library(execScpiCmdsNodeTreelib STATIC
     ${HEADER_NODETREE}
     )
 
-target_link_libraries(execScpiCmdsNodeTreelib
-    PUBLIC
-    Qt5::Core
-    )
-
 target_include_directories(execScpiCmdsNodeTreelib
     PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/nodetree>
