@@ -11,6 +11,7 @@
 #include "exitnode.h"
 #include "ifnode.h"
 #include "setnode.h"
+#include "printnode.h"
 #include "scpimsgnode.h"
 
 
@@ -90,8 +91,6 @@ void CommandParser::parseCmdFile(QString strFileName)
                             bool ok = false;
                             Variable *lVar = nullptr;
                             if ((lVar = gc.getVar(fields[1])) != nullptr) { // Variable found
-
-                                // TODO and now check if the second parameter also is a variable. if not, evaluate the static expression; but if so,
                                 Variable *rVar = nullptr;
                                 if ((rVar = gc.getVar(fields[2])) != nullptr) { // Variable found
                                     m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *rVar));
@@ -134,8 +133,10 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     }
                                     }
 
-                                    if (constVal != nullptr)
+                                    if (constVal != nullptr) {
+                                        gc.addVar(constVal);
                                         m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *constVal));
+                                    }
                                 }
                             }
                             else {
@@ -182,6 +183,25 @@ void CommandParser::parseCmdFile(QString strFileName)
                         if (fields.size() - 1 == 0) // 0 arguments
                         {
                             m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
+                        }
+                    }
+                    else if (fields[0].toUpper() == "PRINT")
+                    {
+                        if (fields.size() - 1 >= 1) // >= 1 argument(s)
+                        {
+                            std::vector<Variable*> *values = new std::vector<Variable*>;
+                            Variable *var = nullptr;
+                            for (int f = 1; f < fields.size(); f++) {
+                                if ((var = gc.getVar(fields[f])) != nullptr) { // Variable found
+                                    values->push_back(var);
+                                }
+                                else {
+                                    var = new Variable("", VariableType::STRING, new QString(fields[f]));
+                                    gc.addVar(var);
+                                    values->push_back(var);
+                                }
+                            }
+                            m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values));
                         }
                     }
                     else if (fields[0].toUpper() == "IF")
