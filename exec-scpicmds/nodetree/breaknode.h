@@ -3,6 +3,8 @@
 
 
 #include "inode.h"
+#include "icmdnode.h"
+
 
 class BreakNode : public ICmdNode
 {
