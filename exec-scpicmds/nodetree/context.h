@@ -10,9 +10,9 @@ class Context
 {
 public:
     bool addVar(Variable *var);
-    Variable *getVar(QString name);
+    Variable *getVar(std::string name);
     std::vector<Variable*> &getVars();
-    bool varExists(QString varName);
+    bool varExists(std::string varName);
     void addConst(Variable *var);
 
 private:

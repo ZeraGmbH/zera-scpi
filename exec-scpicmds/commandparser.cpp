@@ -3,6 +3,7 @@
 #include <QObject>
 #include <memory>
 #include <functional>
+#include <string>
 #include "commandparser.h"
 #include "logging.h"
 #include "inode.h"
@@ -89,13 +90,13 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 // TODO check if 2nd argument is one of valid strings (like INT, FLOAT, STRING)
                                 // TODO check if 3rd argument?
                                 if (fields[2].toUpper() == "INT")
-                                    gc.addVar(new Variable(fields[1], VariableType::INT, new int(fields[3].toInt())));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::INT, new int(fields[3].toInt())));
                                 else if (fields[2].toUpper() == "FLOAT")
-                                    gc.addVar(new Variable(fields[1], VariableType::FLOAT, new float(fields[3].toFloat())));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::FLOAT, new float(fields[3].toFloat())));
                                 else if (fields[2].toUpper() == "BOOL")
-                                    gc.addVar(new Variable(fields[1], VariableType::BOOL, new bool(fields[3].toInt() != 0)));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toInt() != 0)));
                                 else if (fields[2].toUpper() == "STRING")
-                                    gc.addVar(new Variable(fields[1], VariableType::STRING, new QString(fields[3])));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new QString(fields[3])));
                                 else
                                     ; // TODO print error message
                             }
@@ -110,9 +111,9 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 // TODO check if 2nd argument can be interpreted to the variables corresponding type
                                 bool ok = false;
                                 Variable *lVar = nullptr;
-                                if ((lVar = gc.getVar(fields[1])) != nullptr) { // Variable found
+                                if ((lVar = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
                                     Variable *rVar = nullptr;
-                                    if ((rVar = gc.getVar(fields[2])) != nullptr) { // Variable found
+                                    if ((rVar = gc.getVar(fields[2].toStdString())) != nullptr) { // Variable found
                                         m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *rVar));
                                     }
                                     else {
@@ -164,13 +165,13 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 }
 
                                 if (fields[2].toUpper() == "INT")
-                                    gc.addVar(new Variable(fields[1], VariableType::INT, new int(fields[3].toInt())));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::INT, new int(fields[3].toInt())));
                                 else if (fields[2].toUpper() == "FLOAT")
-                                    gc.addVar(new Variable(fields[1], VariableType::FLOAT, new float(fields[3].toFloat())));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::FLOAT, new float(fields[3].toFloat())));
                                 else if (fields[2].toUpper() == "BOOL")
-                                    gc.addVar(new Variable(fields[1], VariableType::BOOL, new bool(fields[3].toInt() != 0)));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toInt() != 0)));
                                 else if (fields[2].toUpper() == "STRING")
-                                    gc.addVar(new Variable(fields[1], VariableType::STRING, new QString(fields[3])));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new QString(fields[3])));
                                 else
                                     ; // TODO print error message
                             }
@@ -212,7 +213,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 std::vector<Variable*> *values = new std::vector<Variable*>;
                                 Variable *var = nullptr;
                                 for (int f = 1; f < fields.size(); f++) {
-                                    if ((var = gc.getVar(fields[f])) != nullptr) { // Variable found
+                                    if ((var = gc.getVar(fields[f].toStdString())) != nullptr) { // Variable found
                                         values->push_back(var);
                                     }
                                     else {
@@ -221,7 +222,8 @@ void CommandParser::parseCmdFile(QString strFileName)
                                         values->push_back(var);
                                     }
                                 }
-                                m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values));
+                                std::function<void(std::string&)> cbLog = [&](std::string &str){Logging::logMsg(QString::fromStdString(str)); };
+                                m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
                             }
                         }
                         else if (fields[0].toUpper() == "IF")

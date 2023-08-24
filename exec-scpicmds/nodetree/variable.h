@@ -2,7 +2,7 @@
 #define VARIABLE_H
 
 
-#include <QString>
+#include <string>
 
 
 enum VariableType
@@ -17,18 +17,18 @@ enum VariableType
 class Variable
 {
 public:
-    Variable(QString name, VariableType type, void *value);
+    Variable(std::string name, VariableType type, void *value);
     ~Variable();
-    QString getName();
+    std::string getName();
     VariableType getType();
     void *getValue();
     void setValue(void *value);
     void deleteValue();
-    QString toString();
-    QString toFullString();
+    std::string toString();
+    std::string toFullString();
 
 private:
-    QString m_name;
+    std::string m_name;
     VariableType m_type;
     void *m_value = nullptr;
 };

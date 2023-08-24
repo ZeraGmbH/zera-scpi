@@ -24,7 +24,7 @@ void SetNode::exec(std::function<void(INode*)> &f)
         m_lValue.setValue(new bool(*(bool*)m_rValue.getValue()));
         break;
     case STRING:
-        m_lValue.setValue(new QString(*(QString*)m_rValue.getValue()));
+        m_lValue.setValue(new std::string(*(std::string*)m_rValue.getValue()));
         break;
     }
 }

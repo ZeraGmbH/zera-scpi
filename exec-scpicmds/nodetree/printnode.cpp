@@ -1,9 +1,8 @@
 #include "printnode.h"
-#include "../logging.h"
 
 
-PrintNode::PrintNode(ICtrNode *parent, std::vector<Variable*> *values) :
-    ICmdNode(parent), m_values(values)
+PrintNode::PrintNode(ICtrNode *parent, std::vector<Variable*> *values, std::function<void(std::string&)> &cbLog) :
+    ICmdNode(parent), m_values(values), m_cbLog(cbLog)
 {
 }
 
@@ -13,8 +12,8 @@ PrintNode::~PrintNode()
 
 void PrintNode::exec(std::function<void(INode*)> &f)
 {
-    QString str = "";
+    std::string str = "";
     for (auto val : *m_values)
         str.append(val->toString());
-    Logging::logMsg(str);
+    m_cbLog(str);
 }

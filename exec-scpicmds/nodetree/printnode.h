@@ -10,12 +10,13 @@
 class PrintNode : public ICmdNode
 {
 public:
-    PrintNode(ICtrNode *parent, std::vector<Variable*> *values);
+    PrintNode(ICtrNode *parent, std::vector<Variable*> *values, std::function<void(std::string&)> &cbLog);
     ~PrintNode();
     void exec(std::function<void(INode*)> &f);
 
 private:
     std::vector<Variable*> *m_values = nullptr;
+    std::function<void(std::string&)> &m_cbLog;
 };
 
 
