@@ -1,7 +1,7 @@
 #include "ifnode.h"
 
 
-IfNode::IfNode(ICtrNode *parent, bool cond) :
+IfNode::IfNode(ICtrNode *parent, Condition &cond) :
     ICtrNode(parent), m_cond(cond), m_ifNodes(parent), m_elseNodes(parent)
 {
 }
@@ -62,7 +62,7 @@ void IfNode::traverse(std::function<void(INode*)> &f)
 
 void IfNode::exec(std::function<void(INode*)> &f)
 {
-    if (m_cond)
+    if (m_cond.eval())
         m_ifNodes.exec(f);
     else
         m_elseNodes.exec(f);

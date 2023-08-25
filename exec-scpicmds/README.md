@@ -79,7 +79,7 @@ Adds the variable to value. The value can be const or also a variable. Boolean v
 * ```<N_REP>``` Number of repetitions. A const value interpretable as unsigned integer or a variable holding such a value.
 
 **Description:**
-Repeats its commands (between the ```LOOP``` and its corresponding ```END``` command) ```<N_REP>``` times. Loops are containers and therefore can be nested.
+Repeats its commands (between the ```LOOP``` and its corresponding ```END``` command) ```<N_REP>``` times. ```LOOP``` is a container (also as ```IF``` is) and therefore (container) commands can be nested into it.
 
 **Example:**
 ```
@@ -172,7 +172,7 @@ Prints const strings and variables to the command line.
     * ```<RIGHT_VALUE>``` Existing variable or a const value that is interpretable to the ```<LEFT_VAR_NAME>``` variables corresponding type. Gets compared to ```<LEFT_VAR_NAME>```.
 
 **Description:**
-The boolean value of ```<COND>``` gets evaluated first. If it evaluates to ```TRUE``` the commands in the ```IF``` block get executed, but not the ones in the ```ELSE``` block. If it evaluates to ```FALSE``` the commands in the ```ELSE``` block get executed, but not the ones in the ```IF``` block. The ```ELSE``` block is optional. It has the same behavior known from programming languages like C.
+The boolean value of ```<COND>``` gets evaluated first. If it evaluates to ```TRUE``` the commands in the ```IF``` block get executed, but not the ones in the ```ELSE``` block. If it evaluates to ```FALSE``` the commands in the ```ELSE``` block get executed, but not the ones in the ```IF``` block. The ```ELSE``` block is optional. It has the same behavior known from programming languages like C. ```IF``` is a container (also as ```LOOP``` is) and therefore (container) commands can be nested into it.
 
 **Examples:**
 ```
@@ -185,7 +185,7 @@ The boolean value of ```<COND>``` gets evaluated first. If it evaluates to ```TR
 ```
 ```
 *IDN*
-# The following IF FALSE comments out the command in its block
+# The following IF FALSE comments out the command in its block (remember, VAR commands will always be evaluated)
 > IF FALSE
   *STB?
 > END
