@@ -12,6 +12,7 @@
 #include "exitnode.h"
 #include "ifnode.h"
 #include "setnode.h"
+#include "addnode.h"
 #include "printnode.h"
 #include "scpimsgnode.h"
 
@@ -110,21 +111,20 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 // TODO check if 1st argument is a valid and existing variable name
                                 // TODO check if 2nd argument can be interpreted to the variables corresponding type
                                 bool ok = false;
-                                Variable *lVar = nullptr;
-                                if ((lVar = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
-                                    Variable *rVar = nullptr;
-                                    if ((rVar = gc.getVar(fields[2].toStdString())) != nullptr) { // Variable found
-                                        m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *rVar));
+                                Variable *lVal = nullptr;
+                                if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
+                                    Variable *rVal = nullptr;
+                                    if ((rVal = gc.getVar(fields[2].toStdString())) != nullptr) { // Variable found
+                                        m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
                                     }
                                     else {
                                         Variable *constVal = nullptr;
 
-                                        switch (lVar->getType()) {
+                                        switch (lVal->getType()) {
                                         case INT: {
                                             int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
                                             if (ok)
                                                 constVal = new Variable("", VariableType::INT, new int(tmp));
-                                            //lVar->setValue(new int(tmp));
                                             else
                                                 ; // TODO print error message
                                             break;
@@ -133,30 +133,26 @@ void CommandParser::parseCmdFile(QString strFileName)
                                             float tmp = fields[2].toFloat(&ok);
                                             if (ok)
                                                 constVal = new Variable("", VariableType::FLOAT, new float(tmp));
-                                            //lVar->setValue(new float(tmp));
                                             break;
                                         }
                                         case BOOL: {
                                             if (fields[2].toUpper() == "TRUE") // TODO       toInt(&ok); // here and on other locations: don't use int for bools, but TRUE and FALSE string... (toUpper())
                                                 constVal = new Variable("", VariableType::BOOL, new bool(true));
-                                            //lVar->setValue(new bool(true));
                                             else if (fields[2].toUpper() == "FALSE")
                                                 constVal = new Variable("", VariableType::BOOL, new bool(true));
-                                            //lVar->setValue(new bool(false));
                                             else
                                                 ; // TODO print error message
                                             break;
                                         }
                                         case STRING: {
-                                            constVal = new Variable("", VariableType::STRING, new QString(fields[2]));
-                                            //lVar->setValue(new QString(fields[2]));
+                                            constVal = new Variable("", VariableType::STRING, new std::string(fields[2].toStdString()));
                                             break;
                                         }
                                         }
 
                                         if (constVal != nullptr) {
                                             gc.addVar(constVal);
-                                            m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVar, *constVal));
+                                            m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *constVal));
                                         }
                                     }
                                 }
@@ -171,12 +167,62 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 else if (fields[2].toUpper() == "BOOL")
                                     gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toInt() != 0)));
                                 else if (fields[2].toUpper() == "STRING")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new QString(fields[3])));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new std::string(fields[3].toStdString())));
                                 else
                                     ; // TODO print error message
                             }
                             else {
                                 // TODO print error message (wrong number of arguments)
+                            }
+                        }
+                        else if (fields[0].toUpper() == "ADD")
+                        {
+                            if (fields.size() - 1 == 2) // 2 arguments
+                            {
+                                bool ok = false;
+                                Variable *lVal = nullptr;
+                                if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
+
+                                    // TODO the whole block is almost the same as in the SET command. Put it into a separate function?
+                                    Variable *rVal = nullptr;
+                                    if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable not found
+                                        switch (lVal->getType()) {
+                                        case INT: {
+                                            int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
+                                            if (ok)
+                                                rVal = new Variable("", VariableType::INT, new int(tmp));
+                                            else
+                                                ; // TODO print error message
+                                            break;
+                                        }
+                                        case FLOAT: {
+                                            float tmp = fields[2].toFloat(&ok);
+                                            if (ok)
+                                                rVal = new Variable("", VariableType::FLOAT, new float(tmp));
+                                            break;
+                                        }
+                                        case BOOL: {
+                                            ; // TODO print error message (cannot use add on boolean value
+                                            break;
+                                        }
+                                        case STRING: {
+                                            rVal = new Variable("", VariableType::STRING, new std::string(fields[2].toStdString()));
+                                            break;
+                                        }
+                                        }
+
+                                        if (rVal != nullptr) {
+                                            gc.addVar(rVal);
+                                            m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                                        }
+                                        else {
+                                             // TODO print error message (lValue and rValue not of same type)
+                                        }
+                                    }
+                                }
+                                else {
+                                    ; // TODO print error message variable not found
+                                }
                             }
                         }
                         else if (fields[0].toUpper() == "LOOP")
