@@ -1,7 +1,7 @@
 #include "loopnode.h"
 
 
-LoopNode::LoopNode(ICtrNode *parent, int cnt) :
+LoopNode::LoopNode(ICtrNode *parent, Variable &cnt) :
     ICtrNode(parent), m_cnt(cnt), m_nodes(parent)
 {
 }
@@ -47,8 +47,10 @@ void LoopNode::traverse(std::function<void(INode*)> &f)
 
 void LoopNode::exec(std::function<void(INode*)> &f)
 {
+    int cnt = *((int*)m_cnt.getValue());
+
     m_break = false;
-    for (int i = 0; i < m_cnt; i++) {
+    for (int i = 0; i < cnt; i++) {
         if (m_break)
             break;
         m_nodes.exec(f);

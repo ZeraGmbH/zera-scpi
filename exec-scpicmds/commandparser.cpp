@@ -233,8 +233,17 @@ void CommandParser::parseCmdFile(QString strFileName)
                             }
                             else if (fields.size() - 1 == 1) // 1 argument
                             {
-                                m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), fields[1].toUInt()));
-                                ctrTypes.push(ContainerType::LOOP);
+
+                                Variable *var = nullptr;
+                                if ((var = gc.getVar(fields[1].toStdString())) == nullptr) { // Variable not found
+                                    var = new Variable("", VariableType::INT, new int(fields[1].toUInt())); // TODO check for toUInt(ok)
+                                }
+
+                                if (var != nullptr) {
+                                    gc.addVar(var);
+                                    m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), *var));
+                                    ctrTypes.push(ContainerType::LOOP);
+                                }
                             }
                         }
                         else if (fields[0].toUpper() == "BREAK")
