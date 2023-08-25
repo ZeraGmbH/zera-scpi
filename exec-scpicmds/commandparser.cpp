@@ -38,6 +38,11 @@ void CommandParser::setLoopNumber(quint8 numLoops)
     m_numLoops = numLoops;
 }
 
+void CommandParser::setIgnoreExistingVariables(bool ignoreExistingVariables)
+{
+    m_ignoreExistingVariables = ignoreExistingVariables;
+}
+
 void CommandParser::parseCmdFile(QString strFileName)
 {
     enum class ContainerType
@@ -70,171 +75,115 @@ void CommandParser::parseCmdFile(QString strFileName)
                         QStringList fields;
                         qsizetype lastIdx = 0;
                         qsizetype prevIdx = 0;
+                        bool ok = false;
                         quoteCount = 0;
 
                         QStringList parts = tmpLine.split("\"");
                         for (int i = 0; i < parts.count(); i++) {
                             if ((i % 2) == 0) { // keywords, variables
-                                for(auto &part : parts[i].split(QRegExp("\\s+"), Qt::SkipEmptyParts)) {
+                                for(auto &part : parts[i].split(QRegExp("\\s+"), Qt::SkipEmptyParts))
                                     fields.append(part.trimmed());
-                                }
                             }
                             else { // strings
                                 fields.append(parts[i].replace("\1", "\""));
                             }
                         }
 
-                        // The commands...
-                        if (fields[0].toUpper() == "VAR") // TODO check for not allowing keywords (also such that might get used in the future) as variale names and also check the variable name is of regex [0-9A-Za-z_]+
+                        // Handle keywords
+                         // TODO split up this following blocks into smaller functions?
+                        if (fields[0].toUpper() == "VAR")
                         {
-                            if (fields.size() - 1 == 3) { // 3 arguments
-                                // TODO check if 1st argument is a valid name and it does not exist yet
-                                // TODO check if 2nd argument is one of valid strings (like INT, FLOAT, STRING)
-                                // TODO check if 3rd argument?
-                                if (fields[2].toUpper() == "INT")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::INT, new int(fields[3].toInt())));
-                                else if (fields[2].toUpper() == "FLOAT")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::FLOAT, new float(fields[3].toFloat())));
-                                else if (fields[2].toUpper() == "BOOL")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toUpper() == "TRUE")));
-                                else if (fields[2].toUpper() == "STRING")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new QString(fields[3])));
-                                else {
-                                    Logging::logMsg(QString("[L%1] VAR statement variable type in 3rd argument is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            if (fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
+                                if (Variable::varNameIsValid(fields[1].toStdString())) {
+                                    if (m_ignoreExistingVariables || !gc.varExists(fields[1].toStdString())) {
+                                        VariableType type;
+                                        if (Variable::strToVarType(fields[2].toStdString(), type)) {
+                                            if (!Variable::strIsKeyword(fields[1].toStdString())) {
+                                                Variable *tmp = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), type);
+                                                if (tmp != nullptr) {
+                                                       gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
+                                                } else {
+                                                    Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[3], fields[2]), LoggingColor::RED);
+                                                    exit(1);
+                                                }
+                                            } else {
+                                                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid.. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
+                                                exit(1);
+                                            }
+                                        } else {
+                                            Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
+                                            exit(1);
+                                        }
+                                    } else {
+                                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
+                                        exit(1);
+                                    }
+                                } else {
+                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                     exit(1);
                                 }
-                            }
-                            else {
-                                Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            } else {
+                                Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments (%2). Needs to be 3. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
-                        else if (fields[0].toUpper() == "SET") // TODO split up this whole block into smaller functions
+                        else if (fields[0].toUpper() == "SET")
                         {
-                            if (fields.size() - 1 == 2) { // 2 arguments
-                                bool ok = false;
+                            if (fields.size() - 1 == 2) { // 2 arguments; format = SET <LEFT_VAR_NAME> <RIGHT_VALUE>
                                 Variable *lVal = nullptr;
                                 if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
                                     Variable *rVal = nullptr;
-                                    if ((rVal = gc.getVar(fields[2].toStdString())) != nullptr) { // Variable found
-                                        m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
-                                    }
-                                    else {
-                                        Variable *constVal = nullptr;
-
-                                        switch (lVal->getType()) {
-                                        case INT: {
-                                            int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above).
-                                            if (ok)
-                                                constVal = new Variable("", VariableType::INT, new int(tmp));
-                                            else
-                                                ; // TODO print error message
-                                            break;
-                                        }
-                                        case FLOAT: {
-                                            float tmp = fields[2].toFloat(&ok);
-                                            if (ok)
-                                                constVal = new Variable("", VariableType::FLOAT, new float(tmp));
-                                            break;
-                                        }
-                                        case BOOL: {
-                                            if (fields[2].toUpper() == "TRUE")
-                                                constVal = new Variable("", VariableType::BOOL, new bool(true));
-                                            else if (fields[2].toUpper() == "FALSE")
-                                                constVal = new Variable("", VariableType::BOOL, new bool(true));
-                                            else {
-                                                Logging::logMsg(QString("[L%1] SET statement value in 2nd argument is not of {TRUE, FALSE}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                                exit(1);
-                                            }
-                                            break;
-                                        }
-                                        case STRING: {
-                                            constVal = new Variable("", VariableType::STRING, new std::string(fields[2].toStdString()));
-                                            break;
-                                        }
-                                        }
-
-                                        if (constVal != nullptr) {
-                                            gc.addVar(constVal);
-                                            m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *constVal));
+                                    if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable found
+                                        rVal = Variable::parseToVar(fields[1].toStdString(), fields[2].toStdString(), lVal->getType());
+                                        if (rVal != nullptr) {
+                                            gc.addVar(rVal);
+                                            m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                                        } else {
+                                            Logging::logMsg(QString("[L%1] SET statement value in 2nd argument (%2) does not match the type of variable in 1st argument. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
+                                            exit(1);
                                         }
                                     }
+                                } else {
+                                    Logging::logMsg(QString("[L%1] SET statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
+                                    exit(1);
                                 }
-                                else {
-                                    ; // TODO print error message (variable not found)
-                                }
-
-                                if (fields[2].toUpper() == "INT")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::INT, new int(fields[3].toInt())));
-                                else if (fields[2].toUpper() == "FLOAT")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::FLOAT, new float(fields[3].toFloat())));
-                                else if (fields[2].toUpper() == "BOOL")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toInt() != 0)));
-                                else if (fields[2].toUpper() == "STRING")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new std::string(fields[3].toStdString())));
-                                else
-                                    ; // TODO print error message
-                            }
-                            else {
-                                Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments. Needs to be 2. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            } else {
+                                Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "ADD")
                         {
-                            if (fields.size() - 1 == 2) // 2 arguments
-                            {
-                                bool ok = false;
+                            if (fields.size() - 1 == 2) { // 2 arguments; format = ADD <LEFT_VAR_NAME> <RIGHT_VALUE>
                                 Variable *lVal = nullptr;
                                 if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
-
-                                    // TODO the whole block is almost the same as in the SET command. Put it into a separate function?
-                                    Variable *rVal = nullptr;
-                                    if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable not found
-                                        switch (lVal->getType()) {
-                                        case INT: {
-                                            int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
-                                            if (ok)
-                                                rVal = new Variable("", VariableType::INT, new int(tmp));
-                                            else
-                                                ; // TODO print error message
-                                            break;
+                                    if (lVal->getType() != VariableType::BOOL) { // ADD is not defined for BOOL
+                                        Variable *rVal = nullptr;
+                                        if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable not found
+                                            rVal = Variable::parseToVar(fields[1].toStdString(), fields[2].toStdString(), lVal->getType());
+                                            if (rVal != nullptr) {
+                                                gc.addVar(rVal);
+                                                m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                                            } else {
+                                                Logging::logMsg(QString("[L%1] ADD statement value in 2nd argument does not match the type of variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                                exit(1);
+                                            }
                                         }
-                                        case FLOAT: {
-                                            float tmp = fields[2].toFloat(&ok);
-                                            if (ok)
-                                                rVal = new Variable("", VariableType::FLOAT, new float(tmp));
-                                            break;
-                                        }
-                                        case BOOL: {
-                                            ; // TODO print error message (cannot use add on boolean value
-                                            break;
-                                        }
-                                        case STRING: {
-                                            rVal = new Variable("", VariableType::STRING, new std::string(fields[2].toStdString()));
-                                            break;
-                                        }
-                                        }
-
-                                        if (rVal != nullptr) {
-                                            gc.addVar(rVal);
-                                            m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
-                                        }
-                                        else {
-                                             // TODO print error message (lValue and rValue not of same type)
-                                        }
+                                    } else {
+                                        Logging::logMsg(QString("[L%1] ADD statement is not defined for BOOL variables. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                        exit(1);
                                     }
+                                } else {
+                                    Logging::logMsg(QString("[L%1] ADD statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
+                                    exit(1);
                                 }
-                                else {
-                                    ; // TODO print error message variable not found
-                                }
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments. Needs to be 2. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            } else {
+                                Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "LOOP")
                         {
                             if (fields.size() - 1 == 0) // 0 arguments
@@ -357,7 +306,6 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     }
                                 }
                                 else {
-                                    bool ok;
                                     switch (lVal->getType()) {
                                     case INT: {
                                         int tmp = fields[3].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
@@ -465,6 +413,11 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 Logging::logMsg(QString("[L%1] END statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                 exit(1);
                             }
+                        }
+                        else
+                        {
+                            Logging::logMsg(QString("[L%1] The first token is not a valid keyword. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            exit(1);
                         }
                     }
                     else {

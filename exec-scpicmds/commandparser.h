@@ -17,6 +17,7 @@ public:
     void setHandleErroneousMessages(unsigned int handleErroneousMessages);
     void setCheckErrorQueue(bool checkErrorQueue);
     void setLoopNumber(quint8 numLoops);
+    void setIgnoreExistingVariables(bool ignoreExistingVariables);
     void parseCmdFile(QString strFileName);
 
 signals:
@@ -32,6 +33,7 @@ private:
     bool m_checkErrorQueue = false;
     TcpHandler& m_tcpHandler;
     quint8 m_numLoops = 1;
+    bool m_ignoreExistingVariables = false;
     NodeTree m_tree;
     Context gc; // global context
 };

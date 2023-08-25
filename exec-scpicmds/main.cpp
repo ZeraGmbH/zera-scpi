@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
     handleErroneousMessagesOption.setDefaultValue("0");
     parser.addOption(handleErroneousMessagesOption);
 
-    QCommandLineOption checkErrorQueueOption("c", "Check targets error queue after sending (executing) the message.\n"
-                                                  "0 = False\n"
-                                                  "1 = True.",
+    QCommandLineOption checkErrorQueueOption("c", "Check target's error queue after sending (executing) the message.\n"
+                                                  "0 = Disabled\n"
+                                                  "1 = Enabled.",
                                              "CHECK_ERROR_QUEUE");
     checkErrorQueueOption.setDefaultValue("0");
     parser.addOption(checkErrorQueueOption);
@@ -44,9 +44,16 @@ int main(int argc, char *argv[])
     receiveTimeoutOption.setDefaultValue("3000");
     parser.addOption(receiveTimeoutOption);
 
-    QCommandLineOption loopFile("l", "Number of repetitions executing of file.", "NUMBER_OF_LOOPS");
-    loopFile.setDefaultValue("1");
-    parser.addOption(loopFile);
+    QCommandLineOption loopFileCntOption("l", "Number of repetitions executing of file.", "NUMBER_OF_LOOPS");
+    loopFileCntOption.setDefaultValue("1");
+    parser.addOption(loopFileCntOption);
+
+    QCommandLineOption ignoreExistingVariablesOption("x", "Ignore existing variables.\n"
+                                                          "0 = Disabled\n"
+                                                          "1 = Enabled.",
+                                                     "IGNORE_EXISTING_VARS");
+    ignoreExistingVariablesOption.setDefaultValue("0");
+    parser.addOption(ignoreExistingVariablesOption);
 
     // Parse command line arguments
     parser.process(a);
@@ -91,9 +98,15 @@ int main(int argc, char *argv[])
         parser.showHelp(-1);
     }
 
-    unsigned int loopNumber = parser.value(loopFile).toUInt(&ok);
+    unsigned int loopFileCnt = parser.value(loopFileCntOption).toUInt(&ok);
     if (!ok) {
         Logging::logMsg(QString("Number of repetitions (option -l) needs to be an integer >= 0!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
+
+    unsigned int ignoreExistingVariables = (parser.value(ignoreExistingVariablesOption).toUInt(&ok) != 0);
+    if (!ok) {
+        Logging::logMsg(QString("Ignore existing variables (option -x) needs to be an integer with 0 = disabled, >0 enabled!"), LoggingColor::YELLOW);
         parser.showHelp(-1);
     }
 
@@ -112,7 +125,8 @@ int main(int argc, char *argv[])
     CommandParser cmdParser(tcpHandler);
     cmdParser.setHandleErroneousMessages(handleErroneousMessages);
     cmdParser.setCheckErrorQueue(checkErrorQueue);
-    cmdParser.setLoopNumber(loopNumber);
+    cmdParser.setLoopNumber(loopFileCnt);
+    cmdParser.setIgnoreExistingVariables(ignoreExistingVariables);
     cmdParser.parseCmdFile(cmdFile);
 
     tcpHandler.disconnectFromHost();

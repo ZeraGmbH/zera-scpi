@@ -43,12 +43,13 @@ Sets the variable to value. The value can be const or also a variable.
 
 ### ADD
 **Syntax:**
-```> ADD <LEFT_VAR_NAME> {<VALUE>, <RIGHT_VAR_NAME>}```
+```> ADD <LEFT_VAR_NAME> <RIGHT_VALUE>```
 
 **Arguments:**
 * ```<LEFT_VAR_NAME>``` Existing variable which assign the value to.
-* ```<VALUE>``` A const value that is interpretable to the variables corresponding type. The same rules as for ```<VALUE>``` in the ```VAR``` command apply.
-* ```<RIGHT_VAR_NAME>``` Existing variable of the same type as ```<LEFT_VAR_NAME>``` which assign the value from.
+* ```<RIGHT_VALUE>``` One of the following types.
+  * ```<CONST_VALUE>``` A const value that is interpretable to the ```<LEFT_VAR_NAME>``` variables corresponding type. The same rules as for ```<VALUE>``` in the ```VAR``` command apply.
+  * ```<VARIABLE>``` Existing variable of the same type as ```<LEFT_VAR_NAME>``` from which the value is assigned from.
 
 **Description:**
 Adds the variable to value. The value can be const or also a variable. Boolean variables are not allowed. Strings are concatenated.
