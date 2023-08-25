@@ -71,7 +71,7 @@ std::string Variable::toFullString()
     case FLOAT:
         return m_name + "(FLOAT)" + std::to_string(*((float*)m_value));
     case BOOL:
-        return m_name + "(BOOL)" + (*((int*)m_value) ? "TRUE" : "FALSE");
+        return m_name + "(BOOL)" + (*((bool*)m_value) ? "TRUE" : "FALSE");
     case STRING:
         return m_name + "(STRING)" + *((std::string*)m_value);
     }

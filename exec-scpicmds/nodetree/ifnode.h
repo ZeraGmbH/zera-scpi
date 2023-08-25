@@ -4,12 +4,13 @@
 #include <vector>
 #include "ictrnode.h"
 #include "ctrnode.h"
+#include "condition.h"
 
 
 class IfNode : public ICtrNode
 {
 public:
-    IfNode(ICtrNode *parent, bool cond);
+    IfNode(ICtrNode *parent, Condition &cond);
     ~IfNode();
     void append(INode *node) override;
     bool remove(INode* node) override;
@@ -23,7 +24,7 @@ public:
     void switchToElseBranch();
 
 private:
-    bool m_cond = false;
+    Condition &m_cond;
     bool m_inIfBranch = true;
     CtrNode m_ifNodes;
     CtrNode m_elseNodes;

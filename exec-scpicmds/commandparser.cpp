@@ -15,6 +15,7 @@
 #include "addnode.h"
 #include "printnode.h"
 #include "scpimsgnode.h"
+#include "condition.h"
 
 
 CommandParser::CommandParser(TcpHandler &tcpHandler) :
@@ -84,9 +85,9 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
 
                         // The commands...
-                        if (fields[0].toUpper() == "VAR") // TODO check for not allowing keywords (also such that might get used in the future) as variale names
+                        if (fields[0].toUpper() == "VAR") // TODO check for not allowing keywords (also such that might get used in the future) as variale names and also check the variable name is of regex [0-9A-Za-z_]+
                         {
-                            if (fields.size() - 1 == 3) { // 3 arguments{
+                            if (fields.size() - 1 == 3) { // 3 arguments
                                 // TODO check if 1st argument is a valid name and it does not exist yet
                                 // TODO check if 2nd argument is one of valid strings (like INT, FLOAT, STRING)
                                 // TODO check if 3rd argument?
@@ -95,21 +96,22 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 else if (fields[2].toUpper() == "FLOAT")
                                     gc.addVar(new Variable(fields[1].toStdString(), VariableType::FLOAT, new float(fields[3].toFloat())));
                                 else if (fields[2].toUpper() == "BOOL")
-                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toInt() != 0)));
+                                    gc.addVar(new Variable(fields[1].toStdString(), VariableType::BOOL, new bool(fields[3].toUpper() == "TRUE")));
                                 else if (fields[2].toUpper() == "STRING")
                                     gc.addVar(new Variable(fields[1].toStdString(), VariableType::STRING, new QString(fields[3])));
-                                else
-                                    ; // TODO print error message
+                                else {
+                                    Logging::logMsg(QString("[L%1] VAR statement variable type in 3rd argument is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    exit(1);
+                                }
                             }
                             else {
-                                // TODO print error message
+                                Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "SET") // TODO split up this whole block into smaller functions
                         {
                             if (fields.size() - 1 == 2) { // 2 arguments
-                                // TODO check if 1st argument is a valid and existing variable name
-                                // TODO check if 2nd argument can be interpreted to the variables corresponding type
                                 bool ok = false;
                                 Variable *lVal = nullptr;
                                 if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
@@ -122,7 +124,7 @@ void CommandParser::parseCmdFile(QString strFileName)
 
                                         switch (lVal->getType()) {
                                         case INT: {
-                                            int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
+                                            int tmp = fields[2].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above).
                                             if (ok)
                                                 constVal = new Variable("", VariableType::INT, new int(tmp));
                                             else
@@ -136,12 +138,14 @@ void CommandParser::parseCmdFile(QString strFileName)
                                             break;
                                         }
                                         case BOOL: {
-                                            if (fields[2].toUpper() == "TRUE") // TODO       toInt(&ok); // here and on other locations: don't use int for bools, but TRUE and FALSE string... (toUpper())
+                                            if (fields[2].toUpper() == "TRUE")
                                                 constVal = new Variable("", VariableType::BOOL, new bool(true));
                                             else if (fields[2].toUpper() == "FALSE")
                                                 constVal = new Variable("", VariableType::BOOL, new bool(true));
-                                            else
-                                                ; // TODO print error message
+                                            else {
+                                                Logging::logMsg(QString("[L%1] SET statement value in 2nd argument is not of {TRUE, FALSE}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                                exit(1);
+                                            }
                                             break;
                                         }
                                         case STRING: {
@@ -172,7 +176,8 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     ; // TODO print error message
                             }
                             else {
-                                // TODO print error message (wrong number of arguments)
+                                Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments. Needs to be 2. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "ADD")
@@ -224,12 +229,17 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     ; // TODO print error message variable not found
                                 }
                             }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments. Needs to be 2. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
+                            }
                         }
                         else if (fields[0].toUpper() == "LOOP")
                         {
                             if (fields.size() - 1 == 0) // 0 arguments
                             {
-                                // Endless loop (only makes sense when BREAK is implemented
+                                // TODO implement and document: Endless loop (only makes sense when BREAK is used)
                             }
                             else if (fields.size() - 1 == 1) // 1 argument
                             {
@@ -245,13 +255,22 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     ctrTypes.push(ContainerType::LOOP);
                                 }
                             }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments. Needs to be 0 or 1. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
+                            }
                         }
                         else if (fields[0].toUpper() == "BREAK")
                         {
-                            // TODO check if there are nodes in the BREAK's parent tree as they are unreachable
                             if (fields.size() - 1 == 0) // 0 arguments
                             {
                                 m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
+                            }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "EXIT")
@@ -259,6 +278,11 @@ void CommandParser::parseCmdFile(QString strFileName)
                             if (fields.size() - 1 == 0) // 0 arguments
                             {
                                 m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
+                            }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "PRINT")
@@ -280,35 +304,172 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 std::function<void(std::string&)> cbLog = [&](std::string &str){Logging::logMsg(QString::fromStdString(str)); };
                                 m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
                             }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
+                            }
                         }
                         else if (fields[0].toUpper() == "IF")
                         {
                             if (fields.size() - 1 == 1) // 1 argument
                             {
-                                IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(),fields[1].toInt() != 0);
+                                QString varName = fields[1];
+                                Variable *var = nullptr;
+                                if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
+                                    var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
+                                }
+                                else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
+                                    ; // Do nothing more, as var already got found (in the if-statement above)
+                                }
+                                else {
+                                    Logging::logMsg(QString("[L%1] IF statement has invalid arguments. Needs to be TRUE, FALSE or an existing variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    exit(1);
+                                }
+
+                                if (var != nullptr) {
+                                    gc.addVar(var);
+                                    IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new BoolCondition(*var)));
+                                    m_tree.enterContainer(ifnode);
+                                    ifnodes.push(ifnode);
+                                    ctrTypes.push(ContainerType::IF);
+                                }
+                            }
+                            else if (fields.size() - 1 == 3) // 3 arguments
+                            {
+                                QString varName;
+
+                                // Check 1st parameter
+                                Variable *lVal = nullptr;
+                                varName = fields[1];
+                                if ((lVal = gc.getVar(varName.toStdString())) == nullptr) {
+                                    Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    exit(1);
+                                }
+
+                                // Check 3rd parameter
+                                Variable *rVal = nullptr; // TODO move this variable parsing into separate function
+                                varName = fields[3];
+                                if ((rVal = gc.getVar(varName.toStdString())) != nullptr) {
+                                    if (lVal->getType() != rVal->getType()) {
+                                        Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                        exit(1);
+                                    }
+                                }
+                                else {
+                                    bool ok;
+                                    switch (lVal->getType()) {
+                                    case INT: {
+                                        int tmp = fields[3].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
+                                        if (ok)
+                                            rVal = new Variable("", VariableType::INT, new int(tmp));
+                                        else
+                                            ; // TODO print error message
+                                        break;
+                                    }
+                                    case FLOAT: {
+                                        float tmp = fields[3].toFloat(&ok);
+                                        if (ok)
+                                            rVal = new Variable("", VariableType::FLOAT, new float(tmp));
+                                        break;
+                                    }
+                                    case BOOL: {
+                                        if (fields[3].toUpper() == "TRUE" || fields[3].toUpper() == "FALSE") {
+                                            rVal = new Variable("", VariableType::BOOL, new bool(fields[3].toUpper() == "TRUE"));
+                                        break;
+                                    }
+                                    case STRING: {
+                                        rVal = new Variable("", VariableType::STRING, new std::string(fields[3].toStdString()));
+                                        break;
+                                    }
+                                    }
+
+                                    if (rVal != nullptr) {
+                                        gc.addVar(rVal);
+                                        m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                                    }
+                                    else {
+                                        Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                        exit(1);
+                                    }
+                                    }
+                                }
+
+                                // Check 2nd parameter
+                                ComparisonType compType;
+                                if (ComparisonCondition::getComparisonTypeFromString(fields[2].trimmed().toStdString(), compType)) {
+                                    bool errorFound = false;
+                                    switch (lVal->getType()) {
+                                    case INT:
+                                        ; // Do nothing as all comparisons are valid
+                                        break;
+                                    case FLOAT:
+                                        ; // Do nothing as all comparisons are valid
+                                        break;
+                                    case BOOL:
+                                        if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
+                                            errorFound = true;
+                                        break;
+                                    case STRING:
+                                        if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
+                                            errorFound = true;
+                                        break;
+                                    }
+
+                                    if(errorFound) {
+                                        // TODO add strings in the following message to show of which type each variable is.
+                                        Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument is not compitible with the type of the variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                        exit(1);
+                                    }
+
+                                }
+                                else {
+                                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    exit(1);
+                                }
+
+                                gc.addVar(lVal);
+                                IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new ComparisonCondition(*lVal, *rVal, compType)));
                                 m_tree.enterContainer(ifnode);
                                 ifnodes.push(ifnode);
                                 ctrTypes.push(ContainerType::IF);
                             }
                             else
                             {
-                                // TODO print error message
+                                Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "ELSE")
                         {
-                            ifnodes.top()->switchToElseBranch();
+                            if (fields.size() - 1 == 0) // 0 arguments
+                            {
+                                ifnodes.top()->switchToElseBranch();
+                            }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
+                            }
                         }
                         else if (fields[0].toUpper() == "END")
                         {
-                            m_tree.leaveContainer();
-                            if (ctrTypes.top() == ContainerType::IF)
-                                ifnodes.pop();
-                            ctrTypes.pop();
+                            if (fields.size() - 1 == 0) // 0 arguments
+                            {                            m_tree.leaveContainer();
+                                if (ctrTypes.top() == ContainerType::IF)
+                                    ifnodes.pop();
+                                ctrTypes.pop();
+                            }
+                            else
+                            {
+                                Logging::logMsg(QString("[L%1] END statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                exit(1);
+                            }
                         }
                     }
                     else {
-                        ; // TODO print error message that there is no even number of quotes; then leave
+                        Logging::logMsg(QString("[L%1] No even number of quotes (\") detected. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                        exit(1);
                     }
                 }
                 else
