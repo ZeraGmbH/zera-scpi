@@ -26,6 +26,10 @@ public:
     void deleteValue();
     std::string toString();
     std::string toFullString();
+    static bool strIsKeyword(std::string keyword);
+    static bool strToVarType(std::string str, VariableType &type);
+    static Variable* parseToVar(std::string name, std::string token, VariableType type);
+    static bool varNameIsValid(std::string name);
 
 private:
     std::string m_name;

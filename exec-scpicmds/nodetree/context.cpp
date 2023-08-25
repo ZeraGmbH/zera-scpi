@@ -3,7 +3,7 @@
 
 bool Context::addVar(Variable *var)
 {
-    // Checken ob Variable bereits existiert.
+    // Check if variable already exists
     if (!getVar(var->getName())) {
         m_vars.push_back(var);
         return true;
