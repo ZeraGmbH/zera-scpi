@@ -41,7 +41,7 @@ Sets the variable to value. The value can be const or also a variable.
 ```> SET MYVAR3 FALSE```
 ```> SET MYVAR4 Test2```
 
-# ADD
+### ADD
 **Syntax:**
 ```> ADD <LEFT_VAR_NAME> {<VALUE>, <RIGHT_VAR_NAME>}```
 
@@ -67,7 +67,7 @@ Adds the variable to value. The value can be const or also a variable. Boolean v
 > PRINT MY_VAR_STRING
 ```
 
-## LOOP
+### LOOP
 **Syntax:**
 ```
 > LOOP <N_REP>
@@ -92,7 +92,7 @@ Repeats its commands (between the ```LOOP``` and its corresponding ```END``` com
 > END
 ```
 
-## BREAK
+### BREAK
 **Syntax:**
 ```BREAK```
 
@@ -112,7 +112,7 @@ Breaks all execution recursively of all commands in the command stack up to the 
 > END
 ```
 
-## EXIT
+### EXIT
 **Syntax:**
 ```EXIT```
 
@@ -130,7 +130,7 @@ Breaks all execution recursively of all commands in the commans stack up to the 
 *IDN?
 ```
 
-## PRINT
+### PRINT
 **Syntax:**
 ```PRINT <STR> [<STR> [...]]```
 
@@ -147,7 +147,7 @@ Prints const strings and variables to the command line.
 > PRINT "MYVAR = " MYVAR
 ```
 
-## IF
+### IF
 **Syntax:**
 ```
 > IF <COND>
