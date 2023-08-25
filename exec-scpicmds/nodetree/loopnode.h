@@ -4,11 +4,12 @@
 #include <vector>
 #include "ictrnode.h"
 #include "ctrnode.h"
+#include "variable.h"
 
 class LoopNode : public ICtrNode
 {
 public:
-    LoopNode(ICtrNode *parent, int cnt);
+    LoopNode(ICtrNode *parent, Variable &cnt);
     ~LoopNode();
     void append(INode *node) override;
     bool remove(INode *node) override;
@@ -20,7 +21,7 @@ public:
     void exec(std::function<void(INode*)> &f) override;
     void breakExec() override;
 private:
-    int m_cnt = 0;
+    Variable &m_cnt;
     CtrNode m_nodes;
     bool m_break = false;
 };
