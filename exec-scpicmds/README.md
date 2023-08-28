@@ -11,7 +11,7 @@ In this section the commands are described.
 **Arguments:**
 * ```<VAR_NAME>``` Variable name which is a string of following characters (as regular expression): ```[0-9A-Za-z_]+```.
 * ```<VAR_TYPE>``` One of type {```INT```, ```FLOAT```, ```BOOL```, ```STRING```}.
-* ```<VALUE>``` Interpretable to the corresponding type of ```<VAR_NAME>```. For Boolean values only ```TRUE``` or ```FALSE``` is accepted. Strings need to be set in ```"``` and quotes in strings can be escaped using ```\"```.
+* ```<VALUE>``` Interpretable to the corresponding type of ```<VAR_NAME>```. For Boolean values only ```TRUE``` or ```FALSE``` is accepted. Strings need to be set in ```"``` when using whitespaces and quotes in strings can be escaped using ```\"```.
 
 **Description:**
 The ```VAR``` command creates a new variable. All these variables are globally, so there's no scope for them. All variables found in the input file are parsed, independendly of their location (e.g. inside a ```LOOP``` command).

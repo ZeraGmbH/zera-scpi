@@ -97,6 +97,9 @@ std::string Variable::getTypeString()
 
 bool Variable::strIsKeyword(std::string keyword)
 {
+    std::string keywordUpper(keyword);
+    std::transform(keywordUpper.begin(), keywordUpper.end(), keywordUpper.begin(), ::toupper);
+
     std::vector<std::string> keywords;
     keywords.push_back("VAR");
     keywords.push_back("SET");
@@ -114,7 +117,7 @@ bool Variable::strIsKeyword(std::string keyword)
     keywords.push_back("BOOL");
     keywords.push_back("STRING");
 
-    if (std::find(keywords.begin(), keywords.end(), keyword) != keywords.end())
+    if (std::find(keywords.begin(), keywords.end(), keywordUpper) != keywords.end())
         return true;
 
     return false;
@@ -122,18 +125,19 @@ bool Variable::strIsKeyword(std::string keyword)
 
 bool Variable::strToVarType(std::string str, VariableType &type)
 {
-    std::transform(str.begin(), str.end(), str.begin(), ::toupper);
+    std::string strUpper(str);
+    std::transform(strUpper.begin(), strUpper.end(), strUpper.begin(), ::toupper);
 
-    if (str == "INT") {
+    if (strUpper == "INT") {
         type = VariableType::INT;
         return true;
-    } else if (str == "FLOAT") {
+    } else if (strUpper == "FLOAT") {
         type = VariableType::FLOAT;
         return true;
-    } else if (str == "BOOL") {
+    } else if (strUpper == "BOOL") {
         type = VariableType::BOOL;
         return true;
-    } else if (str == "STRING") {
+    } else if (strUpper == "STRING") {
         type = VariableType::STRING;
         return true;
     }
@@ -141,12 +145,9 @@ bool Variable::strToVarType(std::string str, VariableType &type)
     return false;
 }
 
-
 Variable* Variable::parseToVar(std::string name, std::string token, VariableType type)
 {
     Variable *res = nullptr;
-
-    std::transform(token.begin(), token.end(), token.begin(), ::toupper);
 
     if (!Variable::strIsKeyword(token)) {
         switch (type) {
