@@ -193,7 +193,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                             if (fields.size() - 1 == 0) { // 0 arguments
                                 m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer()));
                                 ctrTypes.push(ContainerType::LOOP);
-                            } else if (fields.size() - 1 == 1) { // 1 argument
+                            } else if (fields.size() - 1 == 1) { // 1 argument; format = LOOP <N_REP>
                                 Variable *var = nullptr;
                                 if ((var = gc.getVar(fields[1].toStdString())) == nullptr) { // Variable not found
                                     if ((var = Variable::parseToVar("", fields[1].toStdString(), VariableType::INT)) == nullptr) {
@@ -241,7 +241,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
                         else if (fields[0].toUpper() == "PRINT")
                         {
-                            if (fields.size() - 1 >= 1) { // >= 1 argument(s)
+                            if (fields.size() - 1 >= 1) { // >= 1 argument(s); format = PRINT <STR> [, <STR> [...]]
                                 std::vector<Variable*> *values = new std::vector<Variable*>;
                                 Variable *var = nullptr;
                                 for (int f = 1; f < fields.size(); f++) {
@@ -260,7 +260,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
                         else if (fields[0].toUpper() == "IF")
                         {
-                            if (fields.size() - 1 == 1) // 1 argument
+                            if (fields.size() - 1 == 1) // 1 argument; format = IF <CONST_BOOL | BOOL_EXPR>
                             {
                                 QString varName = fields[1];
                                 Variable *var = nullptr;
@@ -281,7 +281,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                                     exit(1);
                                 }
                             }
-                            else if (fields.size() - 1 == 3) // 3 arguments
+                            else if (fields.size() - 1 == 3) // 3 arguments; format = IF <LEFT_VAR_NAME> {LT, GT, LE, GE, EQ, NE} <RIGHT_VALUE>
                             {
                                 QString varName;
                                 // Check 1st parameter
@@ -331,17 +331,22 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
                         else if (fields[0].toUpper() == "ELSE")
                         {
-                            IfNode *ifNode = ifnodes.top();
-                            if (fields.size() - 1 == 0) { // 0 arguments
-                                if (!ifNode->isInElseBranch()) {
-                                    ifNode->switchToElseBranch();
-                                    lastElseNodeLineNumber = fileLineNumber;
+                            if (ctrTypes.top() == ContainerType::IF) { //TODO remove ifnodes.size() > 0) {
+                                IfNode *ifNode = ifnodes.top();
+                                if (fields.size() - 1 == 0) { // 0 arguments
+                                    if (!ifNode->isInElseBranch()) {
+                                        ifNode->switchToElseBranch();
+                                        lastElseNodeLineNumber = fileLineNumber;
+                                    } else {
+                                        Logging::logMsg(QString("[L%1] ELSE statement (L%2) already found in current IF statement. Exit program.").arg(QString::number(fileLineNumber), QString::number(lastElseNodeLineNumber)), LoggingColor::RED);
+                                        exit(1);
+                                    }
                                 } else {
-                                    Logging::logMsg(QString("[L%1] ELSE statement (line %2) already found in current IF statement. Exit program.").arg(QString::number(fileLineNumber), QString::number(lastElseNodeLineNumber)), LoggingColor::RED);
+                                    Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                     exit(1);
                                 }
                             } else {
-                                Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
+                                Logging::logMsg(QString("[L%1] ELSE statement outside IF block. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
@@ -362,7 +367,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
                         else
                         {
-                            Logging::logMsg(QString("[L%1] The first token is not a valid keyword. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            Logging::logMsg(QString("[L%1] The first token (%2) is not a valid keyword. Exit program.").arg(QString::number(fileLineNumber), fields[0]), LoggingColor::RED);
                             exit(1);
                         }
                     }
