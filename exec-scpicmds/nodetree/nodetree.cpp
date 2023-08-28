@@ -34,7 +34,7 @@ void NodeTree::leaveContainer()
     m_parentCtr = m_curCtr;
 }
 
-ICtrNode *NodeTree::getCurrentContainer()
+ICtrNode* NodeTree::getCurrentContainer()
 {
     return m_parentCtr;
 }

@@ -21,7 +21,7 @@ public:
     ~Variable();
     std::string getName();
     VariableType getType();
-    void *getValue();
+    void* getValue();
     void setValue(void *value);
     void deleteValue();
     std::string toString();

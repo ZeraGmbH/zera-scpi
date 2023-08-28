@@ -45,12 +45,6 @@ void CommandParser::setIgnoreExistingVariables(bool ignoreExistingVariables)
 
 void CommandParser::parseCmdFile(QString strFileName)
 {
-    enum class ContainerType
-    {
-        LOOP = 0,
-        IF,
-    };
-
     QFile cmdFile(strFileName);
     std::stack<IfNode *> ifnodes;
     std::stack<ContainerType> ctrTypes;
@@ -90,296 +84,43 @@ void CommandParser::parseCmdFile(QString strFileName)
                             }
                         }
 
+                        if (fields.size() == 0) {
+                            Logging::logMsg(QString("[L%1] Command line with no statement. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
+                            exit(1);
+                        }
+                        QString stmtUpper= fields[0].toUpper();
+
                         // Handle keywords
-                         // TODO split up this following blocks into smaller functions?
-                        if (fields[0].toUpper() == "VAR")
-                        {
-                            if (fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
-                                if (!Variable::strIsKeyword(fields[1].toStdString())) {
-                                    if (Variable::varNameIsValid(fields[1].toStdString())) {
-                                        if (m_ignoreExistingVariables || !gc.varExists(fields[1].toStdString())) {
-                                            VariableType type;
-                                            if (Variable::strToVarType(fields[2].toStdString(), type)) {
-                                                if (!Variable::strIsKeyword(fields[1].toStdString())) {
-                                                    Variable *tmp = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), type);
-                                                    if (tmp != nullptr) {
-                                                           gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
-                                                    } else {
-                                                        Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[3], fields[2]), LoggingColor::RED);
-                                                        exit(1);
-                                                    }
-                                                } else {
-                                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
-                                                    exit(1);
-                                                }
-                                            } else {
-                                                Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
-                                                exit(1);
-                                            }
-                                        } else {
-                                            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
-                                            exit(1);
-                                        }
-                                    } else {
-                                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else {
-                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) cannot be a reserved keyword. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments (%2). Needs to be 3. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "SET")
-                        {
-                            if (fields.size() - 1 == 2) { // 2 arguments; format = SET <LEFT_VAR_NAME> <RIGHT_VALUE>
-                                Variable *lVal = nullptr;
-                                if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
-                                    Variable *rVal = nullptr;
-                                    if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable found
-                                        rVal = Variable::parseToVar(fields[1].toStdString(), fields[2].toStdString(), lVal->getType());
-                                        if (rVal != nullptr) {
-                                            gc.addVar(rVal);
-                                            m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
-                                        } else {
-                                            Logging::logMsg(QString("[L%1] SET statement value in 2nd argument (%2) does not match the type of variable in 1st argument. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
-                                            exit(1);
-                                        }
-                                    }
-                                } else {
-                                    Logging::logMsg(QString("[L%1] SET statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "ADD")
-                        {
-                            if (fields.size() - 1 == 2) { // 2 arguments; format = ADD <LEFT_VAR_NAME> <RIGHT_VALUE>
-                                Variable *lVal = nullptr;
-                                if ((lVal = gc.getVar(fields[1].toStdString())) != nullptr) { // Variable found
-                                    if (lVal->getType() != VariableType::BOOL) { // ADD is not defined for BOOL
-                                        Variable *rVal = nullptr;
-                                        if ((rVal = gc.getVar(fields[2].toStdString())) == nullptr) { // Variable not found
-                                            rVal = Variable::parseToVar(fields[1].toStdString(), fields[2].toStdString(), lVal->getType());
-                                            if (rVal != nullptr) {
-                                                gc.addVar(rVal);
-                                                m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
-                                            } else {
-                                                Logging::logMsg(QString("[L%1] ADD statement value in 2nd argument does not match the type of variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                                exit(1);
-                                            }
-                                        }
-                                    } else {
-                                        Logging::logMsg(QString("[L%1] ADD statement is not defined for BOOL variables. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else {
-                                    Logging::logMsg(QString("[L%1] ADD statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "LOOP")
-                        {
-                            if (fields.size() - 1 == 0) { // 0 arguments
-                                m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer()));
-                                ctrTypes.push(ContainerType::LOOP);
-                            } else if (fields.size() - 1 == 1) { // 1 argument; format = LOOP <N_REP>
-                                Variable *var = nullptr;
-                                if ((var = gc.getVar(fields[1].toStdString())) == nullptr) { // Variable not found
-                                    if ((var = Variable::parseToVar("", fields[1].toStdString(), VariableType::INT)) == nullptr) {
-                                        Logging::logMsg(QString("[L%1] LOOP statement value in 1st argument is not of type INT. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else {
-                                    if (var->getType() != VariableType::INT) {
-                                        Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2. Exit program.").arg(QString::number(fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                }
-                                if (var != nullptr) {
-                                    gc.addVar(var);
-                                    m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), *var));
-                                    ctrTypes.push(ContainerType::LOOP);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments (%2). Needs to be 0 or 1. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "BREAK")
-                        {
-                            if (ctrTypes.size() > 0) { // inside a container (LOOP, IF)
-                                if (fields.size() - 1 == 0) { // 0 arguments
-                                    m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
-                                } else {
-                                    Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] BREAK statement is only allowed inside LOOP or IF. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "EXIT")
-                        {
-                            if (fields.size() - 1 == 0) { // 0 arguments
-                                m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
-                            } else {
-                                Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "PRINT")
-                        {
-                            if (fields.size() - 1 >= 1) { // >= 1 argument(s); format = PRINT <STR> [, <STR> [...]]
-                                std::vector<Variable*> *values = new std::vector<Variable*>;
-                                Variable *var = nullptr;
-                                for (int f = 1; f < fields.size(); f++) {
-                                    if ((var = gc.getVar(fields[f].toStdString())) == nullptr) { // Variable not found
-                                        var = new Variable("", VariableType::STRING, new QString(fields[f]));
-                                        gc.addVar(var);
-                                    }
-                                    values->push_back(var);
-                                }
-                                std::function<void(std::string&)> cbLog = [&](std::string &str){ Logging::logMsg(QString::fromStdString(str)); };
-                                m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
-                            } else {
-                                Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "IF")
-                        {
-                            if (fields.size() - 1 == 1) // 1 argument; format = IF <CONST_BOOL | BOOL_EXPR>
-                            {
-                                QString varName = fields[1];
-                                Variable *var = nullptr;
-                                if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
-                                    var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
-                                } else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
-                                    if (var->getType() != VariableType::BOOL)
-                                        var = nullptr;
-                                }
-                                if (var != nullptr) {
-                                    gc.addVar(var);
-                                    IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new BoolCondition(*var)));
-                                    m_tree.enterContainer(ifnode);
-                                    ifnodes.push(ifnode);
-                                    ctrTypes.push(ContainerType::IF);
-                                } else {
-                                    Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            }
-                            else if (fields.size() - 1 == 3) // 3 arguments; format = IF <LEFT_VAR_NAME> {LT, GT, LE, GE, EQ, NE} <RIGHT_VALUE>
-                            {
-                                QString varName;
-                                // Check 1st parameter
-                                Variable *lVal = nullptr;
-                                varName = fields[1];
-                                if ((lVal = gc.getVar(varName.toStdString())) == nullptr) { // Variable not found
-                                    Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                    exit(1);
-                                }
-                                // Check 3rd parameter
-                                Variable *rVal = nullptr;
-                                varName = fields[3];
-                                if ((rVal = gc.getVar(varName.toStdString())) != nullptr) { // Variable found
-                                    if (lVal->getType() != rVal->getType()) { // both variables need to be of the same type, as this is mandatory for out comparison operations later on
-                                        Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else { // Variable not found
-                                    if ((rVal = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
-                                        gc.addVar(rVal);
-                                    } else {
-                                        Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2). Exit program.").arg(QString::number(fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                }
-                                // Check 2nd parameter
-                                ComparisonType compType;
-                                if (ComparisonCondition::getComparisonTypeFromString(fields[2].trimmed().toStdString(), compType)) {
-                                    if (!ComparisonCondition::comparisonTypeValidForVariableType(compType, lVal->getType())) {
-                                        Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not compatible with the type of the variable in 1st argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[2].trimmed().toUpper(), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else {
-                                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(QString::number(fileLineNumber), fields[2].trimmed().toUpper()), LoggingColor::RED);
-                                    exit(1);
-                                }
-                                // Add IF container with comparison condition
-                                gc.addVar(rVal);
-                                IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new ComparisonCondition(*lVal, *rVal, compType)));
-                                m_tree.enterContainer(ifnode);
-                                ifnodes.push(ifnode);
-                                ctrTypes.push(ContainerType::IF);
-                            } else {
-                                Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "ELSE")
-                        {
-                            if (ctrTypes.top() == ContainerType::IF) { //TODO remove ifnodes.size() > 0) {
-                                IfNode *ifNode = ifnodes.top();
-                                if (fields.size() - 1 == 0) { // 0 arguments
-                                    if (!ifNode->isInElseBranch()) {
-                                        ifNode->switchToElseBranch();
-                                        lastElseNodeLineNumber = fileLineNumber;
-                                    } else {
-                                        Logging::logMsg(QString("[L%1] ELSE statement (L%2) already found in current IF statement. Exit program.").arg(QString::number(fileLineNumber), QString::number(lastElseNodeLineNumber)), LoggingColor::RED);
-                                        exit(1);
-                                    }
-                                } else {
-                                    Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] ELSE statement outside IF block. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else if (fields[0].toUpper() == "END")
-                        {
-                            if (fields.size() - 1 == 0)  {// 0 arguments
-                                if (ctrTypes.size() > 0) {
-                                    m_tree.leaveContainer();
-                                    if (ctrTypes.top() == ContainerType::IF)
-                                        ifnodes.pop();
-                                    ctrTypes.pop();
-                                } else {
-                                    Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
-                                    exit(1);
-                                }
-                            } else {
-                                Logging::logMsg(QString("[L%1] END statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
-                                exit(1);
-                            }
-                        }
-                        else
-                        {
+                        CommandParserContext cpc(fields, ifnodes, ctrTypes, fileLineNumber, lastElseNodeLineNumber);
+                        if (stmtUpper == "VAR") {
+                            parseVarStatement(cpc);
+                        } else if (stmtUpper == "SET") {
+                            parseSetStatement(cpc);
+                        } else if (stmtUpper == "ADD") {
+                            parseAddStatement(cpc);
+                        } else if (stmtUpper == "LOOP") {
+                            parseLoopStatement(cpc);
+                        } else if (stmtUpper == "BREAK") {
+                            parseBreakStatement(cpc);
+                        } else if (stmtUpper == "EXIT") {
+                            parseExitStatement(cpc);
+                        } else if (stmtUpper == "PRINT") {
+                            parsePrintStatement(cpc);
+                        } else if (stmtUpper == "IF") {
+                            parseIfStatement(cpc);
+                        } else if (stmtUpper == "ELSE") {
+                            parseElseStatement(cpc);
+                        } else if (stmtUpper == "END") {
+                            parseEndStatement(cpc);
+                        } else {
                             Logging::logMsg(QString("[L%1] The first token (%2) is not a valid keyword. Exit program.").arg(QString::number(fileLineNumber), fields[0]), LoggingColor::RED);
                             exit(1);
                         }
-                    }
-                    else {
+                    } else {
                         Logging::logMsg(QString("[L%1] No even number of quotes (\") detected. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                         exit(1);
                     }
-                }
-                else
-                {
+                } else {
                     QString& msg = line; // Just to make clear, this line is a message
                     qsizetype lastCmdPos = 0;
 
@@ -544,4 +285,293 @@ void CommandParser::removeInvalidMsgs(bool silent)
     }
 
     root.prune();
+}
+
+void CommandParser::parseVarStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
+        if (!Variable::strIsKeyword(cpc.fields[1].toStdString())) {
+            if (Variable::varNameIsValid(cpc.fields[1].toStdString())) {
+                if (m_ignoreExistingVariables || !gc.varExists(cpc.fields[1].toStdString())) {
+                    VariableType type;
+                    if (Variable::strToVarType(cpc.fields[2].toStdString(), type)) {
+                        if (!Variable::strIsKeyword(cpc.fields[1].toStdString())) {
+                            Variable *tmp = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[3].toStdString(), type);
+                            if (tmp != nullptr) {
+                                   gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
+                            } else {
+                                Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[3], cpc.fields[2]), LoggingColor::RED);
+                                exit(1);
+                            }
+                        } else {
+                            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1], cpc.fields[2]), LoggingColor::RED);
+                            exit(1);
+                        }
+                    } else {
+                        Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
+                        exit(1);
+                    }
+                } else {
+                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+                    exit(1);
+                }
+            } else {
+                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+                exit(1);
+            }
+        } else {
+            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) cannot be a reserved keyword. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments (%2). Needs to be 3. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseSetStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 2) { // 2 arguments; format = SET <LEFT_VAR_NAME> <RIGHT_VALUE>
+        Variable *lVal = nullptr;
+        if ((lVal = gc.getVar(cpc.fields[1].toStdString())) != nullptr) { // Variable found
+            Variable *rVal = nullptr;
+            if ((rVal = gc.getVar(cpc.fields[2].toStdString())) == nullptr) { // Variable found
+                rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[2].toStdString(), lVal->getType());
+                if (rVal != nullptr) {
+                    gc.addVar(rVal);
+                    m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                } else {
+                    Logging::logMsg(QString("[L%1] SET statement value in 2nd argument (%2) does not match the type of variable in 1st argument. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
+                    exit(1);
+                }
+            }
+        } else {
+            Logging::logMsg(QString("[L%1] SET statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseAddStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 2) { // 2 arguments; format = ADD <LEFT_VAR_NAME> <RIGHT_VALUE>
+        Variable *lVal = nullptr;
+        if ((lVal = gc.getVar(cpc.fields[1].toStdString())) != nullptr) { // Variable found
+            if (lVal->getType() != VariableType::BOOL) { // ADD is not defined for BOOL
+                Variable *rVal = nullptr;
+                if ((rVal = gc.getVar(cpc.fields[2].toStdString())) == nullptr) { // Variable not found
+                    rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[2].toStdString(), lVal->getType());
+                    if (rVal != nullptr) {
+                        gc.addVar(rVal);
+                        m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
+                    } else {
+                        Logging::logMsg(QString("[L%1] ADD statement value in 2nd argument does not match the type of variable in 1st argument. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                        exit(1);
+                    }
+                }
+            } else {
+                Logging::logMsg(QString("[L%1] ADD statement is not defined for BOOL variables. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                exit(1);
+            }
+        } else {
+            Logging::logMsg(QString("[L%1] ADD statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseLoopStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 0) { // 0 arguments
+        m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer()));
+        cpc.ctrTypes.push(ContainerType::LOOP);
+    } else if (cpc.fields.size() - 1 == 1) { // 1 argument; format = LOOP <N_REP>
+        Variable *var = nullptr;
+        if ((var = gc.getVar(cpc.fields[1].toStdString())) == nullptr) { // Variable not found
+            if ((var = Variable::parseToVar("", cpc.fields[1].toStdString(), VariableType::INT)) == nullptr) {
+                Logging::logMsg(QString("[L%1] LOOP statement value in 1st argument is not of type INT. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                exit(1);
+            }
+        } else {
+            if (var->getType() != VariableType::INT) {
+                Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
+                exit(1);
+            }
+        }
+        if (var != nullptr) {
+            gc.addVar(var);
+            m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), *var));
+            cpc.ctrTypes.push(ContainerType::LOOP);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments (%2). Needs to be 0 or 1. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+
+}
+
+void CommandParser::parseBreakStatement(CommandParserContext &cpc)
+{
+    if (cpc.ctrTypes.size() > 0) { // inside a container (LOOP, IF)
+        if (cpc.fields.size() - 1 == 0) { // 0 arguments
+            m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
+        } else {
+            Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] BREAK statement is only allowed inside LOOP or IF. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseExitStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 0) { // 0 arguments
+        m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
+    } else {
+        Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parsePrintStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 >= 1) { // >= 1 argument(s); format = PRINT <STR> [, <STR> [...]]
+        std::vector<Variable*> *values = new std::vector<Variable*>;
+        Variable *var = nullptr;
+        for (int f = 1; f < cpc.fields.size(); f++) {
+            if ((var = gc.getVar(cpc.fields[f].toStdString())) == nullptr) { // Variable not found
+                var = new Variable("", VariableType::STRING, new QString(cpc.fields[f]));
+                gc.addVar(var);
+            }
+            values->push_back(var);
+        }
+        std::function<void(std::string&)> cbLog = [&](std::string &str){ Logging::logMsg(QString::fromStdString(str)); };
+        m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
+    } else {
+        Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseIfStatement(CommandParserContext &cpc)
+{
+    QString stmtUpper= cpc.fields[0].toUpper();
+
+    if (stmtUpper == "IF")
+    {
+        if (cpc.fields.size() - 1 == 1) // 1 argument; format = IF <CONST_BOOL | BOOL_EXPR>
+        {
+            QString varName = cpc.fields[1];
+            Variable *var = nullptr;
+            if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
+                var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
+            } else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
+                if (var->getType() != VariableType::BOOL)
+                    var = nullptr;
+            }
+            if (var != nullptr) {
+                gc.addVar(var);
+                IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new BoolCondition(*var)));
+                m_tree.enterContainer(ifnode);
+                cpc.ifnodes.push(ifnode);
+                cpc.ctrTypes.push(ContainerType::IF);
+            } else {
+                Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                exit(1);
+            }
+        } else if (cpc.fields.size() - 1 == 3) { // 3 arguments; format = IF <LEFT_VAR_NAME> {LT, GT, LE, GE, EQ, NE} <RIGHT_VALUE>
+            QString varName;
+            // Check 1st parameter
+            Variable *lVal = nullptr;
+            varName = cpc.fields[1];
+            if ((lVal = gc.getVar(varName.toStdString())) == nullptr) { // Variable not found
+                Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                exit(1);
+            }
+            // Check 3rd parameter
+            Variable *rVal = nullptr;
+            varName = cpc.fields[3];
+            if ((rVal = gc.getVar(varName.toStdString())) != nullptr) { // Variable found
+                if (lVal->getType() != rVal->getType()) { // both variables need to be of the same type, as this is mandatory for out comparison operations later on
+                    Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                    exit(1);
+                }
+            } else { // Variable not found
+                if ((rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
+                    gc.addVar(rVal);
+                } else {
+                    Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2). Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
+                    exit(1);
+                }
+            }
+            // Check 2nd parameter
+            ComparisonType compType;
+            if (ComparisonCondition::getComparisonTypeFromString(cpc.fields[2].trimmed().toStdString(), compType)) {
+                if (!ComparisonCondition::comparisonTypeValidForVariableType(compType, lVal->getType())) {
+                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not compatible with the type of the variable in 1st argument (%3). Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper(), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
+                    exit(1);
+                }
+            } else {
+                Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper()), LoggingColor::RED);
+                exit(1);
+            }
+            // Add IF container with comparison condition
+            gc.addVar(rVal);
+            IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new ComparisonCondition(*lVal, *rVal, compType)));
+            m_tree.enterContainer(ifnode);
+            cpc.ifnodes.push(ifnode);
+            cpc.ctrTypes.push(ContainerType::IF);
+        } else {
+            Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
+            exit(1);
+        }
+    }
+}
+
+void CommandParser::parseElseStatement(CommandParserContext &cpc)
+{
+    if (cpc.ctrTypes.top() == ContainerType::IF) {
+        IfNode *ifNode = cpc.ifnodes.top();
+        if (cpc.fields.size() - 1 == 0) { // 0 arguments
+            if (!ifNode->isInElseBranch()) {
+                ifNode->switchToElseBranch();
+                cpc.lastElseNodeLineNumber = cpc.fileLineNumber;
+            } else {
+                Logging::logMsg(QString("[L%1] ELSE statement (L%2) already found in current IF statement. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.lastElseNodeLineNumber)), LoggingColor::RED);
+                exit(1);
+            }
+        } else {
+            Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] ELSE statement outside IF block. Exit program.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
+        exit(1);
+    }
+}
+
+void CommandParser::parseEndStatement(CommandParserContext &cpc)
+{
+    if (cpc.fields.size() - 1 == 0)  {// 0 arguments
+        if (cpc.ctrTypes.size() > 0) {
+            m_tree.leaveContainer();
+            if (cpc.ctrTypes.top() == ContainerType::IF)
+                cpc.ifnodes.pop();
+            cpc.ctrTypes.pop();
+        } else {
+            Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block. Exit program.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
+            exit(1);
+        }
+    } else {
+        Logging::logMsg(QString("[L%1] END statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        exit(1);
+    }
 }
