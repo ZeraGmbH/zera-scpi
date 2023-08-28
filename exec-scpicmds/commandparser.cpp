@@ -210,31 +210,30 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "BREAK")
                         {
-                            if (fields.size() - 1 == 0) // 0 arguments
-                            {
-                                m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            if (ctrTypes.size() > 0) { // inside a container (LOOP, IF)
+                                if (fields.size() - 1 == 0) { // 0 arguments
+                                    m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
+                                } else {
+                                    Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
+                                    exit(1);
+                                }
+                            } else {
+                                Logging::logMsg(QString("[L%1] BREAK statement is only allowed inside LOOP or IF. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
                         else if (fields[0].toUpper() == "EXIT")
                         {
-                            if (fields.size() - 1 == 0) // 0 arguments
-                            {
+                            if (fields.size() - 1 == 0) { // 0 arguments
                                 m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            } else {
+                                Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "PRINT")
                         {
                             if (fields.size() - 1 >= 1) // >= 1 argument(s)
