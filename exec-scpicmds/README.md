@@ -71,13 +71,13 @@ Adds the variable to value. The value can be const or also a variable. Boolean v
 ### LOOP
 **Syntax:**
 ```
-> LOOP <N_REP>
+> LOOP [<N_REP>]
 ...
 > END
 ```
 
 **Arguments:**
-* ```<N_REP>``` Number of repetitions. A const value interpretable as unsigned integer or a variable holding such a value.
+* ```<N_REP>``` Optional number of repetitions. A const value interpretable as unsigned integer or a variable holding such a value. Is this value is not specified, the loop is an endless loop.
 
 **Description:**
 Repeats its commands (between the ```LOOP``` and its corresponding ```END``` command) ```<N_REP>``` times. ```LOOP``` is a container (also as ```IF``` is) and therefore (container) commands can be nested into it.

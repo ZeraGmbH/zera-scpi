@@ -14,16 +14,16 @@ SetNode::~SetNode()
 void SetNode::exec(std::function<void(INode*)> &f)
 {
     switch (m_lValue.getType()) {
-    case INT:
+    case VariableType::INT:
         m_lValue.setValue(new int(*(int*)m_rValue.getValue()));
         break;
-    case FLOAT:
+    case VariableType::FLOAT:
         m_lValue.setValue(new float(*(float*)m_rValue.getValue()));
         break;
-    case BOOL:
+    case VariableType::BOOL:
         m_lValue.setValue(new bool(*(bool*)m_rValue.getValue()));
         break;
-    case STRING:
+    case VariableType::STRING:
         m_lValue.setValue(new std::string(*(std::string*)m_rValue.getValue()));
         break;
     }

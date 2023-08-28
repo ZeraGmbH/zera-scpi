@@ -38,16 +38,16 @@ void Variable::setValue(void *value)
 void Variable::deleteValue()
 {
     switch (m_type) {
-    case INT:
+    case VariableType::INT:
         delete (int*)m_value;
         break;
-    case FLOAT:
+    case VariableType::FLOAT:
         delete (float*)m_value;
         break;
-    case BOOL:
+    case VariableType::BOOL:
         delete (bool*)m_value;
         break;
-    case STRING:
+    case VariableType::STRING:
         delete (std::string*)m_value;
         break;
     }
@@ -56,13 +56,13 @@ void Variable::deleteValue()
 std::string Variable::toString()
 {
     switch (m_type) {
-    case INT:
+    case VariableType::INT:
         return std::to_string(*((int*)m_value));
-    case FLOAT:
+    case VariableType::FLOAT:
         return std::to_string(*((float*)m_value));
-    case BOOL:
+    case VariableType::BOOL:
         return std::string((*((bool*)m_value)) ? "TRUE" : "FALSE");
-    case STRING:
+    case VariableType::STRING:
         return *((std::string*)m_value);
     }
 }
@@ -70,14 +70,28 @@ std::string Variable::toString()
 std::string Variable::toFullString()
 {
     switch (m_type) {
-    case INT:
+    case VariableType::INT:
         return m_name + "(INT)" + std::to_string(*((int*)m_value));
-    case FLOAT:
+    case VariableType::FLOAT:
         return m_name + "(FLOAT)" + std::to_string(*((float*)m_value));
-    case BOOL:
+    case VariableType::BOOL:
         return m_name + "(BOOL)" + (*((bool*)m_value) ? "TRUE" : "FALSE");
-    case STRING:
+    case VariableType::STRING:
         return m_name + "(STRING)" + *((std::string*)m_value);
+    }
+}
+
+std::string Variable::getTypeString()
+{
+    switch (m_type) {
+    case VariableType::INT:
+        return "INT";
+    case VariableType::FLOAT:
+        return "FLOAT";
+    case VariableType::BOOL:
+        return "BOOL";
+    case VariableType::STRING:
+        return "STRING";
     }
 }
 
@@ -136,7 +150,7 @@ Variable* Variable::parseToVar(std::string name, std::string token, VariableType
 
     if (!Variable::strIsKeyword(token)) {
         switch (type) {
-        case INT: {
+        case VariableType::INT: {
             try {
                 int tmp = std::stoi(token, nullptr);
                 res = new Variable(name, VariableType::INT, new int(tmp));
@@ -144,7 +158,7 @@ Variable* Variable::parseToVar(std::string name, std::string token, VariableType
             catch (...) {}
             break;
         }
-        case FLOAT: {
+        case VariableType::FLOAT: {
             try {
                 float tmp = std::stof(token, nullptr);
                 res = new Variable(name, VariableType::FLOAT, new float(tmp));
@@ -152,11 +166,11 @@ Variable* Variable::parseToVar(std::string name, std::string token, VariableType
             catch (...) {}
             break;
         }
-        case BOOL: {
+        case VariableType::BOOL: {
                 res = new Variable(name, VariableType::BOOL, new bool(token == "TRUE"));
             break;
         }
-        case STRING: {
+        case VariableType::STRING: {
             res = new Variable(name, VariableType::STRING, new std::string(token));
             break;
         }
