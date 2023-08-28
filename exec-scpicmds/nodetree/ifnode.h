@@ -22,6 +22,7 @@ public:
     void exec(std::function<void(INode*)> &f) override;
     void breakExec() override;
     void switchToElseBranch();
+    bool isInElseBranch();
 
 private:
     Condition &m_cond;
