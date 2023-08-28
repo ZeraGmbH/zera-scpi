@@ -94,32 +94,37 @@ void CommandParser::parseCmdFile(QString strFileName)
                         if (fields[0].toUpper() == "VAR")
                         {
                             if (fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
-                                if (Variable::varNameIsValid(fields[1].toStdString())) {
-                                    if (m_ignoreExistingVariables || !gc.varExists(fields[1].toStdString())) {
-                                        VariableType type;
-                                        if (Variable::strToVarType(fields[2].toStdString(), type)) {
-                                            if (!Variable::strIsKeyword(fields[1].toStdString())) {
-                                                Variable *tmp = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), type);
-                                                if (tmp != nullptr) {
-                                                       gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
+                                if (!Variable::strIsKeyword(fields[1].toStdString())) {
+                                    if (Variable::varNameIsValid(fields[1].toStdString())) {
+                                        if (m_ignoreExistingVariables || !gc.varExists(fields[1].toStdString())) {
+                                            VariableType type;
+                                            if (Variable::strToVarType(fields[2].toStdString(), type)) {
+                                                if (!Variable::strIsKeyword(fields[1].toStdString())) {
+                                                    Variable *tmp = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), type);
+                                                    if (tmp != nullptr) {
+                                                           gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
+                                                    } else {
+                                                        Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[3], fields[2]), LoggingColor::RED);
+                                                        exit(1);
+                                                    }
                                                 } else {
-                                                    Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[3], fields[2]), LoggingColor::RED);
+                                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
                                                     exit(1);
                                                 }
                                             } else {
-                                                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
+                                                Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
                                                 exit(1);
                                             }
                                         } else {
-                                            Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(fileLineNumber), fields[2]), LoggingColor::RED);
+                                            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
                                             exit(1);
                                         }
                                     } else {
-                                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
+                                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
                                         exit(1);
                                     }
                                 } else {
-                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) cannot be a reserved keyword. Exit program.").arg(QString::number(fileLineNumber), fields[1]), LoggingColor::RED);
                                     exit(1);
                                 }
                             } else {
@@ -252,7 +257,6 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "IF")
                         {
                             if (fields.size() - 1 == 1) // 1 argument
@@ -261,127 +265,70 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 Variable *var = nullptr;
                                 if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
                                     var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
+                                } else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
+                                    if (var->getType() != VariableType::BOOL)
+                                        var = nullptr;
                                 }
-                                else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
-                                    ; // Do nothing more, as var already got found (in the if-statement above)
-                                }
-                                else {
-                                    Logging::logMsg(QString("[L%1] IF statement has invalid arguments. Needs to be TRUE, FALSE or an existing variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                                    exit(1);
-                                }
-
                                 if (var != nullptr) {
                                     gc.addVar(var);
                                     IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new BoolCondition(*var)));
                                     m_tree.enterContainer(ifnode);
                                     ifnodes.push(ifnode);
                                     ctrTypes.push(ContainerType::IF);
+                                } else {
+                                    Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    exit(1);
                                 }
                             }
                             else if (fields.size() - 1 == 3) // 3 arguments
                             {
                                 QString varName;
-
                                 // Check 1st parameter
                                 Variable *lVal = nullptr;
                                 varName = fields[1];
-                                if ((lVal = gc.getVar(varName.toStdString())) == nullptr) {
+                                if ((lVal = gc.getVar(varName.toStdString())) == nullptr) { // Variable not found
                                     Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                     exit(1);
                                 }
-
                                 // Check 3rd parameter
-                                Variable *rVal = nullptr; // TODO move this variable parsing into separate function
+                                Variable *rVal = nullptr;
                                 varName = fields[3];
-                                if ((rVal = gc.getVar(varName.toStdString())) != nullptr) {
-                                    if (lVal->getType() != rVal->getType()) {
+                                if ((rVal = gc.getVar(varName.toStdString())) != nullptr) { // Variable found
+                                    if (lVal->getType() != rVal->getType()) { // both variables need to be of the same type, as this is mandatory for out comparison operations later on
                                         Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                         exit(1);
                                     }
-                                }
-                                else {
-                                    switch (lVal->getType()) {
-                                    case VariableType::INT: {
-                                        int tmp = fields[3].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
-                                        if (ok)
-                                            rVal = new Variable("", VariableType::INT, new int(tmp));
-                                        else
-                                            ; // TODO print error message
-                                        break;
-                                    }
-                                    case VariableType::FLOAT: {
-                                        float tmp = fields[3].toFloat(&ok);
-                                        if (ok)
-                                            rVal = new Variable("", VariableType::FLOAT, new float(tmp));
-                                        break;
-                                    }
-                                    case VariableType::BOOL: {
-                                        if (fields[3].toUpper() == "TRUE" || fields[3].toUpper() == "FALSE") {
-                                            rVal = new Variable("", VariableType::BOOL, new bool(fields[3].toUpper() == "TRUE"));
-                                        break;
-                                    }
-                                    case VariableType::STRING: {
-                                        rVal = new Variable("", VariableType::STRING, new std::string(fields[3].toStdString()));
-                                        break;
-                                    }
-                                    }
-
-                                    if (rVal != nullptr) {
+                                } else { // Variable not found
+                                    if ((rVal = Variable::parseToVar(fields[1].toStdString(), fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
                                         gc.addVar(rVal);
-                                        m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
-                                    }
-                                    else {
-                                        Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    } else {
+                                        Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2). Exit program.").arg(QString::number(fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
                                         exit(1);
                                     }
-                                    }
                                 }
-
                                 // Check 2nd parameter
                                 ComparisonType compType;
                                 if (ComparisonCondition::getComparisonTypeFromString(fields[2].trimmed().toStdString(), compType)) {
-                                    bool errorFound = false;
-                                    switch (lVal->getType()) {
-                                    case VariableType::INT:
-                                        ; // Do nothing as all comparisons are valid
-                                        break;
-                                    case VariableType::FLOAT:
-                                        ; // Do nothing as all comparisons are valid
-                                        break;
-                                    case VariableType::BOOL:
-                                        if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
-                                            errorFound = true;
-                                        break;
-                                    case VariableType::STRING:
-                                        if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
-                                            errorFound = true;
-                                        break;
-                                    }
-
-                                    if(errorFound) {
-                                        // TODO add strings in the following message to show of which type each variable is.
-                                        Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument is not compitible with the type of the variable in 1st argument. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                    if (!ComparisonCondition::comparisonTypeValidForVariableType(compType, lVal->getType())) {
+                                        Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not compatible with the type of the variable in 1st argument (%3). Exit program.").arg(QString::number(fileLineNumber), fields[2].trimmed().toUpper(), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
                                         exit(1);
                                     }
-
-                                }
-                                else {
-                                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                } else {
+                                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(QString::number(fileLineNumber), fields[2].trimmed().toUpper()), LoggingColor::RED);
                                     exit(1);
                                 }
-
-                                gc.addVar(lVal);
+                                // Add IF container with comparison condition
+                                gc.addVar(rVal);
                                 IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new ComparisonCondition(*lVal, *rVal, compType)));
                                 m_tree.enterContainer(ifnode);
                                 ifnodes.push(ifnode);
                                 ctrTypes.push(ContainerType::IF);
-                            }
-                            else
-                            {
+                            } else {
                                 Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "ELSE")
                         {
                             if (fields.size() - 1 == 0) // 0 arguments

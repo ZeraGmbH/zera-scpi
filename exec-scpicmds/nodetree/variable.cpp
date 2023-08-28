@@ -112,6 +112,9 @@ bool Variable::strIsKeyword(std::string keyword)
     keywords.push_back("IF");
     keywords.push_back("ELSE");
 
+    keywords.push_back("TRUE");
+    keywords.push_back("FALSE");
+
     keywords.push_back("INT");
     keywords.push_back("FLOAT");
     keywords.push_back("BOOL");
@@ -149,33 +152,31 @@ Variable* Variable::parseToVar(std::string name, std::string token, VariableType
 {
     Variable *res = nullptr;
 
-    if (!Variable::strIsKeyword(token)) {
-        switch (type) {
-        case VariableType::INT: {
-            try {
-                int tmp = std::stoi(token, nullptr);
-                res = new Variable(name, VariableType::INT, new int(tmp));
-            }
-            catch (...) {}
-            break;
+    switch (type) {
+    case VariableType::INT: {
+        try {
+            int tmp = std::stoi(token, nullptr);
+            res = new Variable(name, VariableType::INT, new int(tmp));
         }
-        case VariableType::FLOAT: {
-            try {
-                float tmp = std::stof(token, nullptr);
-                res = new Variable(name, VariableType::FLOAT, new float(tmp));
-            }
-            catch (...) {}
-            break;
+        catch (...) {}
+        break;
+    }
+    case VariableType::FLOAT: {
+        try {
+            float tmp = std::stof(token, nullptr);
+            res = new Variable(name, VariableType::FLOAT, new float(tmp));
         }
-        case VariableType::BOOL: {
-                res = new Variable(name, VariableType::BOOL, new bool(token == "TRUE"));
-            break;
-        }
-        case VariableType::STRING: {
-            res = new Variable(name, VariableType::STRING, new std::string(token));
-            break;
-        }
-        }
+        catch (...) {}
+        break;
+    }
+    case VariableType::BOOL: {
+            res = new Variable(name, VariableType::BOOL, new bool(token == "TRUE"));
+        break;
+    }
+    case VariableType::STRING: {
+        res = new Variable(name, VariableType::STRING, new std::string(token));
+        break;
+    }
     }
 
     return res;
