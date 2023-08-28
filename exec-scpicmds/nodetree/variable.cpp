@@ -24,7 +24,7 @@ VariableType Variable::getType()
     return m_type;
 }
 
-void *Variable::getValue()
+void* Variable::getValue()
 {
     return this->m_value;
 }

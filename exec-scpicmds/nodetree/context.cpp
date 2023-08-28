@@ -1,6 +1,13 @@
 #include "context.h"
 
 
+Context::~Context()
+{
+    for (auto var : m_vars)
+        delete var;
+    m_vars.clear();
+}
+
 bool Context::addVar(Variable *var)
 {
     // Check if variable already exists (but ignore const variables (they have name == ""))

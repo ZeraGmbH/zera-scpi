@@ -14,7 +14,7 @@ public:
     ~NodeTree();
     void enterContainer(ICtrNode *ctr);
     void leaveContainer();
-    ICtrNode *getCurrentContainer();
+    ICtrNode* getCurrentContainer();
     void append(INode* node) override;
     bool remove(INode* node) override;
     bool prune() override;
@@ -24,7 +24,7 @@ public:
     void traverse(std::function<void(INode*)> &f) override;
     void exec(std::function<void(INode*)> &f) override;
     void breakExec() override;
-    CtrNode *getRoot();
+    CtrNode* getRoot();
 
 private:
     CtrNode *m_root = nullptr;

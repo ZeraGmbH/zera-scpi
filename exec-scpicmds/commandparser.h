@@ -4,9 +4,30 @@
 #include <QObject>
 #include "tcphandler.h"
 #include "messagedata.h"
+#include "ifnode.h"
 #include "nodetree.h"
 #include "variable.h"
 #include "context.h"
+
+
+enum class ContainerType
+{
+    LOOP = 0,
+    IF,
+};
+
+
+struct CommandParserContext
+{
+    CommandParserContext(QStringList &fields, std::stack<IfNode*> &ifnodes, std::stack<ContainerType> &ctrTypes, int &fileLineNumber, int &lastElseNodeLineNumber) :
+        fields(fields), ifnodes(ifnodes), ctrTypes(ctrTypes), fileLineNumber(fileLineNumber), lastElseNodeLineNumber(lastElseNodeLineNumber) {}
+
+    QStringList &fields;
+    std::stack<IfNode*> &ifnodes;
+    std::stack<ContainerType> &ctrTypes;
+    int fileLineNumber;
+    int lastElseNodeLineNumber;
+};
 
 
 class CommandParser : public QObject
@@ -28,6 +49,16 @@ private:
     void sendMsgs(unsigned int iterNo = 0);
     void loopAndSendMsgs();
     void removeInvalidMsgs(bool silent);
+    void parseVarStatement(CommandParserContext &cpc);
+    void parseSetStatement(CommandParserContext &cpc);
+    void parseAddStatement(CommandParserContext &cpc);
+    void parseLoopStatement(CommandParserContext &cpc);
+    void parseBreakStatement(CommandParserContext &cpc);
+    void parseExitStatement(CommandParserContext &cpc);
+    void parsePrintStatement(CommandParserContext &cpc);
+    void parseIfStatement(CommandParserContext &cpc);
+    void parseElseStatement(CommandParserContext &cpc);
+    void parseEndStatement(CommandParserContext &cpc);
 
     unsigned int m_handleErroneousMessages = 0;
     bool m_checkErrorQueue = false;
