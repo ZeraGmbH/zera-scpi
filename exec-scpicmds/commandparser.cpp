@@ -107,7 +107,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                                                     exit(1);
                                                 }
                                             } else {
-                                                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid.. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
+                                                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(fileLineNumber), fields[1], fields[2]), LoggingColor::RED);
                                                 exit(1);
                                             }
                                         } else {
