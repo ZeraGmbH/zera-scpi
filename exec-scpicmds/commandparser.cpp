@@ -54,6 +54,7 @@ void CommandParser::parseCmdFile(QString strFileName)
     QFile cmdFile(strFileName);
     std::stack<IfNode *> ifnodes;
     std::stack<ContainerType> ctrTypes;
+    int lastElseNodeLineNumber = 0;
 
     if(cmdFile.open(QIODevice::ReadOnly)) {
         // Read lines and split into single commands (per line)
@@ -328,19 +329,23 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "ELSE")
                         {
-                            if (fields.size() - 1 == 0) // 0 arguments
-                            {
-                                ifnodes.top()->switchToElseBranch();
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            IfNode *ifNode = ifnodes.top();
+                            if (fields.size() - 1 == 0) { // 0 arguments
+                                if (!ifNode->isInElseBranch()) {
+                                    ifNode->switchToElseBranch();
+                                    lastElseNodeLineNumber = fileLineNumber;
+                                } else {
+                                    Logging::logMsg(QString("[L%1] ELSE statement (line %2) already found in current IF statement. Exit program.").arg(QString::number(fileLineNumber), QString::number(lastElseNodeLineNumber)), LoggingColor::RED);
+                                    exit(1);
+                                }
+                            } else {
+                                Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "END")
                         {
                             if (fields.size() - 1 == 0) // 0 arguments

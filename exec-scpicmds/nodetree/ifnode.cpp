@@ -79,3 +79,8 @@ void IfNode::switchToElseBranch()
 {
     m_inIfBranch = false;
 }
+
+bool IfNode::isInElseBranch()
+{
+    return !m_inIfBranch;
+}
