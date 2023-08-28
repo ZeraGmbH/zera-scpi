@@ -350,18 +350,20 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "END")
                         {
-                            if (fields.size() - 1 == 0) // 0 arguments
-                            {                            m_tree.leaveContainer();
-                                if (ctrTypes.top() == ContainerType::IF)
-                                    ifnodes.pop();
-                                ctrTypes.pop();
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] END statement does not expect any arguments. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            if (fields.size() - 1 == 0)  {// 0 arguments
+                                if (ctrTypes.size() > 0) {
+                                    m_tree.leaveContainer();
+                                    if (ctrTypes.top() == ContainerType::IF)
+                                        ifnodes.pop();
+                                    ctrTypes.pop();
+                                } else {
+                                    Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
+                                    exit(1);
+                                }
+                            } else {
+                                Logging::logMsg(QString("[L%1] END statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
