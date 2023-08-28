@@ -233,32 +233,26 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "PRINT")
                         {
-                            if (fields.size() - 1 >= 1) // >= 1 argument(s)
-                            {
+                            if (fields.size() - 1 >= 1) { // >= 1 argument(s)
                                 std::vector<Variable*> *values = new std::vector<Variable*>;
                                 Variable *var = nullptr;
                                 for (int f = 1; f < fields.size(); f++) {
-                                    if ((var = gc.getVar(fields[f].toStdString())) != nullptr) { // Variable found
-                                        values->push_back(var);
-                                    }
-                                    else {
+                                    if ((var = gc.getVar(fields[f].toStdString())) == nullptr) { // Variable not found
                                         var = new Variable("", VariableType::STRING, new QString(fields[f]));
                                         gc.addVar(var);
-                                        values->push_back(var);
                                     }
+                                    values->push_back(var);
                                 }
-                                std::function<void(std::string&)> cbLog = [&](std::string &str){Logging::logMsg(QString::fromStdString(str)); };
+                                std::function<void(std::string&)> cbLog = [&](std::string &str){ Logging::logMsg(QString::fromStdString(str)); };
                                 m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
-                            }
-                            else
-                            {
+                            } else {
                                 Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1. Exit program.").arg(fileLineNumber), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "IF")
                         {
                             if (fields.size() - 1 == 1) // 1 argument
