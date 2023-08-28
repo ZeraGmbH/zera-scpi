@@ -3,14 +3,13 @@
 
 bool Context::addVar(Variable *var)
 {
-    // Check if variable already exists
-    if (!getVar(var->getName())) {
+    // Check if variable already exists (but ignore const variables (they have name == ""))
+    std::string name = var->getName();
+    if (name != "" && !getVar(name)) {
         m_vars.push_back(var);
         return true;
     }
-    else {
-        return false;
-    }
+    return false;
 }
 
 Variable* Context::getVar(std::string name)

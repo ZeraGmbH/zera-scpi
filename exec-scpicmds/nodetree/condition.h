@@ -41,6 +41,7 @@ public:
     ComparisonCondition(Variable &lValue, Variable &rValue, ComparisonType &type);
     bool eval() override;
     static bool getComparisonTypeFromString(std::string comp, ComparisonType &type);
+    static bool comparisonTypeValidForVariableType(ComparisonType compType, VariableType varType);
 
 private:
     Variable &m_lValue;

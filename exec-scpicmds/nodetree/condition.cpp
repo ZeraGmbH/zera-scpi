@@ -112,3 +112,21 @@ bool ComparisonCondition::getComparisonTypeFromString(std::string comp, Comparis
 
     return true;
 }
+
+bool ComparisonCondition::comparisonTypeValidForVariableType(ComparisonType compType, VariableType varType)
+{
+    bool errorFound = false;
+    switch (varType) {
+    case VariableType::INT:
+        return true; // All comparisons are valid
+    case VariableType::FLOAT:
+        return true; // All comparisons are valid
+    case VariableType::BOOL:
+        if (compType == ComparisonType::EQ || compType == ComparisonType::NE)
+            return true;
+    case VariableType::STRING:
+        if (compType == ComparisonType::EQ || compType == ComparisonType::NE)
+            return true;
+    }
+    return false;
+}
