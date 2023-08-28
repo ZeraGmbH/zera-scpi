@@ -1,8 +1,13 @@
 #include "loopnode.h"
 
 
+LoopNode::LoopNode(ICtrNode *parent) :
+    ICtrNode(parent), m_cnt(nullptr), m_nodes(parent)
+{
+}
+
 LoopNode::LoopNode(ICtrNode *parent, Variable &cnt) :
-    ICtrNode(parent), m_cnt(cnt), m_nodes(parent)
+    ICtrNode(parent), m_cnt(&cnt), m_nodes(parent)
 {
 }
 
@@ -47,13 +52,20 @@ void LoopNode::traverse(std::function<void(INode*)> &f)
 
 void LoopNode::exec(std::function<void(INode*)> &f)
 {
-    int cnt = *((int*)m_cnt.getValue());
-
     m_break = false;
-    for (int i = 0; i < cnt; i++) {
-        if (m_break)
-            break;
-        m_nodes.exec(f);
+    if (m_cnt != nullptr) {
+        int cnt = *((int*)m_cnt->getValue());
+        for (int i = 0; i < cnt; i++) {
+            if (m_break)
+                break;
+            m_nodes.exec(f);
+        }
+    } else { // endless loop
+        while (true) {
+            if (m_break)
+                break;
+            m_nodes.exec(f);
+        }
     }
 }
 

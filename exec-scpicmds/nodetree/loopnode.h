@@ -9,6 +9,7 @@
 class LoopNode : public ICtrNode
 {
 public:
+    LoopNode(ICtrNode *parent);
     LoopNode(ICtrNode *parent, Variable &cnt);
     ~LoopNode();
     void append(INode *node) override;
@@ -21,7 +22,7 @@ public:
     void exec(std::function<void(INode*)> &f) override;
     void breakExec() override;
 private:
-    Variable &m_cnt;
+    Variable *m_cnt = nullptr;
     CtrNode m_nodes;
     bool m_break = false;
 };

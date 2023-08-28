@@ -182,34 +182,35 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 exit(1);
                             }
                         }
-
-                        // TODO continue checking here
                         else if (fields[0].toUpper() == "LOOP")
                         {
-                            if (fields.size() - 1 == 0) // 0 arguments
-                            {
-                                // TODO implement and document: Endless loop (only makes sense when BREAK is used)
-                            }
-                            else if (fields.size() - 1 == 1) // 1 argument
-                            {
-
+                            if (fields.size() - 1 == 0) { // 0 arguments
+                                m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer()));
+                                ctrTypes.push(ContainerType::LOOP);
+                            } else if (fields.size() - 1 == 1) { // 1 argument
                                 Variable *var = nullptr;
                                 if ((var = gc.getVar(fields[1].toStdString())) == nullptr) { // Variable not found
-                                    var = new Variable("", VariableType::INT, new int(fields[1].toUInt())); // TODO check for toUInt(ok)
+                                    if ((var = Variable::parseToVar("", fields[1].toStdString(), VariableType::INT)) == nullptr) {
+                                        Logging::logMsg(QString("[L%1] LOOP statement value in 1st argument is not of type INT. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                                        exit(1);
+                                    }
+                                } else {
+                                    if (var->getType() != VariableType::INT) {
+                                        Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2. Exit program.").arg(QString::number(fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
+                                        exit(1);
+                                    }
                                 }
-
                                 if (var != nullptr) {
                                     gc.addVar(var);
                                     m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), *var));
                                     ctrTypes.push(ContainerType::LOOP);
                                 }
-                            }
-                            else
-                            {
-                                Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments. Needs to be 0 or 1. Exit program.").arg(fileLineNumber), LoggingColor::RED);
+                            } else {
+                                Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments (%2). Needs to be 0 or 1. Exit program.").arg(QString::number(fileLineNumber), QString::number(fields.size() - 1)), LoggingColor::RED);
                                 exit(1);
                             }
                         }
+                        // TODO continue checking here
                         else if (fields[0].toUpper() == "BREAK")
                         {
                             if (fields.size() - 1 == 0) // 0 arguments
@@ -307,7 +308,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 }
                                 else {
                                     switch (lVal->getType()) {
-                                    case INT: {
+                                    case VariableType::INT: {
                                         int tmp = fields[3].toInt(&ok); // TODO all these checks here might get put into its own function. They are used in a similar way in the VAR command (see above)
                                         if (ok)
                                             rVal = new Variable("", VariableType::INT, new int(tmp));
@@ -315,18 +316,18 @@ void CommandParser::parseCmdFile(QString strFileName)
                                             ; // TODO print error message
                                         break;
                                     }
-                                    case FLOAT: {
+                                    case VariableType::FLOAT: {
                                         float tmp = fields[3].toFloat(&ok);
                                         if (ok)
                                             rVal = new Variable("", VariableType::FLOAT, new float(tmp));
                                         break;
                                     }
-                                    case BOOL: {
+                                    case VariableType::BOOL: {
                                         if (fields[3].toUpper() == "TRUE" || fields[3].toUpper() == "FALSE") {
                                             rVal = new Variable("", VariableType::BOOL, new bool(fields[3].toUpper() == "TRUE"));
                                         break;
                                     }
-                                    case STRING: {
+                                    case VariableType::STRING: {
                                         rVal = new Variable("", VariableType::STRING, new std::string(fields[3].toStdString()));
                                         break;
                                     }
@@ -348,17 +349,17 @@ void CommandParser::parseCmdFile(QString strFileName)
                                 if (ComparisonCondition::getComparisonTypeFromString(fields[2].trimmed().toStdString(), compType)) {
                                     bool errorFound = false;
                                     switch (lVal->getType()) {
-                                    case INT:
+                                    case VariableType::INT:
                                         ; // Do nothing as all comparisons are valid
                                         break;
-                                    case FLOAT:
+                                    case VariableType::FLOAT:
                                         ; // Do nothing as all comparisons are valid
                                         break;
-                                    case BOOL:
+                                    case VariableType::BOOL:
                                         if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
                                             errorFound = true;
                                         break;
-                                    case STRING:
+                                    case VariableType::STRING:
                                         if (!(compType == ComparisonType::EQ || compType == ComparisonType::NE))
                                             errorFound = true;
                                         break;
