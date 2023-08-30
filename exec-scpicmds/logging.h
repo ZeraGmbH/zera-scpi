@@ -30,11 +30,12 @@ public:
     explicit Logging(QObject *parent = nullptr);
     static QString colorString(QString strMsg, LoggingColor color = LoggingColor::NONE, LoggingStyle style = LoggingStyle::NONE);
     static void logMsg(QString strMsg, LoggingColor color = LoggingColor::NONE, LoggingStyle style = LoggingStyle::NONE);
+    static void enableFormattedOutput(bool enable);
 
 signals:
 
 private:
-    static const bool m_enableGlobalColorLogging = true;
+    static bool m_enableFormattedOutput;
 };
 
 #endif // LOGGING_H
