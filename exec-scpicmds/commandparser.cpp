@@ -58,6 +58,8 @@ void CommandParser::parseCmdFile(QString strFileName)
         int fileLineNumber = 0;
 
         // Iterate over all lines (messages) in file
+
+        int stmtErrorFound = 0;
         while (!textStream.atEnd()) {
             QString line = textStream.readLine().trimmed();
             fileLineNumber++;
@@ -87,40 +89,48 @@ void CommandParser::parseCmdFile(QString strFileName)
                         }
 
                         if (fields.size() == 0) {
-                            Logging::logMsg(QString("[L%1] Command line with no statement. Exit program.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
-                            exit(1);
+                            Logging::logMsg(QString("[L%1] Command line with no statement.").arg(QString::number(fileLineNumber)), LoggingColor::RED);
+                            stmtErrorFound = true;
+                            break;
                         }
-                        QString stmtUpper= fields[0].toUpper();
 
                         // Handle keywords
                         CommandParserContext cpc(fields, ifNodes, ctrTypes, conds, fileLineNumber, lastElseNodeLineNumber);
+                        QString stmtUpper= fields[0].toUpper();
                         if (stmtUpper == "VAR") {
-                            parseVarStatement(cpc);
+                            stmtErrorFound = parseVarStatement(cpc);
                         } else if (stmtUpper == "SET") {
-                            parseSetStatement(cpc);
+                            stmtErrorFound = parseSetStatement(cpc);
                         } else if (stmtUpper == "ADD") {
-                            parseAddStatement(cpc);
+                            stmtErrorFound = parseAddStatement(cpc);
                         } else if (stmtUpper == "LOOP") {
-                            parseLoopStatement(cpc);
+                            stmtErrorFound = parseLoopStatement(cpc);
                         } else if (stmtUpper == "BREAK") {
-                            parseBreakStatement(cpc);
+                            stmtErrorFound = parseBreakStatement(cpc);
                         } else if (stmtUpper == "EXIT") {
-                            parseExitStatement(cpc);
+                            stmtErrorFound = parseExitStatement(cpc);
                         } else if (stmtUpper == "PRINT") {
-                            parsePrintStatement(cpc);
+                            stmtErrorFound = parsePrintStatement(cpc);
                         } else if (stmtUpper == "IF") {
-                            parseIfStatement(cpc);
+                            stmtErrorFound = parseIfStatement(cpc);
                         } else if (stmtUpper == "ELSE") {
-                            parseElseStatement(cpc);
+                            stmtErrorFound = parseElseStatement(cpc);
                         } else if (stmtUpper == "END") {
-                            parseEndStatement(cpc);
+                            stmtErrorFound = parseEndStatement(cpc);
                         } else {
-                            Logging::logMsg(QString("[L%1] The first token (%2) is not a valid keyword. Exit program.").arg(QString::number(fileLineNumber), fields[0]), LoggingColor::RED);
-                            exit(1);
+                            Logging::logMsg(QString("[L%1] The first token (%2) is not a valid keyword.").arg(QString::number(fileLineNumber), fields[0]), LoggingColor::RED);
+                            stmtErrorFound = true;
+                            break;
+                        }
+
+                        if (stmtErrorFound != 0) {
+                            stmtErrorFound = true;
+                            break;
                         }
                     } else {
-                        Logging::logMsg(QString("[L%1] No even number of quotes (\") detected. Exit program.").arg(fileLineNumber), LoggingColor::RED);
-                        exit(1);
+                        Logging::logMsg(QString("[L%1] No even number of quotes (\") detected.").arg(fileLineNumber), LoggingColor::RED);
+                        stmtErrorFound = true;
+                        break;
                     }
                 } else {
                     QString& msg = line; // Just to make clear, this line is a message
@@ -148,57 +158,61 @@ void CommandParser::parseCmdFile(QString strFileName)
         }
         cmdFile.close();
 
-        // Check messages
-        Logging::logMsg(QString("Checking messages..."));
-        bool msgsValid = msgsAreValid();
-        if (msgsValid)
-            Logging::logMsg(QString("... All messages look fine."), LoggingColor::GREEN);
-        else
-            Logging::logMsg(QString("... Invalid messages(s) found!"), LoggingColor::RED);
-
-        switch (m_handleErroneousMessages)
-        {
-        case 0:
-        default:
-            if (!msgsValid)
-                Logging::logMsg(QString("... -> No messages will get executed."), LoggingColor::YELLOW);
+        if (stmtErrorFound == 0) {
+            // Check messages
+            Logging::logMsg(QString("Checking messages..."));
+            bool msgsValid = msgsAreValid();
+            if (msgsValid)
+                Logging::logMsg(QString("... All messages look fine."), LoggingColor::GREEN);
             else
+                Logging::logMsg(QString("... Invalid messages(s) found!"), LoggingColor::RED);
+
+            switch (m_handleErroneousMessages)
+            {
+            case 0:
+            default:
+                if (!msgsValid)
+                    Logging::logMsg(QString("... -> No messages will get executed."), LoggingColor::YELLOW);
+                else
+                    loopAndSendMsgs();
+                break;
+
+            case 1:
+                if (!msgsValid)
+                    Logging::logMsg(QString("... -> Trying to execute them anyway."), LoggingColor::YELLOW);
                 loopAndSendMsgs();
-            break;
+                break;
 
-        case 1:
-            if (!msgsValid)
-                Logging::logMsg(QString("... -> Trying to execute them anyway."), LoggingColor::YELLOW);
-            loopAndSendMsgs();
-            break;
+            case 2:
+                if (!msgsValid) {
+                    Logging::logMsg(QString("... -> Removing invalid messages and executing the rest."), LoggingColor::YELLOW);
+                    removeInvalidMsgs(false);
+                }
+                loopAndSendMsgs();
+                break;
 
-        case 2:
-            if (!msgsValid) {
-                Logging::logMsg(QString("... -> Removing invalid messages and executing the rest."), LoggingColor::YELLOW);
-                removeInvalidMsgs(false);
+            case 3:
+                if (!msgsValid) {
+                    Logging::logMsg(QString("... -> Removing invalid messages (silently) and executing the rest."), LoggingColor::YELLOW);
+                    removeInvalidMsgs(true);
+                }
+                loopAndSendMsgs();
+                break;
             }
-            loopAndSendMsgs();
-            break;
 
-        case 3:
-            if (!msgsValid) {
-                Logging::logMsg(QString("... -> Removing invalid messages (silently) and executing the rest."), LoggingColor::YELLOW);
-                removeInvalidMsgs(true);
-            }
-            loopAndSendMsgs();
-            break;
+            // Cleanup
+            m_tree.clear();
+            gc.clear();
+            for (auto cond : conds)
+                delete cond;
+        } else {
+            Logging::logMsg(QString("Stopped parsing and execution!"), LoggingColor::RED);
         }
     }
     else
     {
-        Logging::logMsg(QString("Command file \"%1\" could not be opened!").arg(strFileName), LoggingColor::RED);
+        Logging::logMsg(QString("Input file \"%1\" could not be opened!").arg(strFileName), LoggingColor::RED);
     }
-
-    // Cleanup
-    m_tree.clear();
-    gc.clear();
-    for (auto cond : conds)
-        delete cond;
 }
 
 bool CommandParser::msgsAreValid()
@@ -292,7 +306,7 @@ void CommandParser::removeInvalidMsgs(bool silent)
     root.prune();
 }
 
-void CommandParser::parseVarStatement(CommandParserContext &cpc)
+int CommandParser::parseVarStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
         if (!Variable::strIsKeyword(cpc.fields[1].toStdString())) {
@@ -305,38 +319,39 @@ void CommandParser::parseVarStatement(CommandParserContext &cpc)
                             if (tmp != nullptr) {
                                    gc.addVar(tmp); // No need to check the return value, as we already check before, if the variable already exists
                             } else {
-                                Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3). Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[3], cpc.fields[2]), LoggingColor::RED);
-                                exit(1);
+                                Logging::logMsg(QString("[L%1] VAR statement value in 3rd argument (%2) is not of type in 2nd argument (%3).").arg(QString::number(cpc.fileLineNumber), cpc.fields[3], cpc.fields[2]), LoggingColor::RED);
+                                return -1;
                             }
                         } else {
-                            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1], cpc.fields[2]), LoggingColor::RED);
-                            exit(1);
+                            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is a reserved keyword and therefore not valid.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1], cpc.fields[2]), LoggingColor::RED);
+                            return -1;
                         }
                     } else {
-                        Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
-                        exit(1);
+                        Logging::logMsg(QString("[L%1] VAR statement variable type in 2nd argument (%2) is not of {INT, FLOAT, BOOL, STRING}.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
+                        return -1;
                     }
                 } else {
                     if (!m_ignoreExistingVariables) {
-                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-                        exit(1);
+                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+                        return -1;
                     }
                 }
             } else {
-                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\".").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+                return -1;
             }
         } else {
-            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) cannot be a reserved keyword. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) cannot be a reserved keyword.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments (%2). Needs to be 3. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] VAR statement has invalid number of arguments (%2). Needs to be 3.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseSetStatement(CommandParserContext &cpc)
+int CommandParser::parseSetStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 2) { // 2 arguments; format = SET <LEFT_VAR_NAME> <RIGHT_VALUE>
         Variable *lVal = nullptr;
@@ -348,21 +363,22 @@ void CommandParser::parseSetStatement(CommandParserContext &cpc)
                     gc.addVar(rVal);
                     m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
                 } else {
-                    Logging::logMsg(QString("[L%1] SET statement value in 2nd argument (%2) does not match the type of variable in 1st argument. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
-                    exit(1);
+                    Logging::logMsg(QString("[L%1] SET statement value in 2nd argument (%2) does not match the type of variable in 1st argument.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2]), LoggingColor::RED);
+                    return -1;
                 }
             }
         } else {
-            Logging::logMsg(QString("[L%1] SET statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] SET statement variable name in 1st argument (%2) is not defined.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] SET statement has invalid number of arguments (%2). Needs to be 2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseAddStatement(CommandParserContext &cpc)
+int CommandParser::parseAddStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 2) { // 2 arguments; format = ADD <LEFT_VAR_NAME> <RIGHT_VALUE>
         Variable *lVal = nullptr;
@@ -375,25 +391,26 @@ void CommandParser::parseAddStatement(CommandParserContext &cpc)
                         gc.addVar(rVal);
                         m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
                     } else {
-                        Logging::logMsg(QString("[L%1] ADD statement value in 2nd argument does not match the type of variable in 1st argument. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                        exit(1);
+                        Logging::logMsg(QString("[L%1] ADD statement value in 2nd argument does not match the type of variable in 1st argument.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                        return -1;
                     }
                 }
             } else {
-                Logging::logMsg(QString("[L%1] ADD statement is not defined for BOOL variables. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] ADD statement is not defined for BOOL variables.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                return -1;
             }
         } else {
-            Logging::logMsg(QString("[L%1] ADD statement variable name in 1st argument (%2) is not defined. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] ADD statement variable name in 1st argument (%2) is not defined.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments (%2). Needs to be 2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] ADD statement has invalid number of arguments (%2). Needs to be 2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseLoopStatement(CommandParserContext &cpc)
+int CommandParser::parseLoopStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 0) { // 0 arguments
         m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer()));
@@ -402,14 +419,14 @@ void CommandParser::parseLoopStatement(CommandParserContext &cpc)
         Variable *var = nullptr;
         if ((var = gc.getVar(cpc.fields[1].toStdString())) == nullptr) { // Variable not found
             if ((var = Variable::parseToVar("", cpc.fields[1].toStdString(), VariableType::INT)) == nullptr) {
-                Logging::logMsg(QString("[L%1] LOOP statement value in 1st argument is not of type INT. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] LOOP statement value in 1st argument is not of type INT.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                return -1;
             }
         } else {
             if (var->getType() != VariableType::INT) {
-                Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
+                Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
                 delete var;
-                exit(1);
+                return -1;
             }
         }
         if (var != nullptr) {
@@ -420,38 +437,40 @@ void CommandParser::parseLoopStatement(CommandParserContext &cpc)
             cpc.ctrTypes.push(ContainerType::LOOP);
         }
     } else {
-        Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments (%2). Needs to be 0 or 1. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] LOOP statement has invalid number of arguments (%2). Needs to be 0 or 1.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
-
+    return 0;
 }
 
-void CommandParser::parseBreakStatement(CommandParserContext &cpc)
+int CommandParser::parseBreakStatement(CommandParserContext &cpc)
 {
     if (cpc.ctrTypes.size() > 0) { // inside a container (LOOP, IF)
         if (cpc.fields.size() - 1 == 0) { // 0 arguments
             m_tree.append(new BreakNode(m_tree.getCurrentContainer()));
         } else {
-            Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] BREAK statement does not expect any arguments, but got %2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] BREAK statement is only allowed inside LOOP or IF. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] BREAK statement is only allowed inside LOOP or IF.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseExitStatement(CommandParserContext &cpc)
+int CommandParser::parseExitStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 0) { // 0 arguments
         m_tree.append(new ExitNode(m_tree.getCurrentContainer()));
     } else {
-        Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] EXIT statement does not expect any arguments, but got %2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parsePrintStatement(CommandParserContext &cpc)
+int CommandParser::parsePrintStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 >= 1) { // >= 1 argument(s); format = PRINT <STR> [, <STR> [...]]
         std::vector<Variable*> *values = new std::vector<Variable*>;
@@ -466,12 +485,13 @@ void CommandParser::parsePrintStatement(CommandParserContext &cpc)
         std::function<void(std::string&)> cbLog = [&](std::string &str){ Logging::logMsg(QString::fromStdString(str)); };
         m_tree.append(new PrintNode(m_tree.getCurrentContainer(), values, cbLog));
     } else {
-        Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] PRINT statement has invalid number of arguments. Needs to be >=1.").arg(cpc.fileLineNumber), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseIfStatement(CommandParserContext &cpc)
+int CommandParser::parseIfStatement(CommandParserContext &cpc)
 {
     QString stmtUpper= cpc.fields[0].toUpper();
 
@@ -498,8 +518,8 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
                 cpc.ctrTypes.push(ContainerType::IF);
                 cpc.ifNodes.push(ifNode);
             } else {
-                Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                return -1;
             }
         } else if (cpc.fields.size() - 1 == 3) { // 3 arguments; format = IF <LEFT_VAR_NAME> {LT, GT, LE, GE, EQ, NE} <RIGHT_VALUE>
             QString varName;
@@ -507,35 +527,35 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
             Variable *lVal = nullptr;
             varName = cpc.fields[1];
             if ((lVal = gc.getVar(varName.toStdString())) == nullptr) { // Variable not found
-                Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] IF statement has invalid 1st argument. Needs to be an existing variable.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                return -1;
             }
             // Check 3rd parameter
             Variable *rVal = nullptr;
             varName = cpc.fields[3];
             if ((rVal = gc.getVar(varName.toStdString())) != nullptr) { // Variable found
                 if (lVal->getType() != rVal->getType()) { // both variables need to be of the same type, as this is mandatory for out comparison operations later on
-                    Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-                    exit(1);
+                    Logging::logMsg(QString("[L%1] IF statement variable in 3rd argument is not of same type as variable in 1st argument.").arg(cpc.fileLineNumber), LoggingColor::RED);
+                    return -1;
                 }
             } else { // Variable not found
                 if ((rVal = Variable::parseToVar("", cpc.fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
                     gc.addVar(rVal);
                 } else {
-                    Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2). Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
-                    exit(1);
+                    Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2).").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
+                    return -1;
                 }
             }
             // Check 2nd parameter
             ComparisonType compType;
             if (ComparisonCondition::getComparisonTypeFromString(cpc.fields[2].trimmed().toStdString(), compType)) {
                 if (!ComparisonCondition::comparisonTypeValidForVariableType(compType, lVal->getType())) {
-                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not compatible with the type of the variable in 1st argument (%3). Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper(), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
-                    exit(1);
+                    Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not compatible with the type of the variable in 1st argument (%3).").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper(), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
+                    return -1;
                 }
             } else {
-                Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not of {LT, GT, LE, GE, EQ, NE}. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper()), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] IF statement comparison rule in 2nd argument (%2) is not of {LT, GT, LE, GE, EQ, NE}.").arg(QString::number(cpc.fileLineNumber), cpc.fields[2].trimmed().toUpper()), LoggingColor::RED);
+                return -1;
             }
             // Add IF container with comparison condition
             ICondition *cond = new ComparisonCondition(*lVal, *rVal, compType);
@@ -545,13 +565,14 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
             cpc.ifNodes.push(ifnode);
             cpc.ctrTypes.push(ContainerType::IF);
         } else {
-            Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3.").arg(cpc.fileLineNumber), LoggingColor::RED);
+            return -1;
         }
     }
+    return 0;
 }
 
-void CommandParser::parseElseStatement(CommandParserContext &cpc)
+int CommandParser::parseElseStatement(CommandParserContext &cpc)
 {
     if (cpc.ctrTypes.top() == ContainerType::IF) {
         IfNode *ifNode = cpc.ifNodes.top();
@@ -560,20 +581,21 @@ void CommandParser::parseElseStatement(CommandParserContext &cpc)
                 ifNode->switchToElseBranch();
                 cpc.lastElseNodeLineNumber = cpc.fileLineNumber;
             } else {
-                Logging::logMsg(QString("[L%1] ELSE statement (L%2) already found in current IF statement. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.lastElseNodeLineNumber)), LoggingColor::RED);
-                exit(1);
+                Logging::logMsg(QString("[L%1] ELSE statement (L%2) already found in current IF statement.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.lastElseNodeLineNumber)), LoggingColor::RED);
+                return -1;
             }
         } else {
-            Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] ELSE statement does not expect any arguments, but got %2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] ELSE statement outside IF block. Exit program.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] ELSE statement outside IF block.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }
 
-void CommandParser::parseEndStatement(CommandParserContext &cpc)
+int CommandParser::parseEndStatement(CommandParserContext &cpc)
 {
     if (cpc.fields.size() - 1 == 0)  {// 0 arguments
         if (cpc.ctrTypes.size() > 0) {
@@ -582,11 +604,12 @@ void CommandParser::parseEndStatement(CommandParserContext &cpc)
                 cpc.ifNodes.pop();
             cpc.ctrTypes.pop();
         } else {
-            Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block. Exit program.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
-            exit(1);
+            Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);
+            return -1;
         }
     } else {
-        Logging::logMsg(QString("[L%1] END statement does not expect any arguments, but got %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
-        exit(1);
+        Logging::logMsg(QString("[L%1] END statement does not expect any arguments, but got %2.").arg(QString::number(cpc.fileLineNumber), QString::number(cpc.fields.size() - 1)), LoggingColor::RED);
+        return -1;
     }
+    return 0;
 }

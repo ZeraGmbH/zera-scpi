@@ -50,16 +50,16 @@ private:
     void sendMsgs(unsigned int iterNo = 0);
     void loopAndSendMsgs();
     void removeInvalidMsgs(bool silent);
-    void parseVarStatement(CommandParserContext &cpc);
-    void parseSetStatement(CommandParserContext &cpc);
-    void parseAddStatement(CommandParserContext &cpc);
-    void parseLoopStatement(CommandParserContext &cpc);
-    void parseBreakStatement(CommandParserContext &cpc);
-    void parseExitStatement(CommandParserContext &cpc);
-    void parsePrintStatement(CommandParserContext &cpc);
-    void parseIfStatement(CommandParserContext &cpc);
-    void parseElseStatement(CommandParserContext &cpc);
-    void parseEndStatement(CommandParserContext &cpc);
+    int parseVarStatement(CommandParserContext &cpc);
+    int parseSetStatement(CommandParserContext &cpc);
+    int parseAddStatement(CommandParserContext &cpc);
+    int parseLoopStatement(CommandParserContext &cpc);
+    int parseBreakStatement(CommandParserContext &cpc);
+    int parseExitStatement(CommandParserContext &cpc);
+    int parsePrintStatement(CommandParserContext &cpc);
+    int parseIfStatement(CommandParserContext &cpc);
+    int parseElseStatement(CommandParserContext &cpc);
+    int parseEndStatement(CommandParserContext &cpc);
 
     unsigned int m_handleErroneousMessages = 0;
     bool m_checkErrorQueue = false;
