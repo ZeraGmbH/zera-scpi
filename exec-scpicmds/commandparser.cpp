@@ -43,6 +43,7 @@ void CommandParser::setIgnoreExistingVariables(bool ignoreExistingVariables)
     m_ignoreExistingVariables = ignoreExistingVariables;
 }
 
+
 void CommandParser::parseCmdFile(QString strFileName)
 {
     QFile cmdFile(strFileName);

@@ -40,6 +40,13 @@ int main(int argc, char *argv[])
     checkErrorQueueOption.setDefaultValue("0");
     parser.addOption(checkErrorQueueOption);
 
+    QCommandLineOption enableFormattedOutputOption("enable-formatted-output", "Enable formatted logging output.\n"
+                                                  "0 = Disabled\n"
+                                                  "1 = Enabled.",
+                                             "ENABLE_FORMATTED_OUPUT");
+    enableFormattedOutputOption.setDefaultValue("0");
+    parser.addOption(enableFormattedOutputOption);
+
     QCommandLineOption receiveTimeoutOption("t", "Receive timeout [ms] (default = 3000). 0 = blocking.", "RECV_TIMEOUT");
     receiveTimeoutOption.setDefaultValue("3000");
     parser.addOption(receiveTimeoutOption);
@@ -60,6 +67,14 @@ int main(int argc, char *argv[])
 
     // Read and check command line arguments
     bool ok = false;
+
+    bool enableFormattedOutput = (parser.value(enableFormattedOutputOption).toUInt(&ok) != 0);
+    if (ok) {
+        Logging::enableFormattedOutput(enableFormattedOutput);
+    } else {
+        Logging::logMsg(QString("Enable formatted logging output (option --enable-formatted-output) needs to be an integer with 0 = disabled, >0 enabled!"), LoggingColor::YELLOW);
+        parser.showHelp(-1);
+    }
 
     QString cmdFile = parser.value(cmdFileOption);
     if(cmdFile.isEmpty()) {

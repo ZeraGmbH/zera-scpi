@@ -1,6 +1,9 @@
 #include <QDateTime>
 #include "logging.h"
 
+
+bool Logging::m_enableFormattedOutput = false;
+
 Logging::Logging(QObject *parent)
     : QObject{parent}
 {
@@ -10,7 +13,7 @@ QString Logging::colorString(QString strMsg, LoggingColor color, LoggingStyle st
 {
     QString colorPre, colorPost, stylePre, stylePost;
 
-    if(m_enableGlobalColorLogging)
+    if(m_enableFormattedOutput)
     {
         switch(color)
         {
@@ -69,4 +72,9 @@ void Logging::logMsg(QString strMsg, LoggingColor color, LoggingStyle style)
             .arg(QDateTime::currentDateTime().toString("HH:mm:ss.zzz"), colorString(strMsg, color, style));
 
     qInfo("%s", qPrintable(strOut));
+}
+
+void Logging::enableFormattedOutput(bool enable)
+{
+    m_enableFormattedOutput = enable;
 }
