@@ -46,8 +46,9 @@ void CommandParser::setIgnoreExistingVariables(bool ignoreExistingVariables)
 void CommandParser::parseCmdFile(QString strFileName)
 {
     QFile cmdFile(strFileName);
-    std::stack<IfNode *> ifnodes;
+    std::stack<IfNode*> ifNodes;
     std::stack<ContainerType> ctrTypes;
+    std::vector<ICondition*> conds;
     int lastElseNodeLineNumber = 0;
 
     if(cmdFile.open(QIODevice::ReadOnly)) {
@@ -91,7 +92,7 @@ void CommandParser::parseCmdFile(QString strFileName)
                         QString stmtUpper= fields[0].toUpper();
 
                         // Handle keywords
-                        CommandParserContext cpc(fields, ifnodes, ctrTypes, fileLineNumber, lastElseNodeLineNumber);
+                        CommandParserContext cpc(fields, ifNodes, ctrTypes, conds, fileLineNumber, lastElseNodeLineNumber);
                         if (stmtUpper == "VAR") {
                             parseVarStatement(cpc);
                         } else if (stmtUpper == "SET") {
@@ -194,6 +195,9 @@ void CommandParser::parseCmdFile(QString strFileName)
 
     // Cleanup
     m_tree.clear();
+    gc.clear();
+    for (auto cond : conds)
+        delete cond;
 }
 
 bool CommandParser::msgsAreValid()
@@ -292,7 +296,7 @@ void CommandParser::parseVarStatement(CommandParserContext &cpc)
     if (cpc.fields.size() - 1 == 3) { // 3 arguments; format = VAR <VAR_NAME> <VAR_TYPE> <VALUE>
         if (!Variable::strIsKeyword(cpc.fields[1].toStdString())) {
             if (Variable::varNameIsValid(cpc.fields[1].toStdString())) {
-                if (m_ignoreExistingVariables || !gc.varExists(cpc.fields[1].toStdString())) {
+                if (!gc.varExists(cpc.fields[1].toStdString())) {
                     VariableType type;
                     if (Variable::strToVarType(cpc.fields[2].toStdString(), type)) {
                         if (!Variable::strIsKeyword(cpc.fields[1].toStdString())) {
@@ -312,8 +316,10 @@ void CommandParser::parseVarStatement(CommandParserContext &cpc)
                         exit(1);
                     }
                 } else {
-                    Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
-                    exit(1);
+                    if (!m_ignoreExistingVariables) {
+                        Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) already exists. Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
+                        exit(1);
+                    }
                 }
             } else {
                 Logging::logMsg(QString("[L%1] VAR statement variable name in 1st argument (%2) is invalid. Needs to be of (regex) format \"[0-9A-Za-z_]+\". Exit program.").arg(QString::number(cpc.fileLineNumber), cpc.fields[1]), LoggingColor::RED);
@@ -336,7 +342,7 @@ void CommandParser::parseSetStatement(CommandParserContext &cpc)
         if ((lVal = gc.getVar(cpc.fields[1].toStdString())) != nullptr) { // Variable found
             Variable *rVal = nullptr;
             if ((rVal = gc.getVar(cpc.fields[2].toStdString())) == nullptr) { // Variable found
-                rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[2].toStdString(), lVal->getType());
+                rVal = Variable::parseToVar("", cpc.fields[2].toStdString(), lVal->getType());
                 if (rVal != nullptr) {
                     gc.addVar(rVal);
                     m_tree.append(new SetNode(m_tree.getCurrentContainer(), *lVal, *rVal));
@@ -363,7 +369,7 @@ void CommandParser::parseAddStatement(CommandParserContext &cpc)
             if (lVal->getType() != VariableType::BOOL) { // ADD is not defined for BOOL
                 Variable *rVal = nullptr;
                 if ((rVal = gc.getVar(cpc.fields[2].toStdString())) == nullptr) { // Variable not found
-                    rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[2].toStdString(), lVal->getType());
+                    rVal = Variable::parseToVar("", cpc.fields[2].toStdString(), lVal->getType());
                     if (rVal != nullptr) {
                         gc.addVar(rVal);
                         m_tree.append(new AddNode(m_tree.getCurrentContainer(), *lVal, *rVal));
@@ -406,7 +412,8 @@ void CommandParser::parseLoopStatement(CommandParserContext &cpc)
         }
         if (var != nullptr) {
             gc.addVar(var);
-            m_tree.enterContainer(new LoopNode(m_tree.getCurrentContainer(), *var));
+            LoopNode *loopNode = new LoopNode(m_tree.getCurrentContainer(), *var);
+            m_tree.enterContainer(loopNode);
             cpc.ctrTypes.push(ContainerType::LOOP);
         }
     } else {
@@ -448,7 +455,7 @@ void CommandParser::parsePrintStatement(CommandParserContext &cpc)
         Variable *var = nullptr;
         for (int f = 1; f < cpc.fields.size(); f++) {
             if ((var = gc.getVar(cpc.fields[f].toStdString())) == nullptr) { // Variable not found
-                var = new Variable("", VariableType::STRING, new QString(cpc.fields[f]));
+                var = new Variable("", VariableType::STRING, new std::string(cpc.fields[f].toStdString()));
                 gc.addVar(var);
             }
             values->push_back(var);
@@ -474,15 +481,19 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
             if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
                 var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
             } else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
-                if (var->getType() != VariableType::BOOL)
+                if (var->getType() != VariableType::BOOL) {
+                    delete var;
                     var = nullptr;
+                }
             }
             if (var != nullptr) {
                 gc.addVar(var);
-                IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new BoolCondition(*var)));
-                m_tree.enterContainer(ifnode);
-                cpc.ifnodes.push(ifnode);
+                ICondition *cond = new BoolCondition(*var);
+                cpc.conds.push_back(cond);
+                IfNode *ifNode = new IfNode(m_tree.getCurrentContainer(), *cond);
+                m_tree.enterContainer(ifNode);
                 cpc.ctrTypes.push(ContainerType::IF);
+                cpc.ifNodes.push(ifNode);
             } else {
                 Logging::logMsg(QString("[L%1] IF statement has an invalid argument. Needs to be TRUE, FALSE or an existing BOOL variable. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
                 exit(1);
@@ -505,7 +516,7 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
                     exit(1);
                 }
             } else { // Variable not found
-                if ((rVal = Variable::parseToVar(cpc.fields[1].toStdString(), cpc.fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
+                if ((rVal = Variable::parseToVar("", cpc.fields[3].toStdString(), lVal->getType())) != nullptr) { // Parse 3rd argument to same type as variable in 1st argument
                     gc.addVar(rVal);
                 } else {
                     Logging::logMsg(QString("[L%1] IF statement value in 3rd argument is not interpretable to same type as variable in 1st argument (%2). Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(lVal->getTypeString())), LoggingColor::RED);
@@ -524,10 +535,11 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
                 exit(1);
             }
             // Add IF container with comparison condition
-            gc.addVar(rVal);
-            IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *(new ComparisonCondition(*lVal, *rVal, compType)));
+            ICondition *cond = new ComparisonCondition(*lVal, *rVal, compType);
+            cpc.conds.push_back(cond);
+            IfNode *ifnode = new IfNode(m_tree.getCurrentContainer(), *cond);
             m_tree.enterContainer(ifnode);
-            cpc.ifnodes.push(ifnode);
+            cpc.ifNodes.push(ifnode);
             cpc.ctrTypes.push(ContainerType::IF);
         } else {
             Logging::logMsg(QString("[L%1] IF statement has invalid number of arguments. Needs to be 1 or 3. Exit program.").arg(cpc.fileLineNumber), LoggingColor::RED);
@@ -539,7 +551,7 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
 void CommandParser::parseElseStatement(CommandParserContext &cpc)
 {
     if (cpc.ctrTypes.top() == ContainerType::IF) {
-        IfNode *ifNode = cpc.ifnodes.top();
+        IfNode *ifNode = cpc.ifNodes.top();
         if (cpc.fields.size() - 1 == 0) { // 0 arguments
             if (!ifNode->isInElseBranch()) {
                 ifNode->switchToElseBranch();
@@ -564,7 +576,7 @@ void CommandParser::parseEndStatement(CommandParserContext &cpc)
         if (cpc.ctrTypes.size() > 0) {
             m_tree.leaveContainer();
             if (cpc.ctrTypes.top() == ContainerType::IF)
-                cpc.ifnodes.pop();
+                cpc.ifNodes.pop();
             cpc.ctrTypes.pop();
         } else {
             Logging::logMsg(QString("[L%1] END statement outside LOOP or IF block. Exit program.").arg(QString::number(cpc.fileLineNumber)), LoggingColor::RED);

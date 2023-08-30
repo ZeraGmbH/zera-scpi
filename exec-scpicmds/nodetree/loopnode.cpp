@@ -13,6 +13,7 @@ LoopNode::LoopNode(ICtrNode *parent, Variable &cnt) :
 
 LoopNode::~LoopNode()
 {
+    clear();
 }
 
 void LoopNode::append(INode *node)

@@ -3,16 +3,14 @@
 
 Context::~Context()
 {
-    for (auto var : m_vars)
-        delete var;
-    m_vars.clear();
+    clear();
 }
 
 bool Context::addVar(Variable *var)
 {
     // Check if variable already exists (but ignore const variables (they have name == ""))
     std::string name = var->getName();
-    if (name != "" && !getVar(name)) {
+    if (name == "" || !varExists(name)) {
         m_vars.push_back(var);
         return true;
     }
@@ -38,7 +36,9 @@ bool Context::varExists(std::string varName)
     return (getVar(varName) != nullptr);
 }
 
-void Context::addConst(Variable *var)
+void Context::clear()
 {
-    m_consts.push_back(var);
+    for (auto var : m_vars)
+        delete var;
+    m_vars.clear();
 }

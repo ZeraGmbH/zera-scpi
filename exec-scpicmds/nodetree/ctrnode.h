@@ -38,7 +38,8 @@ public:
         }
 
         ~iterator() {
-            delete m_nodesLinear;
+            if (m_nodesLinear != nullptr)
+                delete m_nodesLinear;
         }
 
         reference operator*() const { return *m_ptr; }
@@ -66,10 +67,12 @@ public:
         };
         this->traverse(f); // Collect leaf nodes
 
-        if (m_nodesLinear->size() > 0)
+        if (m_nodesLinear->size() > 0) {
             return iterator(m_nodesLinear);
-         else
+        } else {
+            delete m_nodesLinear;
             return iterator(nullptr);
+        }
     }
 
     iterator end() {

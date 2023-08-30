@@ -19,12 +19,13 @@ enum class ContainerType
 
 struct CommandParserContext
 {
-    CommandParserContext(QStringList &fields, std::stack<IfNode*> &ifnodes, std::stack<ContainerType> &ctrTypes, int &fileLineNumber, int &lastElseNodeLineNumber) :
-        fields(fields), ifnodes(ifnodes), ctrTypes(ctrTypes), fileLineNumber(fileLineNumber), lastElseNodeLineNumber(lastElseNodeLineNumber) {}
+    CommandParserContext(QStringList &fields, std::stack<IfNode*> &ifNodes, std::stack<ContainerType> &ctrTypes, std::vector<ICondition*> &conds, int &fileLineNumber, int &lastElseNodeLineNumber) :
+        fields(fields), ifNodes(ifNodes), ctrTypes(ctrTypes), conds(conds), fileLineNumber(fileLineNumber), lastElseNodeLineNumber(lastElseNodeLineNumber) {}
 
     QStringList &fields;
-    std::stack<IfNode*> &ifnodes;
+    std::stack<IfNode*> &ifNodes;
     std::stack<ContainerType> &ctrTypes;
+    std::vector<ICondition*> &conds;
     int fileLineNumber;
     int lastElseNodeLineNumber;
 };

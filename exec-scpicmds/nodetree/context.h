@@ -14,11 +14,10 @@ public:
     Variable* getVar(std::string name);
     std::vector<Variable*>& getVars();
     bool varExists(std::string varName);
-    void addConst(Variable *var);
+    void clear();
 
 private:
     std::vector<Variable*> m_vars;
-    std::vector<Variable*> m_consts; // just to hold references, even if their value remains constandt
 };
 
 

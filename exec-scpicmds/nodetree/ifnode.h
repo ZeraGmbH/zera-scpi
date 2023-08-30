@@ -10,7 +10,7 @@
 class IfNode : public ICtrNode
 {
 public:
-    IfNode(ICtrNode *parent, Condition &cond);
+    IfNode(ICtrNode *parent, ICondition &cond);
     ~IfNode();
     void append(INode *node) override;
     bool remove(INode* node) override;
@@ -25,7 +25,7 @@ public:
     bool isInElseBranch();
 
 private:
-    Condition &m_cond;
+    ICondition &m_cond;
     bool m_inIfBranch = true;
     CtrNode m_ifNodes;
     CtrNode m_elseNodes;

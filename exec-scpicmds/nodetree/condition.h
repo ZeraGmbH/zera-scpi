@@ -16,18 +16,19 @@ enum class ComparisonType
 };
 
 
-class Condition
+class ICondition
 {
 public:
     virtual bool eval() = 0;
-    virtual ~Condition() = default;
+    virtual ~ICondition() = default;
 };
 
 
-class BoolCondition : public Condition
+class BoolCondition : public ICondition
 {
 public:
     BoolCondition(Variable &value);
+    ~BoolCondition();
     bool eval() override ;
 
 private:
@@ -35,7 +36,7 @@ private:
 };
 
 
-class ComparisonCondition : public Condition
+class ComparisonCondition : public ICondition
 {
 public:
     ComparisonCondition(Variable &lValue, Variable &rValue, ComparisonType &type);

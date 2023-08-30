@@ -14,6 +14,8 @@ NodeTree::NodeTree(ICtrNode *parent) : ICtrNode(parent)
 NodeTree::~NodeTree()
 {
     delete m_root;
+    while (m_ctrs.size() != 0)
+           m_ctrs.pop();
 }
 
 void NodeTree::enterContainer(ICtrNode *ctr)
@@ -57,6 +59,13 @@ bool NodeTree::prune()
 void NodeTree::clear()
 {
     m_root->clear();
+    delete m_root;
+    m_root = nullptr;
+    m_parentCtr = nullptr;
+    m_curCtr = nullptr;
+    while (m_ctrs.size() != 0)
+        m_ctrs.pop();
+    bool m_break = false;
 }
 
 bool NodeTree::isEmpty()

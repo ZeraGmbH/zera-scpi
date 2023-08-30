@@ -1,7 +1,7 @@
 #include "ifnode.h"
 
 
-IfNode::IfNode(ICtrNode *parent, Condition &cond) :
+IfNode::IfNode(ICtrNode *parent, ICondition &cond) :
     ICtrNode(parent), m_cond(cond), m_ifNodes(parent), m_elseNodes(parent)
 {
 }
@@ -41,6 +41,7 @@ void IfNode::clear()
     m_ifNodes.clear();
     m_elseNodes.clear();
     m_isEmpty = true;
+    m_inIfBranch = true;
 }
 
 bool IfNode::isEmpty()

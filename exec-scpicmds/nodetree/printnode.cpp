@@ -8,6 +8,8 @@ PrintNode::PrintNode(ICtrNode *parent, std::vector<Variable*> *values, std::func
 
 PrintNode::~PrintNode()
 {
+    if (m_values != nullptr)
+        delete m_values;
 }
 
 void PrintNode::exec(std::function<void(INode*)> &f)
