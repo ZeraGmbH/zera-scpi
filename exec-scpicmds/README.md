@@ -185,7 +185,7 @@ The boolean value of ```<COND>``` gets evaluated first. If it evaluates to ```TR
 > END
 ```
 ```
-*IDN*
+*IDN?
 # The following IF FALSE comments out the command in its block (remember, VAR commands will always be evaluated)
 > IF FALSE
   *STB?
