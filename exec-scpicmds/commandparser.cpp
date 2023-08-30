@@ -407,12 +407,14 @@ void CommandParser::parseLoopStatement(CommandParserContext &cpc)
         } else {
             if (var->getType() != VariableType::INT) {
                 Logging::logMsg(QString("[L%1] LOOP statement variable in 1st argument is not of type INT, but of type %2. Exit program.").arg(QString::number(cpc.fileLineNumber), QString::fromStdString(var->getTypeString())), LoggingColor::RED);
+                delete var;
                 exit(1);
             }
         }
         if (var != nullptr) {
             gc.addVar(var);
-            LoopNode *loopNode = new LoopNode(m_tree.getCurrentContainer(), *var);
+            IntVariable *x = dynamic_cast<IntVariable*>(var);
+            LoopNode *loopNode = new LoopNode(m_tree.getCurrentContainer(), *x);
             m_tree.enterContainer(loopNode);
             cpc.ctrTypes.push(ContainerType::LOOP);
         }
@@ -455,7 +457,7 @@ void CommandParser::parsePrintStatement(CommandParserContext &cpc)
         Variable *var = nullptr;
         for (int f = 1; f < cpc.fields.size(); f++) {
             if ((var = gc.getVar(cpc.fields[f].toStdString())) == nullptr) { // Variable not found
-                var = new Variable("", VariableType::STRING, new std::string(cpc.fields[f].toStdString()));
+                var = new StringVariable("", cpc.fields[f].toStdString());
                 gc.addVar(var);
             }
             values->push_back(var);
@@ -479,7 +481,7 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
             QString varName = cpc.fields[1];
             Variable *var = nullptr;
             if (varName.toUpper() == "TRUE" || varName.toUpper() == "FALSE") {
-                var = new Variable("", VariableType::BOOL, new bool(varName.toUpper() == "TRUE"));
+                var = new BoolVariable("", varName.toUpper() == "TRUE");
             } else if ((var = gc.getVar(varName.toStdString())) != nullptr) {
                 if (var->getType() != VariableType::BOOL) {
                     delete var;
@@ -488,7 +490,7 @@ void CommandParser::parseIfStatement(CommandParserContext &cpc)
             }
             if (var != nullptr) {
                 gc.addVar(var);
-                ICondition *cond = new BoolCondition(*var);
+                ICondition *cond = new BoolCondition(*dynamic_cast<BoolVariable*>(var));
                 cpc.conds.push_back(cond);
                 IfNode *ifNode = new IfNode(m_tree.getCurrentContainer(), *cond);
                 m_tree.enterContainer(ifNode);

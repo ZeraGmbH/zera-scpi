@@ -6,7 +6,7 @@ LoopNode::LoopNode(ICtrNode *parent) :
 {
 }
 
-LoopNode::LoopNode(ICtrNode *parent, Variable &cnt) :
+LoopNode::LoopNode(ICtrNode *parent, IntVariable &cnt) :
     ICtrNode(parent), m_cnt(&cnt), m_nodes(parent)
 {
 }
@@ -55,7 +55,7 @@ void LoopNode::exec(std::function<void(INode*)> &f)
 {
     m_break = false;
     if (m_cnt != nullptr) {
-        int cnt = *((int*)m_cnt->getValue());
+        int cnt = m_cnt->getValue();
         for (int i = 0; i < cnt; i++) {
             if (m_break)
                 break;
