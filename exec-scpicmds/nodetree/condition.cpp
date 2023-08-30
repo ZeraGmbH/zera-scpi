@@ -1,7 +1,7 @@
 #include "condition.h"
 
 
-BoolCondition::BoolCondition(Variable &value) :
+BoolCondition::BoolCondition(BoolVariable &value) :
     m_value(value)
 {
 }
@@ -12,7 +12,7 @@ BoolCondition::~BoolCondition()
 
 bool BoolCondition::eval()
 {
-    return *((bool*)m_value.getValue());
+    return m_value.getValue();
 }
 
 
@@ -24,8 +24,8 @@ ComparisonCondition::ComparisonCondition(Variable &lValue, Variable &rValue, Com
 bool ComparisonCondition::eval()
 {
     if (m_lValue.getType() == VariableType::INT) {
-        int lVal = *(int*)m_lValue.getValue();
-        int rVal = *(int*)m_rValue.getValue();
+        int lVal = dynamic_cast<IntVariable&>(m_lValue).getValue();
+        int rVal = dynamic_cast<IntVariable&>(m_rValue).getValue();
 
         switch (m_compType) {
         case ComparisonType::LT:
@@ -43,8 +43,8 @@ bool ComparisonCondition::eval()
         }
     }
     else if (m_lValue.getType() == VariableType::FLOAT) {
-        float lVal = *(float*)m_lValue.getValue();
-        float rVal = *(float*)m_rValue.getValue();
+        float lVal = dynamic_cast<FloatVariable&>(m_lValue).getValue();
+        float rVal = dynamic_cast<FloatVariable&>(m_rValue).getValue();
 
         switch (m_compType) {
         case ComparisonType::LT:
@@ -62,8 +62,8 @@ bool ComparisonCondition::eval()
         }
     }
     else if (m_lValue.getType() == VariableType::BOOL) {
-        bool lVal = *(bool*)m_lValue.getValue();
-        bool rVal = *(bool*)m_rValue.getValue();
+        bool lVal = dynamic_cast<BoolVariable&>(m_lValue).getValue();
+        bool rVal = dynamic_cast<BoolVariable&>(m_rValue).getValue();
 
         switch (m_compType) {
         case ComparisonType::LT:
@@ -78,8 +78,8 @@ bool ComparisonCondition::eval()
         }
     }
     else if (m_lValue.getType() == VariableType::STRING) {
-        std::string lVal = *(std::string*)m_lValue.getValue();
-        std::string rVal = *(std::string*)m_rValue.getValue();
+        std::string lVal = dynamic_cast<StringVariable&>(m_lValue).getValue();
+        std::string rVal = dynamic_cast<StringVariable&>(m_rValue).getValue();
 
         switch (m_compType) {
         case ComparisonType::LT:

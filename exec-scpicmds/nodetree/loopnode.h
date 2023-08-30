@@ -10,7 +10,7 @@ class LoopNode : public ICtrNode
 {
 public:
     LoopNode(ICtrNode *parent);
-    LoopNode(ICtrNode *parent, Variable &cnt);
+    LoopNode(ICtrNode *parent, IntVariable &cnt);
     ~LoopNode();
     void append(INode *node) override;
     bool remove(INode *node) override;
@@ -22,7 +22,7 @@ public:
     void exec(std::function<void(INode*)> &f) override;
     void breakExec() override;
 private:
-    Variable *m_cnt = nullptr;
+    IntVariable *m_cnt = nullptr;
     CtrNode m_nodes;
     bool m_break = false;
 };

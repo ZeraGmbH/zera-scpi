@@ -27,12 +27,12 @@ public:
 class BoolCondition : public ICondition
 {
 public:
-    BoolCondition(Variable &value);
+    BoolCondition(BoolVariable &value);
     ~BoolCondition();
     bool eval() override ;
 
 private:
-    Variable &m_value;
+    BoolVariable &m_value;
 };
 
 
