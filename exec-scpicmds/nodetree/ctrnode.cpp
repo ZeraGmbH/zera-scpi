@@ -17,13 +17,13 @@ void CtrNode::append(INode *node)
     m_isEmpty = false;
 }
 
-bool CtrNode::remove(INode* node)
+bool CtrNode::remove(INode *node)
 {
     bool found = false;
 
     ICtrNode *n = nullptr;
     int i = 0;
-    for (auto it: m_nodes) {
+    for (auto it : m_nodes) {
         n = dynamic_cast<ICtrNode*>(it);
         if(n != nullptr) {
             found = found || n->remove(node);
@@ -51,10 +51,11 @@ bool CtrNode::prune()
 
     ICtrNode *n = nullptr;
     int i = 0;
-    for (auto it: m_nodes) {
+    for (auto it : m_nodes) {
         n = dynamic_cast<ICtrNode*>(it);
         if(n != nullptr) {
             if (n->isEmpty()) {
+                delete m_nodes[i];
                 m_nodes.erase(m_nodes.begin() + i); // Delete container item
                 found = true;
             }
@@ -71,14 +72,15 @@ bool CtrNode::prune()
 void CtrNode::clear()
 {
     ICtrNode *node = nullptr;
-    for (auto it: m_nodes) {
+    for (auto it : m_nodes) {
         node = dynamic_cast<ICtrNode*>(it);
         if(node != nullptr)
             node->clear();
-        delete (it);
+        delete it;
     }
     m_nodes.clear();
     m_isEmpty = true;
+    m_break = false;
 }
 
 bool CtrNode::isEmpty()

@@ -6,6 +6,10 @@ BoolCondition::BoolCondition(Variable &value) :
 {
 }
 
+BoolCondition::~BoolCondition()
+{
+}
+
 bool BoolCondition::eval()
 {
     return *((bool*)m_value.getValue());

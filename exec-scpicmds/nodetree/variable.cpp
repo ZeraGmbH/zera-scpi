@@ -170,7 +170,7 @@ Variable* Variable::parseToVar(std::string name, std::string token, VariableType
         break;
     }
     case VariableType::BOOL: {
-            res = new Variable(name, VariableType::BOOL, new bool(token == "TRUE"));
+        res = new Variable(name, VariableType::BOOL, new bool(token == "TRUE"));
         break;
     }
     case VariableType::STRING: {
