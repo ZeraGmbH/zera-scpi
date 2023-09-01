@@ -13,6 +13,7 @@ class IMessageHandler(ABC):
     def send_message(self, message: str) -> None:
         pass
 
+    @abstractmethod
     def receive_response(self) -> Optional[str]:
         pass
 
