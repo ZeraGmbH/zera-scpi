@@ -36,7 +36,7 @@ class TCPHandler(IMessageHandler):
 
     def send_message(self, message: str) -> None:
         if self._socket is not None:
-            self._socket.send((message + "\n").encode())
+            self._socket.send(message.encode())
     
     def receive_response(self) -> Optional[str]:
         if len(self._responses) == 0:
@@ -115,7 +115,7 @@ class ExecScpiCmdsProgram:
         print("Sending messages...")
         for message in messages:
             print(f"{message}")
-            tcp_handler.send_message(message)
+            tcp_handler.send_message(message + "\n")
 
             number_of_expected_responses = message.count("?")
             for r in range(number_of_expected_responses):
