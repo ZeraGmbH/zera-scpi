@@ -12,7 +12,7 @@ class ExecScpiCmdsProgram:
     def run() -> None:
         parser = argparse.ArgumentParser(description="Execute SCPI commands and optionally check results.")
         parser.add_argument("-f", "--input-file", required=True,
-                            help="Path to CMD_FILE containing SCPI commands.")
+                            help="Path to file containing SCPI commands.")
         parser.add_argument("-i", "--ip-address", required=True,
                             help="IP-address of instrument.")
         parser.add_argument("-p", "--port-number", required=True, type=int,
