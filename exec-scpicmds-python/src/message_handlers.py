@@ -20,6 +20,7 @@ class TCPHandler(IMessageHandler):
         self._receive_timeout = receive_timeout
         self._receive_buffer = ""
         self._responses = list()
+        self._socket = None
         self._connect()
     
     def __del__(self) -> None:
@@ -50,15 +51,29 @@ class TCPHandler(IMessageHandler):
                 self._receive_buffer = self._receive_buffer[idx + 1:]
         return self._responses.pop(0) if len(self._responses) > 0 else None
 
-    def _connect(self) -> None:
-        self._socket = socket.socket()
-        if self._receive_timeout is not None and self._receive_timeout >= 0:
-            self._socket.settimeout(self._receive_timeout / 1000)
-        try:
-            self._socket.connect((self._ip_address, self._port_number))
-        except:
-            self._socket = None
+    def _connect(self) -> bool:
+        if not self.connected:
+            self._socket = socket.socket()
+            if self._receive_timeout is not None and self._receive_timeout >= 0:
+                self._socket.settimeout(self._receive_timeout / 1000)
+            try:
+                self._socket.connect((self._ip_address, self._port_number))
+                return True
+            except Exception as e:
+                print(self._socket)
+                if self._socket is not None:
+                    self._socket.close()
+                    self._socket = None
+                return False
+        else:
+            return False
 
-    def _disconnect(self) -> None:
-        self._socket.close()
+    def _disconnect(self) -> bool:
+        if self.connected:
+            self._socket.shutdown(socket.SHUT_RDWR)
+            self._socket.close()
+            self._socket = None
+            return True
+        else:
+            return False
 
