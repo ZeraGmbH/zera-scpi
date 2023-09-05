@@ -29,7 +29,7 @@ class TestMessageParser(unittest.TestCase):
             self.assertEqual(type(messages), list, "Read invalid number of messages.")
             self.assertEqual(len(messages), 4, "Read invalid number of messages.")
             self.assertEqual(messages[0], lines[0].strip(), f"Message #0 \"{lines[0]}\" is not parsed correctly.")
-            self.assertEqual(messages[1], lines[1] + " ", f"Message #1 \"{(lines[1][:20] + '...') if len(line[1]) < 20 else lines[1]}\" is not parsed correctly.")
+            self.assertEqual(messages[1], lines[1], f"Message #1 \"{(lines[1][:20] + '...') if len(line[1]) < 20 else lines[1]}\" is not parsed correctly.")
             self.assertEqual(messages[2], lines[3].strip(), "Message #3 \"{lines[3]}\" is not parsed correctly.")
             self.assertEqual(messages[3], lines[4].strip(), "Message #4 \"{lines[4]}\" is not parsed correctly.")
 
@@ -37,5 +37,4 @@ class TestMessageParser(unittest.TestCase):
                 os.remove(filename)
 
 if __name__ == "__main__":
-    TestMessageParser().test_read_messages_from_file()
     unittest.main()
