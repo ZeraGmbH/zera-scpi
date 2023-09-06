@@ -7,9 +7,9 @@ from dataclasses import dataclass
 
 
 class PortNumberGenerator:
-    _begin: int
-    _end: int
-    _cur: int
+    _begin: int = 2000
+    _end: int = _begin + 100 - 1
+    _cur: int = _end
 
     @classmethod
     def set_port_range(cls, begin: int, end: int) -> bool:
