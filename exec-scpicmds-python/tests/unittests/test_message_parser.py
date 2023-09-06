@@ -1,4 +1,5 @@
 import unittest
+import logging
 import os
 from src.message_parser import MessageParser
 
@@ -7,8 +8,10 @@ class TestMessageParser(unittest.TestCase):
     def test_read_messages_from_file(self):
         filename = "example_file_for_test_read_messages_from_file.txt"
         if os.path.exists(filename):
+            logging.debug(f"Removing file \"{filename}\".")
             os.remove(filename)
         if os.path.exists(filename):
+            logging.debug(f"Removal of file \"{filename}\" failed.")
             self.assertFalse(True, f"File {filename} already exists and couldn't get removed. Therefore no tests can get executed.")
         else:
             lines = list()
@@ -36,5 +39,8 @@ class TestMessageParser(unittest.TestCase):
             if os.path.exists(filename):
                 os.remove(filename)
 
+
 if __name__ == "__main__":
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
     unittest.main()
