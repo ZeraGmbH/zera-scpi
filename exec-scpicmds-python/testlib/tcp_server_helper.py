@@ -1,8 +1,34 @@
+from typing import Optional
 import time
 import socket
 import logging
 import threading
 from dataclasses import dataclass
+
+
+class PortNumberGenerator:
+    _begin: int
+    _end: int
+    _cur: int
+
+    @classmethod
+    def set_port_range(cls, begin: int, end: int) -> bool:
+        if begin < end and begin >= 0 and end <= 65535: 
+            cls._begin = begin
+            cls._end = end
+            cls._cur = begin
+            return True
+        else:
+            return False
+
+    @classmethod
+    def get_next_port_number(cls) -> Optional[int]:
+        cur = cls._cur
+        if cur <= cls._end:
+            cls._cur += 1
+            return cur
+        else:
+            return None
 
 
 @dataclass
