@@ -1,10 +1,11 @@
-from typing import Iterable
+from typing import Iterable, Optional, Type
 import logging
+import types
 import os
 
 
 class FileWriterHelper:
-    def __init__(self, filename: str, lines: Iterable[str], line_terminator: str = "\n"):
+    def __init__(self, filename: str, lines: Iterable[str], line_terminator: str = "\n") -> None:
         self._filename = filename
         self._lines = lines
         self._line_terminator = line_terminator
@@ -16,11 +17,11 @@ class FileWriterHelper:
             file.write(line + self._line_terminator)
         file.close()
         return None  # There is no useful object to return
-    
-    def __exit__(self, _exc_type, _exc_val, _traceback) -> None:
+
+    def __exit__(self, _exc_type: Optional[Type[BaseException]], _exc_val: Optional[BaseException], _traceback: Optional[types.TracebackType]) -> None:
         self._remove_file()
     
-    def _remove_file(self):
+    def _remove_file(self) -> None:
         if os.path.exists(self._filename):
             logging.debug(f"Removing file \"{self._filename}\".")
             os.remove(self._filename)
