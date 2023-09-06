@@ -2,15 +2,16 @@ import logging
 import sys
 sys.path.insert(0, '.')
 import unittest
+import socket
 from src.message_handlers import TCPHandler
 from testlib.tcp_server_helper import VerboseTcpServer
 
 
 class EchoVerboseTcpServer(VerboseTcpServer):
-    def __init__(self, ip_address: str, port_number: int):
+    def __init__(self, ip_address: str, port_number: int) -> None:
         VerboseTcpServer.__init__(self, ip_address, port_number)
 
-    def on_client_receive_message(self, client, message):
+    def on_client_receive_message(self, client: socket.socket, message: str) -> None:
         super().on_client_receive_message(client, message)
         client.send(message)  # Echo message back to client
 
