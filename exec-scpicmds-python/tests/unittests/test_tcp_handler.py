@@ -1,4 +1,3 @@
-
 import time
 import socket
 import logging
@@ -14,6 +13,7 @@ from src.message_handlers import TCPHandler
 class ClientData:
     socket: socket.socket
     id: int
+    thread: threading.Thread
 
 
 class TcpServer():
@@ -30,7 +30,7 @@ class TcpServer():
         self._socket.listen(listen_backlog)
     
     def __del__(self):
-        self._quit = True
+        self.quit()
 
     def run(self, run_in_background: bool = False):
         if run_in_background:
@@ -53,6 +53,10 @@ class TcpServer():
     
     def quit(self):
         self._quit = True
+        for client_data in self._clients:
+            client_data.thread.join()
+            logging.debug(f"Joined thread #{client_data.id}")
+
 
     def _accept_clients(self):
         while not self._quit:
@@ -61,10 +65,11 @@ class TcpServer():
             except:  # Timeout
                 pass
             else:
-                self._clients.append(ClientData(client_socket, self._next_client_id))
+                thread = threading.Thread(target=self.receive, args=(client_socket,))
+                self._clients.append(ClientData(client_socket, self._next_client_id, thread))
                 self._next_client_id += 1
                 self.on_client_connection_open(client_socket)
-                threading.Thread(target=self.receive, args=(client_socket,)).start()
+                thread.start()
             time.sleep(0.01)  # Throttle loop as accept is non-blocking
 
     def receive(self, client):
