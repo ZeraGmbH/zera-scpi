@@ -1,15 +1,22 @@
+from typing import Optional
 import logging
 import sys
 sys.path.insert(0, '.')
 import unittest
 from src.message_handlers import TCPHandler
-from testlib.tcp_server_helper import VerboseTcpServer, EchoVerboseTcpServer
+from testlib.tcp_server_helper import VerboseTcpServer, EchoVerboseTcpServer, PortNumberGenerator
+
+
+def setUpModule():
+    start_port = 16320
+    port_cnt = 100
+    PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
 
 
 class TestTCPHandler(unittest.TestCase):
     def test_connect(self) -> None:
         ip_address = "localhost"
-        port_number = 16320  # use port different from proper one to avoid conflicts
+        port_number = PortNumberGenerator.get_next_port_number()  # use port different from proper one to avoid conflicts
         server = VerboseTcpServer(ip_address, port_number)
         server.run(run_in_background=True)
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)
@@ -23,7 +30,7 @@ class TestTCPHandler(unittest.TestCase):
 
     def test_send_receive(self) -> None:
         ip_address = "localhost"
-        port_number = 16321  # Use different port for each test to allow them being executed in parallel
+        port_number = PortNumberGenerator.get_next_port_number()  # Use different port for each test to allow them being executed in parallel
         server = EchoVerboseTcpServer(ip_address, port_number)
         server.run(run_in_background=True)
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)

@@ -7,7 +7,13 @@ import socket
 from src.message_parser import MessageParser
 from src.message_handlers import TCPHandler
 from testlib.message_parser_helper import FileWriterHelper
-from testlib.tcp_server_helper import EchoVerboseTcpServer
+from testlib.tcp_server_helper import EchoVerboseTcpServer, PortNumberGenerator
+
+
+def setUpModule():
+    start_port = 16420
+    port_cnt = 100
+    PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
 
 
 class TestMessageHandling(unittest.TestCase):
@@ -30,7 +36,7 @@ class TestMessageHandling(unittest.TestCase):
             self.assertTrue(False, f"Writing temporary test file \"{filename}\" failed with exception \"{e}\".")
         # Send messages over TCP/IP and read echo
         ip_address = "localhost"
-        port_number = 16322  # Use different port for each test to allow them being executed in parallel
+        port_number = PortNumberGenerator.get_next_port_number()  # Use different port for each test to allow them being executed in parallel
         server = EchoVerboseTcpServer(ip_address, port_number)
         server.run(run_in_background=True)
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)
