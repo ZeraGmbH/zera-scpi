@@ -121,3 +121,12 @@ class VerboseTcpServer(TcpServer):
 
     def on_client_connection_close(self, _client: socket.socket) -> None:
         logging.debug("Client disconnected.")
+
+
+class EchoVerboseTcpServer(VerboseTcpServer):
+    def __init__(self, ip_address: str, port_number: int) -> None:
+        VerboseTcpServer.__init__(self, ip_address, port_number)
+
+    def on_client_receive_message(self, client: socket.socket, message: str) -> None:
+        super().on_client_receive_message(client, message)
+        client.send(message)  # Echo message back to client
