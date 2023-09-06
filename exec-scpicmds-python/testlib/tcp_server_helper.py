@@ -103,7 +103,7 @@ class TcpServer():
         pass
 
 
-class TcpTestServer(TcpServer):
+class VerboseTcpServer(TcpServer):
     def __init__(self, ip_address: str, port_number: int):
         TcpServer.__init__(self, ip_address, port_number)
 
@@ -115,7 +115,6 @@ class TcpTestServer(TcpServer):
 
     def on_client_receive_message(self, _client, message):
         logging.debug(f"Client sent message: {message}")
-        self.broadcast(message)  # Sending message to all clients
 
     def on_client_connection_open(self, _client):
         logging.debug("Client connected.")
