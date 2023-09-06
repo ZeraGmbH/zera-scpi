@@ -1,5 +1,6 @@
 import unittest
 import logging
+import os
 import sys
 sys.path.insert(0, '.')
 from src.message_parser import MessageParser
@@ -8,7 +9,7 @@ from testlib.message_parser_helper import FileWriterHelper
 
 class TestMessageParser(unittest.TestCase):
     def test_read_messages_from_file(self) -> None:
-        filename = "example_file_for_test_read_messages_from_file.txt"
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "example_file_for_test_read_messages_from_file.txt")
         lines = list()
         lines.append("\t*IDN? |IDN?  ")
         lines.append("|".join(["*IDN" for x in range(1000)]))
