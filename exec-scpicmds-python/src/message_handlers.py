@@ -76,4 +76,3 @@ class TCPHandler(IMessageHandler):
             return True
         else:
             return False
-
