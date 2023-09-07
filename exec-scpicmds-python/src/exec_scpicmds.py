@@ -2,9 +2,10 @@
 
 import os
 import sys
+sys.path.insert(0, '.')
 import argparse
-from message_parser import MessageParser
-from message_handlers import TCPHandler
+from src.message_parser import MessageParser
+from src.message_handlers import TCPHandler
 
 
 class ExecScpiCmdsProgram:
@@ -27,7 +28,7 @@ class ExecScpiCmdsProgram:
 
         if (messages := MessageParser.read_messages_from_file(args.input_file)) is None:
             print(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
-            exit(1)
+            exit(2)
 
         print(f"Connect to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
@@ -35,7 +36,7 @@ class ExecScpiCmdsProgram:
             print(f"Successfully connected to {args.ip_address}:{args.port_number}.")
         else:
             print(f"Establishing connection failed!", file=sys.stderr)
-            exit(1)
+            exit(3)
 
         print("Sending messages...")
         for message in messages:
