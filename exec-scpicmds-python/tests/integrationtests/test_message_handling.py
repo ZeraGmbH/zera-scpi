@@ -19,7 +19,8 @@ def setUpModule():
 class TestMessageHandling(unittest.TestCase):
     def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
         # Prepare and read message file
-        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), "example_file_for_test_read_message_file_and_send_receive_over_tcpip.txt")
+        filename = MessageParser.get_filename_from_class_and_method(self, self.test_read_message_file_and_send_receive_over_tcpip) + ".txt"
+        filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = list()
         lines.append("*IDN?")
         lines.append("*STB?")
