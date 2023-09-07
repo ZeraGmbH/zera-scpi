@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 import time
 import socket
 import logging
@@ -43,7 +43,7 @@ class TcpServer():
         self._ip_address = ip_address
         self._port_number = port_number
         self._socket = socket.socket()
-        self._clients: list[ClientData] = list()
+        self._clients: List[ClientData] = list()
         self._next_client_id = 0
         self._quit = False
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
@@ -78,7 +78,6 @@ class TcpServer():
         for client_data in self._clients:
             client_data.thread.join()
             logging.debug(f"Joined thread #{client_data.id}")
-
 
     def _accept_clients(self) -> None:
         while not self._quit:

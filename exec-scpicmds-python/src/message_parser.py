@@ -1,9 +1,9 @@
-from typing import Optional
+from typing import Optional, List
 
 
 class MessageParser:
     @staticmethod
-    def read_messages_from_file(file_path: str) -> Optional[list[str]]:
+    def read_messages_from_file(file_path: str) -> Optional[List[str]]:
         try:
             with open(file_path, "r") as file:
                 lines = list()
