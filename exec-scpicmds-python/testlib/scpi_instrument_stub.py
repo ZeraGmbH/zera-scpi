@@ -1,3 +1,5 @@
+import sys
+sys.path.insert(0, '.')
 import socket
 import random
 from testlib.tcp_server_helper import VerboseTcpServer
