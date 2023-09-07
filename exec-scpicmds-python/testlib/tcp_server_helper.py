@@ -99,7 +99,10 @@ class TcpServer():
             data = client.recv(2048)
             if data is None or data == b"":
                 break
-            self.on_client_receive_message(client, data)
+            self.on_client_receive_message(client, data.decode())
+            # TODO current simplified assumption: we read complete messages and messages only consist of single byte characters
+            #      => correct would be: read byte-chunks, add them to a buffer, and on receiving a "\n", split the message of,
+            #      then decode() it (multibyte characters) and pass it to on_client_receive_message()
         for c, client_data in enumerate(self._clients):
             if client_data.socket is client:
                 del self._clients[c]
@@ -155,4 +158,4 @@ class EchoVerboseTcpServer(VerboseTcpServer):
 
     def on_client_receive_message(self, client: socket.socket, message: str) -> None:
         super().on_client_receive_message(client, message)
-        client.send(message)  # Echo message back to client
+        client.send(message.encode())  # Echo message back to client
