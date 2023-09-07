@@ -2,6 +2,7 @@ import sys
 sys.path.insert(0, '.')
 import socket
 import random
+import itertools
 from testlib.tcp_server_helper import VerboseTcpServer
 
 
@@ -16,16 +17,14 @@ class ScpiInstrumentStub(VerboseTcpServer):
         commands = [command.strip().upper() for command in message.split("|")]
         for command in commands:
             if command.endswith("?"):
-                keywords = command.replace("?", "").split(":")
-                match keywords:
-                    case ["*IDN"]:
-                        send("ZERA SCPI Instrument Stub version 0.0.1\n")
-                    case ["*STB"]:
-                        send("+0\n")
-                    case ["MEASURE", ("DFT1" | "FFT1"), ("UL1" | "UL2" | "UL3" | "UL1-UL2" | "UL3-UL2" | "UL3-UL1" | "UAUX" | "IL1" | "IL2" | "IL3" | "IL1-IL2" | "IL3-IL2" | "IL3-IL1" | "IAUX")]:
-                        send(",".join([str(random.random()) for i in range((20 + 1) * 2)]) + "\n")
-                    case _:
-                        send("ResponseToUnknownQuery\n")
+                if command == "*IDN?":
+                    send("ZERA SCPI Instrument Stub version 0.0.1\n")
+                elif command == "*STB?":
+                    send("+0\n")
+                elif command in [":".join(x) + "?" for x in itertools.product(("MEASURE",), ("DFT1", "FFT1"), ("UL1", "UL2", "UL3", "UL1-UL2", "UL3-UL2", "UL3-UL1", "UAUX", "IL1", "IL2", "IL3", "IL1-IL2", "IL3-IL2", "IL3-IL1", "IAUX"))]:
+                    send(",".join([str(random.random()) for i in range((20 + 1) * 2)]) + "\n")
+                elif "?" in command:
+                    send("ResponseToUnknownQuery\n")
 
 
 if __name__ == "__main__":
