@@ -11,6 +11,12 @@ class ScpiInstrumentStub(VerboseTcpServer):
     def __init__(self, ip_address: str, port_number: int) -> None:
         VerboseTcpServer.__init__(self, ip_address, port_number)
 
+    def __repr__(self):
+        return f"ScpiInstrumentStub(ip_address=\"{self._ip_address}\", port_number={self._port_number})"
+
+    def __str__(self):
+        return repr(self)
+
     def on_client_receive_message(self, client: socket.socket, message: str) -> None:
         super().on_client_receive_message(client, message)
         send = lambda response: client.send(response.encode())
