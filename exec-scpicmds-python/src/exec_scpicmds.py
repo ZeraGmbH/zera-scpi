@@ -25,11 +25,11 @@ class ExecScpiCmdsProgram:
         args = parser.parse_args()
 
         if not os.path.exists(args.input_file):
-            logging.info(f"File \"{args.input_file}\" does not exist!", file=sys.stderr)
+            logging.info(f"File \"{args.input_file}\" does not exist!")
             exit(1)
 
         if (messages_and_lines := MessageParser.read_messages_with_lines_from_file(args.input_file)) is None:
-            logging.info(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
+            logging.info(f"Reading file \"{args.input_file}\" failed!")
             exit(2)
         
         messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line)
@@ -54,7 +54,7 @@ class ExecScpiCmdsProgram:
         if tcp_handler.connected:
             logging.info(f"Successfully connected to {args.ip_address}:{args.port_number}.")
         else:
-            logging.info(f"Establishing connection failed!", file=sys.stderr)
+            logging.info(f"Establishing connection failed!")
             exit(3)
 
         if len(messages) > 0:
