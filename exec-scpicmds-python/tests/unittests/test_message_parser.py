@@ -78,7 +78,7 @@ class TestMessageParser(unittest.TestCase):
     def test_get_message_data_from_string(self) -> None:
         message = " \t *IDN? | TEST || |  TEST \tmyparam;| "
         line_number = 42
-        message_data = MessageParser.get_message_data_from_string(message, line_number)
+        message_data = MessageParser.get_message_data_from_string(message, line_number, 1)
         self.assertFalse(message_data.is_valid, f"Message data: is_valid-property parsed incorrectly.")
         self.assertEqual(message_data.file_line_number, line_number, f"Message data: file_line_number-property parsed incorrectly.")
         self.assertEqual(message_data.original_message, message, f"Message data: original_message-property parsed incorrectly.")
