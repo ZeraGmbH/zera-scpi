@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
+from typing import List
 import os
 import sys
 sys.path.insert(0, '.')
 import argparse
 import logging
-from src.message_parser import MessageParser
+from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
 
 
@@ -27,9 +28,11 @@ class ExecScpiCmdsProgram:
             logging.info(f"File \"{args.input_file}\" does not exist!", file=sys.stderr)
             exit(1)
 
-        if (messages := MessageParser.read_messages_from_file(args.input_file)) is None:
+        if (messages_and_lines := MessageParser.read_messages_with_lines_from_file(args.input_file)) is None:
             logging.info(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
             exit(2)
+        
+        messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line) for message_and_line in zip(*messages_and_lines)]
 
         logging.info(f"Connect to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
@@ -41,10 +44,9 @@ class ExecScpiCmdsProgram:
 
         logging.info("Sending messages...")
         for message in messages:
-            logging.info(f"{message}")
-            tcp_handler.send_message(message + "\n")
-
-            number_of_expected_responses = message.count("?")
+            logging.info(f"{message.original_message}")
+            tcp_handler.send_message(message.original_message + "\n")
+            number_of_expected_responses = len([command for command in message.commands if command.command_type is CommandType.QUERY])
             for r in range(number_of_expected_responses):
                 response = tcp_handler.receive_response()
                 if response is not None:
