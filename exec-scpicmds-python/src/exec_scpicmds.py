@@ -4,6 +4,7 @@ import os
 import sys
 sys.path.insert(0, '.')
 import argparse
+import logging
 from src.message_parser import MessageParser
 from src.message_handlers import TCPHandler
 
@@ -23,36 +24,38 @@ class ExecScpiCmdsProgram:
         args = parser.parse_args()
 
         if not os.path.exists(args.input_file):
-            print(f"File \"{args.input_file}\" does not exist!", file=sys.stderr)
+            logging.info(f"File \"{args.input_file}\" does not exist!", file=sys.stderr)
             exit(1)
 
         if (messages := MessageParser.read_messages_from_file(args.input_file)) is None:
-            print(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
+            logging.info(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
             exit(2)
 
-        print(f"Connect to {args.ip_address}:{args.port_number}...")
+        logging.info(f"Connect to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
         if tcp_handler.connected:
-            print(f"Successfully connected to {args.ip_address}:{args.port_number}.")
+            logging.info(f"Successfully connected to {args.ip_address}:{args.port_number}.")
         else:
-            print(f"Establishing connection failed!", file=sys.stderr)
+            logging.info(f"Establishing connection failed!", file=sys.stderr)
             exit(3)
 
-        print("Sending messages...")
+        logging.info("Sending messages...")
         for message in messages:
-            print(f"{message}")
+            logging.info(f"{message}")
             tcp_handler.send_message(message + "\n")
 
             number_of_expected_responses = message.count("?")
             for r in range(number_of_expected_responses):
                 response = tcp_handler.receive_response()
                 if response is not None:
-                    print(f"> {response}")
+                    logging.info(f"> {response}")
                 else:
-                    print("Timeout on receiving response.")
+                    logging.info("Timeout on receiving response.")
 
 
 def main():
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(asctime)s.%(msecs)03d: %(message)s", datefmt="%H:%M:%S")
     program = ExecScpiCmdsProgram
     program.run()
 
