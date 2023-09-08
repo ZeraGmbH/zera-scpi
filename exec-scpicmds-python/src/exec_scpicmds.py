@@ -32,7 +32,22 @@ class ExecScpiCmdsProgram:
             logging.info(f"Reading file \"{args.input_file}\" failed!", file=sys.stderr)
             exit(2)
         
-        messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line) for message_and_line in zip(*messages_and_lines)]
+        messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line)
+                                       for message_and_line in zip(*messages_and_lines)]
+
+        logging.info("Checking messages...")
+        invalid_message_found = False
+        for message in messages:
+            if not message.is_valid:
+                for command in message.commands:
+                    if command.command_type is CommandType.UNKNOWN:
+                        logging.info(f" > Invalid command found in line {message.file_line_number}:{command.position_in_message}")
+                    elif command.command_type is CommandType.EMPTY:
+                        logging.info(f" > Empty command found in line {message.file_line_number}:{command.position_in_message}")
+                    # TODO Check for ASCII characters and allowed symboles only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
+                invalid_message_found = True
+        if not invalid_message_found:
+            logging.info("All messages are valid.")
 
         logging.info(f"Connecting to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
