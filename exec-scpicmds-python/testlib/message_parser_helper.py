@@ -10,6 +10,12 @@ class FileWriterHelper:
         self._lines = lines
         self._line_terminator = line_terminator
 
+    def __repr__(self):
+        return f"FileWriterHelper(filename=\"{self._filename}\", lines={self._lines}, line_terminator={self._line_terminator})"
+
+    def __str__(self):
+        return repr(self)
+
     def __enter__(self) -> None:
         self.remove_file()
         self.write_file()

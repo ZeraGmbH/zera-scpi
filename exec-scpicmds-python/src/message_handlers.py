@@ -22,7 +22,13 @@ class TCPHandler(IMessageHandler):
         self._responses = list()
         self._socket = None
         self._connect()
-    
+
+    def __repr__(self):
+        return f"TCPHandler(ip_address=\"{self._ip_address}\", port_number={self._port_number}{f', receive_timeout={self._receive_timeout}' if self._receive_timeout is not None else ''})"
+
+    def __str__(self):
+        return repr(self)
+
     def __del__(self) -> None:
         if self.connected:
             self._disconnect()
