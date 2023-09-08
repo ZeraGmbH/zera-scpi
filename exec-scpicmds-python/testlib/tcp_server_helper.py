@@ -13,7 +13,7 @@ class PortNumberGenerator:
 
     @classmethod
     def set_port_range(cls, begin: int, end: int) -> bool:
-        if begin < end and begin >= 0 and end <= 65535:
+        if begin <= end and begin > 0 and end <= 65535:
             cls._begin = begin
             cls._end = end
             cls._cur = begin
@@ -21,6 +21,10 @@ class PortNumberGenerator:
         else:
             return False
 
+    @classmethod
+    def get_current_port_number(cls) -> Optional[int]:
+        return cls._cur
+    
     @classmethod
     def get_next_port_number(cls) -> Optional[int]:
         cur = cls._cur
