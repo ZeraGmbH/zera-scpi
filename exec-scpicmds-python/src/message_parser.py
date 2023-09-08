@@ -78,7 +78,7 @@ class MessageParser:
         return True
 
     @staticmethod
-    def get_message_data_from_string(message: str, file_line_number: int) -> MessageData:
+    def get_message_data_from_string(message: str, file_line_number: int, number_of_messages: int) -> MessageData:
         message_data = MessageData()
         commands = message.split("|")
         last_command_position = 0
@@ -92,6 +92,6 @@ class MessageParser:
             last_command_position = message.find("|", last_command_position) + 1
         message_data.original_message = message
         message_data.file_line_number = file_line_number
-        message_data.command_count_string_width = len(str(len(commands)))
+        message_data.command_count_string_width = len(str(number_of_messages))
         message_data.is_valid = MessageParser.check_message_is_valid(message_data)
         return message_data

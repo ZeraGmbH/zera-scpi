@@ -44,7 +44,7 @@ class ExecScpiCmdsProgram:
             logging.info(f"Reading file \"{args.input_file}\" failed!")
             exit(2)
         
-        messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line)
+        messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line, len(messages_and_lines[0]))
                                        for message_and_line in zip(*messages_and_lines)]
 
         logging.info("Checking messages...")
@@ -59,26 +59,35 @@ class ExecScpiCmdsProgram:
                     # TODO Check for ASCII characters and allowed symboles only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
                 invalid_message_found = True
         if not invalid_message_found:
-            logging.info("All messages are valid.")
+            logging.info("... all messages are valid.")
+        else:
+            logging.info("... invalid messages(s) found!")
 
         logging.info(f"Connecting to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
         if tcp_handler.connected:
-            logging.info(f"Successfully connected to {args.ip_address}:{args.port_number}.")
+            logging.info(f"... successfully connected to {args.ip_address}:{args.port_number}.")
         else:
-            logging.info(f"Establishing connection failed!")
+            logging.info(f"... establishing connection failed!")
             exit(3)
 
         if len(messages) > 0:
             logging.info("Sending messages...")
             for message in messages:
-                logging.info(f"{message.original_message}")
+                line_number_string = str(message.file_line_number).zfill(message.command_count_string_width)
+                indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
+                expected_responses_count_string_width = len(str(len(indices_of_expected_responses)))
+                logging.info(f"==> [L{line_number_string}] {message.original_message}")
+                message_part_position = ""
+                for c, command in enumerate(message.commands):
+                    message_part_position = message_part_position.ljust(command.position_in_message, " ")
+                    message_part_position += f"[{str(c).zfill(expected_responses_count_string_width)}]"
+                logging.info(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}")
                 tcp_handler.send_message(message.original_message + "\n")
-                number_of_expected_responses = len([command for command in message.commands if command.command_type is CommandType.QUERY])
-                for r in range(number_of_expected_responses):
+                for r in range(len(indices_of_expected_responses)):
                     response = tcp_handler.receive_response()
                     if response is not None:
-                        logging.info(f"> {response}")
+                        logging.info(f" <-[{str(indices_of_expected_responses[r]).zfill(expected_responses_count_string_width)}] {response}")
                     else:
                         logging.info("Timeout on receiving response.")
         else:
@@ -90,7 +99,7 @@ class ExecScpiCmdsProgram:
 
 def main():
     logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(asctime)s.%(msecs)03d: %(message)s", datefmt="%H:%M:%S")
+    logging.basicConfig(format="[%(asctime)s.%(msecs)03d]: %(message)s", datefmt="%H:%M:%S")
     program = ExecScpiCmdsProgram
     program.run()
 
