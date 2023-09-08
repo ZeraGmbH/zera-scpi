@@ -39,7 +39,7 @@ class TCPHandler(IMessageHandler):
         if len(self._responses) == 0:
             try:
                 chunk = self._socket.recv(2048).decode()
-            except TimeoutError:
+            except socket.timeout:
                 return None
             self._receive_buffer += chunk
             # Split up complete responses and add them to the result list
