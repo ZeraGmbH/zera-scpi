@@ -60,7 +60,6 @@ class TCPHandler(IMessageHandler):
                 self._socket.connect((self._ip_address, self._port_number))
                 return True
             except Exception as e:
-                print(self._socket)
                 if self._socket is not None:
                     self._socket.close()
                     self._socket = None
