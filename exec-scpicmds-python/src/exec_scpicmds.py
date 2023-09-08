@@ -13,14 +13,26 @@ from src.message_handlers import TCPHandler
 class ExecScpiCmdsProgram:
     @staticmethod
     def run() -> None:
+        def check_positive_integer(value: str, excl_zero: bool = False) -> int:
+            int_value = int(value)
+            if (excl_zero and int_value <= 0) or (not excl_zero and int_value < 0):
+                raise argparse.ArgumentTypeError(f"{value} is not a positive int value!")
+            return int_value
+
+        def check_port_number(value: str) -> int:
+            int_value = int(value)
+            if not 0 < int_value <= 65535:
+                raise argparse.ArgumentTypeError(f"{value} is not a valid port number!")
+            return int_value
+    
         parser = argparse.ArgumentParser(description="Execute SCPI commands and optionally check results.")
         parser.add_argument("-f", "--input-file", required=True,
                             help="Path to file containing SCPI commands.")
         parser.add_argument("-i", "--ip-address", required=True,
                             help="IP-address of instrument.")
-        parser.add_argument("-p", "--port-number", required=True, type=int,
+        parser.add_argument("-p", "--port-number", required=True, type=check_port_number,
                             help="Port number of instrument.")
-        parser.add_argument("-t", "--receive-timeout", type=int, default=3000,
+        parser.add_argument("-t", "--receive-timeout", type=lambda x: check_positive_integer(x, excl_zero=True), default=3000,
                             help="Receive timeout [ms] of TCP/IP-connection to instrument.")
         args = parser.parse_args()
 
