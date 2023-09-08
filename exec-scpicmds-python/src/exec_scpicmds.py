@@ -34,7 +34,7 @@ class ExecScpiCmdsProgram:
         
         messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line) for message_and_line in zip(*messages_and_lines)]
 
-        logging.info(f"Connect to {args.ip_address}:{args.port_number}...")
+        logging.info(f"Connecting to {args.ip_address}:{args.port_number}...")
         tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
         if tcp_handler.connected:
             logging.info(f"Successfully connected to {args.ip_address}:{args.port_number}.")
@@ -42,17 +42,23 @@ class ExecScpiCmdsProgram:
             logging.info(f"Establishing connection failed!", file=sys.stderr)
             exit(3)
 
-        logging.info("Sending messages...")
-        for message in messages:
-            logging.info(f"{message.original_message}")
-            tcp_handler.send_message(message.original_message + "\n")
-            number_of_expected_responses = len([command for command in message.commands if command.command_type is CommandType.QUERY])
-            for r in range(number_of_expected_responses):
-                response = tcp_handler.receive_response()
-                if response is not None:
-                    logging.info(f"> {response}")
-                else:
-                    logging.info("Timeout on receiving response.")
+        if len(messages) > 0:
+            logging.info("Sending messages...")
+            for message in messages:
+                logging.info(f"{message.original_message}")
+                tcp_handler.send_message(message.original_message + "\n")
+                number_of_expected_responses = len([command for command in message.commands if command.command_type is CommandType.QUERY])
+                for r in range(number_of_expected_responses):
+                    response = tcp_handler.receive_response()
+                    if response is not None:
+                        logging.info(f"> {response}")
+                    else:
+                        logging.info("Timeout on receiving response.")
+        else:
+            logging.info("No messages to send.")
+
+        logging.info(f"Disconnecting from {args.ip_address}:{args.port_number}...")
+        del tcp_handler
 
 
 def main():
