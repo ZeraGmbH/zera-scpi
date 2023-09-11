@@ -176,14 +176,14 @@ void ScpiNode::adjustScpiHeaders(QString scpiHeader)
     m_sScpiHeaderFull = scpiHeader.toUpper();
     if(m_sScpiHeaderFull.length() < 4)
         m_sScpiHeaderShort = m_sScpiHeaderFull;
-    else if(isLastShortAVowel())
+    else if(isLastShortAVowel(m_sScpiHeaderFull))
         m_sScpiHeaderShort = m_sScpiHeaderFull.left(3);
     else {
         m_sScpiHeaderShort = m_sScpiHeaderFull.left(4);
     }
 }
 
-bool ScpiNode::isLastShortAVowel()
+bool ScpiNode::isLastShortAVowel(QString scpiHeader)
 {
-    return QString("AEIOU").contains(m_sScpiHeaderFull.mid(3, 1));
+    return QString("AEIOU").contains(scpiHeader.mid(3, 1));
 }
