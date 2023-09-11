@@ -1,6 +1,7 @@
 #include "scpi_p.h"
 #include "scpinode.h"
 #include "scpi.h"
+#include "scpinodestaticfunctions.h"
 #include <QDomDocument>
 #include <QDomElement>
 #include <QList>
@@ -73,34 +74,14 @@ void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
     ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
 }
 
-QList<QStringList> cSCPIPrivate::makeShortNameList(QList<QStringList> childNameListFull)
-{
-    QList<QStringList> childNameListShort;
-    for(const auto &fullNameList : qAsConst(childNameListFull)) {
-        QStringList namesShort;
-        for(const auto &fullName : fullNameList) {
-            namesShort.append(ScpiNode::createShortHeader(fullName));
-        }
-        childNameListShort.append(namesShort);
-    }
-    return childNameListShort;
-}
-
-QStringList cSCPIPrivate::checkDoubleShortNames()
+ScpiAmbiguityMap cSCPIPrivate::checkAmbiguousShortNames()
 {
     QList<QStringList> childNameListFull;
     createFullNonNodeNameList(childNameListFull);
     QList<QStringList> childNameListShort = makeShortNameList(childNameListFull);
-    QSet<QStringList> checkShortNames;
-    QStringList errorInfos;
-    for(int i = 0; i<childNameListShort.count(); i++) {
-        if(checkShortNames.contains(childNameListShort[i])) {
-            QString errorNameInfo = childNameListFull[i].join(":") + " / " + childNameListShort[i].join(":");
-            errorInfos.append(errorNameInfo);
-        }
-        checkShortNames.insert(childNameListShort[i]);
-    }
-    return errorInfos;
+    Q_ASSERT(childNameListFull.size() == childNameListShort.size());
+
+    return filterAmbigous(createAllShortLongListMap(childNameListFull, childNameListShort));
 }
 
 ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
@@ -137,4 +118,33 @@ QStringList cSCPIPrivate::removeEmptyNodes(const QStringList &parentNodeNames)
     QStringList parentNodeNamesCleaned = parentNodeNames;
     parentNodeNamesCleaned.removeAll("");
     return parentNodeNamesCleaned;
+}
+
+QList<QStringList> cSCPIPrivate::makeShortNameList(QList<QStringList> childNameListFull)
+{
+    QList<QStringList> childNameListShort;
+    for(const auto &fullNameList : qAsConst(childNameListFull)) {
+        QStringList namesShort;
+        for(const auto &fullName : fullNameList)
+            namesShort.append(ScpiNode::createShortHeader(fullName));
+        childNameListShort.append(namesShort);
+    }
+    return childNameListShort;
+}
+
+ScpiAmbiguityMap cSCPIPrivate::createAllShortLongListMap(QList<QStringList> childNameListFull, QList<QStringList> childNameListShort)
+{
+    ScpiAmbiguityMap allShortLong;
+    for(int i = 0; i<childNameListShort.count(); i++)
+        allShortLong[childNameListShort[i].join(":")].append(childNameListFull[i].join(":"));
+    return allShortLong;
+}
+
+ScpiAmbiguityMap cSCPIPrivate::filterAmbigous(ScpiAmbiguityMap allShortLong)
+{
+    ScpiAmbiguityMap ambigouosShortMap;
+    for(auto iter=allShortLong.constBegin(); iter!=allShortLong.constEnd(); ++iter)
+        if(iter.value().count() > 1)
+            ambigouosShortMap[iter.key()] = iter.value();
+    return ambigouosShortMap;
 }

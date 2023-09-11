@@ -3,20 +3,18 @@
 
 #include <QObject>
 #include "scpi.h"
-#include "scpiobject.h"
-#include "scpitestobjectstub.h"
 
-class test_scpishortformcmd : public QObject
+class test_scpishortambiguity : public QObject
 {
     Q_OBJECT
 private slots:
     void init();
     void cleanup();
 
-    void checkNamesForNonNodes();
-    void checkZeroDoubleShort();
-    void checkOneDoubleShort();
-    void checkTwoDoubleShort();
+    void checkCreateFullNonNodeNameList();
+    void checkNoAmbiguity();
+    void checkAmbiguityPair();
+    void checkAmbiguityTriple();
 
     void checkNodeOnOtherPath1();
     void checkNodeOnOtherPath2();

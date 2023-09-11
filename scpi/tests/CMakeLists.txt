@@ -4,5 +4,5 @@ SETUP_TESTS(
     test_scpiinterface
     test_scpiinterfacexml
     test_scpifullcmdcheckerfortest
-    test_scpishortformcmd
+    test_scpishortambiguity
 )

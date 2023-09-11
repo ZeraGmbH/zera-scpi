@@ -1,22 +1,23 @@
-#include "test_scpishortformcmd.h"
+#include "test_scpishortambiguity.h"
 #include "scpinode.h"
+#include "scpitestobjectstub.h"
 #include <QTest>
 
-QTEST_MAIN(test_scpishortformcmd)
+QTEST_MAIN(test_scpishortambiguity)
 
-void test_scpishortformcmd::init()
+void test_scpishortambiguity::init()
 {
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
     m_scpiInterface = new cSCPI();
 }
 
-void test_scpishortformcmd::cleanup()
+void test_scpishortambiguity::cleanup()
 {
     delete m_scpiInterface;
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
 }
 
-void test_scpishortformcmd::checkNamesForNonNodes()
+void test_scpishortambiguity::checkCreateFullNonNodeNameList()
 {
     QList<ScpiNodeInfo> scpiInfos;
     QStringList list1 = QStringList() << "CHILD1" << "CHILD2" << "FOO";
@@ -37,7 +38,7 @@ void test_scpishortformcmd::checkNamesForNonNodes()
     QVERIFY(scpiList.contains(list3));
 }
 
-void test_scpishortformcmd::checkZeroDoubleShort()
+void test_scpishortambiguity::checkNoAmbiguity()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -49,8 +50,8 @@ void test_scpishortformcmd::checkZeroDoubleShort()
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 0);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
     cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
@@ -60,7 +61,7 @@ void test_scpishortformcmd::checkZeroDoubleShort()
     QCOMPARE(scpiObject3->getType(), SCPI::isCmdwP);
 }
 
-void test_scpishortformcmd::checkOneDoubleShort()
+void test_scpishortambiguity::checkAmbiguityPair()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -72,12 +73,14 @@ void test_scpishortformcmd::checkOneDoubleShort()
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 1);
-    QCOMPARE(errorList[0], "CHILD3:CHILD3:FOO / CHIL:CHIL:FOO");
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 1);
+    QVERIFY(shortLongAmbiguityMap.contains("CHIL:CHIL:FOO"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:CHIL:FOO"].contains("CHILD1:CHILD1:FOO"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:CHIL:FOO"].contains("CHILD3:CHILD3:FOO"));
 }
 
-void test_scpishortformcmd::checkTwoDoubleShort()
+void test_scpishortambiguity::checkAmbiguityTriple()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -89,13 +92,15 @@ void test_scpishortformcmd::checkTwoDoubleShort()
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 2);
-    QVERIFY(errorList.contains("CHILD2:CHILD2:FOO / CHIL:CHIL:FOO"));
-    QVERIFY(errorList.contains("CHILD3:CHILD3:FOO / CHIL:CHIL:FOO"));
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 1);
+    QVERIFY(shortLongAmbiguityMap.contains("CHIL:CHIL:FOO"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:CHIL:FOO"].contains("CHILD1:CHILD1:FOO"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:CHIL:FOO"].contains("CHILD2:CHILD2:FOO"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:CHIL:FOO"].contains("CHILD3:CHILD3:FOO"));
 }
 
-void test_scpishortformcmd::checkNodeOnOtherPath1()
+void test_scpishortambiguity::checkNodeOnOtherPath1()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -105,8 +110,8 @@ void test_scpishortformcmd::checkNodeOnOtherPath1()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 0);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
     cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
@@ -114,7 +119,7 @@ void test_scpishortformcmd::checkNodeOnOtherPath1()
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
-void test_scpishortformcmd::checkNodeOnOtherPath2()
+void test_scpishortambiguity::checkNodeOnOtherPath2()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -124,8 +129,8 @@ void test_scpishortformcmd::checkNodeOnOtherPath2()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 0);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
     cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
     QCOMPARE(scpiObject2->getType(), SCPI::isQuery);
@@ -133,7 +138,7 @@ void test_scpishortformcmd::checkNodeOnOtherPath2()
     QCOMPARE(scpiObject1->getType(), SCPI::isCmd);
 }
 
-void test_scpishortformcmd::checkNodeOnOtherPathSameShortName1()
+void test_scpishortambiguity::checkNodeOnOtherPathSameShortName1()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -143,8 +148,8 @@ void test_scpishortformcmd::checkNodeOnOtherPathSameShortName1()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 0);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
     cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
@@ -152,7 +157,7 @@ void test_scpishortformcmd::checkNodeOnOtherPathSameShortName1()
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
-void test_scpishortformcmd::checkNodeOnOtherPathSameShortName2()
+void test_scpishortambiguity::checkNodeOnOtherPathSameShortName2()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -162,8 +167,8 @@ void test_scpishortformcmd::checkNodeOnOtherPathSameShortName2()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 0);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
     cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
@@ -171,7 +176,7 @@ void test_scpishortformcmd::checkNodeOnOtherPathSameShortName2()
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
-void test_scpishortformcmd::checkLastSameShort1()
+void test_scpishortambiguity::checkLastSameShort1()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -181,11 +186,14 @@ void test_scpishortformcmd::checkLastSameShort1()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 1);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 1);
+    QVERIFY(shortLongAmbiguityMap.contains("CHIL:READ"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:READ"].contains("CHILD1:READ"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:READ"].contains("CHILD1:READ1"));
 }
 
-void test_scpishortformcmd::checkLastSameShort2()
+void test_scpishortambiguity::checkLastSameShort2()
 {
     QList<ScpiNodeInfo> scpiInfos;
 
@@ -195,11 +203,14 @@ void test_scpishortformcmd::checkLastSameShort2()
     scpiInfos.append({list2, SCPI::isCmd});
     addScpiObjects(scpiInfos);
 
-    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
-    QCOMPARE(errorList.count(), 1);
+    ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
+    QCOMPARE(shortLongAmbiguityMap.count(), 1);
+    QVERIFY(shortLongAmbiguityMap.contains("CHIL:READ"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:READ"].contains("CHILD1:READ"));
+    QVERIFY(shortLongAmbiguityMap["CHIL:READ"].contains("CHILD1:READ1"));
 }
 
-void test_scpishortformcmd::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
+void test_scpishortambiguity::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
