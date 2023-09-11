@@ -31,8 +31,10 @@ public:
     void add(ScpiNode *node);
     static void addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
     static void addNodeAndChildrenToNameListFull(const ScpiNode *node, const QStringList parentNames, QList<QStringList> &scpiPathList);
+    static QString createShortHeader(QString scpiHeader);
 
     static int getInstanceCount();
+
 private:
     void adjustScpiHeaders(QString scpiHeader);
     static bool isLastShortAVowel(QString scpiHeader);
