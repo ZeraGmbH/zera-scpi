@@ -22,12 +22,13 @@ void test_scpishortformcmd::checkNamesForNonNodes()
     QStringList list3 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "BOO";
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
-    QList<QStringList> scpiShortList;
-    m_scpiInterface->createFullNameList(scpiShortList);
-    QCOMPARE(scpiShortList.count(), 3);
-    QVERIFY(scpiShortList.contains(list1));
-    QVERIFY(scpiShortList.contains(list2));
-    QVERIFY(scpiShortList.contains(list3));
+
+    QList<QStringList> scpiList;
+    m_scpiInterface->createFullNameList(scpiList);
+    QCOMPARE(scpiList.count(), 3);
+    QVERIFY(scpiList.contains(list1));
+    QVERIFY(scpiList.contains(list2));
+    QVERIFY(scpiList.contains(list3));
 }
 
 void test_scpishortformcmd::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
