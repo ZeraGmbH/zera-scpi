@@ -18,6 +18,14 @@ private slots:
     void checkOneDoubleShort();
     void checkTwoDoubleShort();
 
+    void checkNodeOnOtherPath1();
+    void checkNodeOnOtherPath2();
+    void checkNodeOnOtherPathSameShortName1();
+    void checkNodeOnOtherPathSameShortName2();
+
+    void checkLastSameShort1();
+    void checkLastSameShort2();
+
 private:
     struct ScpiNodeInfo
     {

@@ -19,13 +19,13 @@ void test_scpishortformcmd::cleanup()
 void test_scpishortformcmd::checkNamesForNonNodes()
 {
     QList<ScpiNodeInfo> scpiInfos;
-    QStringList list1 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "FOO";
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD2" << "FOO";
     scpiInfos.append({list1, SCPI::isQuery});
 
-    QStringList list2 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "BAR";
+    QStringList list2 = QStringList() << "CHILD1" << "CHILD2" << "BAR";
     scpiInfos.append({list2, SCPI::isCmd});
 
-    QStringList list3 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "BOO";
+    QStringList list3 = QStringList() << "CHILD1" << "CHILD2" << "BOO";
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
@@ -40,55 +40,163 @@ void test_scpishortformcmd::checkNamesForNonNodes()
 void test_scpishortformcmd::checkZeroDoubleShort()
 {
     QList<ScpiNodeInfo> scpiInfos;
-    QStringList list1 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "FOO";
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD2" << "FOO";
     scpiInfos.append({list1, SCPI::isQuery});
-
-    QStringList list2 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "BAR";
+    QStringList list2 = QStringList() << "CHILD1" << "CHILD2" << "BAR";
     scpiInfos.append({list2, SCPI::isCmd});
-
-    QStringList list3 = QStringList() << "ROOT" << "CHILD1" << "CHILD2" << "BOO";
+    QStringList list3 = QStringList() << "CHILD1" << "CHILD2" << "BOO";
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
     QStringList errorList = m_scpiInterface->checkDoubleShortNames();
     QCOMPARE(errorList.count(), 0);
+
+    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
+    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:bar");
+    QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
+    cSCPIObject *scpiObject3 = m_scpiInterface->getSCPIObject("chil:chil:boo");
+    QCOMPARE(scpiObject3->getType(), SCPI::isCmdwP);
 }
 
 void test_scpishortformcmd::checkOneDoubleShort()
 {
     QList<ScpiNodeInfo> scpiInfos;
-    QStringList list1 = QStringList() << "ROOT" << "CHILD1" << "CHILD1" << "FOO";
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD1" << "FOO";
     scpiInfos.append({list1, SCPI::isQuery});
-
-    QStringList list2 = QStringList() << "ROOT" << "CHILD2" << "CHILD2" << "BAR";
+    QStringList list2 = QStringList() << "CHILD2" << "CHILD2" << "BAR";
     scpiInfos.append({list2, SCPI::isCmd});
-
-    QStringList list3 = QStringList() << "ROOT" << "CHILD3" << "CHILD3" << "FOO";
+    QStringList list3 = QStringList() << "CHILD3" << "CHILD3" << "FOO";
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
     QStringList errorList = m_scpiInterface->checkDoubleShortNames();
     QCOMPARE(errorList.count(), 1);
-    QCOMPARE(errorList[0], "ROOT:CHILD3:CHILD3:FOO / ROOT:CHIL:CHIL:FOO");
+    QCOMPARE(errorList[0], "CHILD3:CHILD3:FOO / CHIL:CHIL:FOO");
 }
 
 void test_scpishortformcmd::checkTwoDoubleShort()
 {
     QList<ScpiNodeInfo> scpiInfos;
-    QStringList list1 = QStringList() << "ROOT" << "CHILD1" << "CHILD1" << "FOO";
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD1" << "FOO";
     scpiInfos.append({list1, SCPI::isQuery});
-
-    QStringList list2 = QStringList() << "ROOT" << "CHILD2" << "CHILD2" << "FOO";
+    QStringList list2 = QStringList() << "CHILD2" << "CHILD2" << "FOO";
     scpiInfos.append({list2, SCPI::isCmd});
-
-    QStringList list3 = QStringList() << "ROOT" << "CHILD3" << "CHILD3" << "FOO";
+    QStringList list3 = QStringList() << "CHILD3" << "CHILD3" << "FOO";
     scpiInfos.append({list3, SCPI::isCmdwP});
     addScpiObjects(scpiInfos);
 
     QStringList errorList = m_scpiInterface->checkDoubleShortNames();
     QCOMPARE(errorList.count(), 2);
-    QVERIFY(errorList.contains("ROOT:CHILD2:CHILD2:FOO / ROOT:CHIL:CHIL:FOO"));
-    QVERIFY(errorList.contains("ROOT:CHILD3:CHILD3:FOO / ROOT:CHIL:CHIL:FOO"));
+    QVERIFY(errorList.contains("CHILD2:CHILD2:FOO / CHIL:CHIL:FOO"));
+    QVERIFY(errorList.contains("CHILD3:CHILD3:FOO / CHIL:CHIL:FOO"));
+}
+
+void test_scpishortformcmd::checkNodeOnOtherPath1()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD1" << "FOO";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "FOO";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 0);
+
+    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
+    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
+    QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
+}
+
+void test_scpishortformcmd::checkNodeOnOtherPath2()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "FOO";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "CHILD1" << "FOO";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 0);
+
+    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
+    QCOMPARE(scpiObject2->getType(), SCPI::isQuery);
+    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    QCOMPARE(scpiObject1->getType(), SCPI::isCmd);
+}
+
+void test_scpishortformcmd::checkNodeOnOtherPathSameShortName1()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD2" << "FOO";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "CHILD2";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 0);
+
+    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
+    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil");
+    QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
+}
+
+void test_scpishortformcmd::checkNodeOnOtherPathSameShortName2()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "CHILD2";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "CHILD2" << "FOO";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 0);
+
+    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil");
+    QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
+    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
+}
+
+void test_scpishortformcmd::checkLastSameShort1()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "READ";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "READ1";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 1);
+}
+
+void test_scpishortformcmd::checkLastSameShort2()
+{
+    QList<ScpiNodeInfo> scpiInfos;
+
+    QStringList list1 = QStringList() << "CHILD1" << "READ1";
+    scpiInfos.append({list1, SCPI::isQuery});
+    QStringList list2 = QStringList() << "CHILD1" << "READ";
+    scpiInfos.append({list2, SCPI::isCmd});
+    addScpiObjects(scpiInfos);
+
+    QStringList errorList = m_scpiInterface->checkDoubleShortNames();
+    QCOMPARE(errorList.count(), 1);
 }
 
 void test_scpishortformcmd::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
