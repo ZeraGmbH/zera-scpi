@@ -35,7 +35,7 @@ public:
     static int getInstanceCount();
 private:
     void adjustScpiHeaders(QString scpiHeader);
-    bool isLastShortAVowel();
+    static bool isLastShortAVowel(QString scpiHeader);
     int row() const;
     void removeRow(int row);
     static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode);
