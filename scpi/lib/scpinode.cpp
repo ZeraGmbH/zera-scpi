@@ -171,16 +171,22 @@ int ScpiNode::getInstanceCount()
     return m_instanceCount;
 }
 
+QString ScpiNode::createShortHeader(QString scpiHeader)
+{
+    QString scpiHeaderShort;
+    if(scpiHeader.length() < 4)
+        scpiHeaderShort = scpiHeader;
+    else if(isLastShortAVowel(scpiHeader))
+        scpiHeaderShort = scpiHeader.left(3);
+    else
+        scpiHeaderShort = scpiHeader.left(4);
+    return scpiHeaderShort;
+}
+
 void ScpiNode::adjustScpiHeaders(QString scpiHeader)
 {
     m_sScpiHeaderFull = scpiHeader.toUpper();
-    if(m_sScpiHeaderFull.length() < 4)
-        m_sScpiHeaderShort = m_sScpiHeaderFull;
-    else if(isLastShortAVowel(m_sScpiHeaderFull))
-        m_sScpiHeaderShort = m_sScpiHeaderFull.left(3);
-    else {
-        m_sScpiHeaderShort = m_sScpiHeaderFull.left(4);
-    }
+    m_sScpiHeaderShort = createShortHeader(m_sScpiHeaderFull);
 }
 
 bool ScpiNode::isLastShortAVowel(QString scpiHeader)
