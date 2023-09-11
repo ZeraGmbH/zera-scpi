@@ -22,7 +22,7 @@ private:
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);
     QStringList removeEmptyNodes(const QStringList& parentNodeNames);
-    static QList<QStringList> makeShort(QList<QStringList> childNameListFull);
+    static QList<QStringList> makeShortNameList(QList<QStringList> childNameListFull);
 
     ScpiNode m_invisibleRootNode;
     cParse m_Parser;

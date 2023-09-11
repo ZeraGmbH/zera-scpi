@@ -73,7 +73,7 @@ void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
     ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
 }
 
-QList<QStringList> cSCPIPrivate::makeShort(QList<QStringList> childNameListFull)
+QList<QStringList> cSCPIPrivate::makeShortNameList(QList<QStringList> childNameListFull)
 {
     QList<QStringList> childNameListShort;
     for(const auto &fullNameList : qAsConst(childNameListFull)) {
@@ -90,7 +90,7 @@ QStringList cSCPIPrivate::checkDoubleShortNames()
 {
     QList<QStringList> childNameListFull;
     createFullNonNodeNameList(childNameListFull);
-    QList<QStringList> childNameListShort = makeShort(childNameListFull);
+    QList<QStringList> childNameListShort = makeShortNameList(childNameListFull);
     QSet<QStringList> checkShortNames;
     QStringList errorInfos;
     for(int i = 0; i<childNameListShort.count(); i++) {
