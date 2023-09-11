@@ -121,6 +121,15 @@ QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QS
     return cmdTag;
 }
 
+void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNode *childNode, const QStringList parentNames)
+{
+    QString typeInfo;
+    if(parentNames.isEmpty())
+        typeInfo = "Model,";
+    typeInfo += ScpiNodeStaticFunctions::scpiTypeToString(childNode->getType());
+    cmdTag.setAttribute("Type", typeInfo);
+}
+
 void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
@@ -130,14 +139,9 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
 
         QDomElement cmdTag = createCmdTag(childNameListFull, doc, childNameFull, childNode);
         addNodeSpecificAttributes(childNode, cmdTag);
-
-        QString typeInfo;
-        if(parentNames.isEmpty())
-            typeInfo = "Model,";
-        typeInfo += ScpiNodeStaticFunctions::scpiTypeToString(childNode->getType());
-        cmdTag.setAttribute("Type", typeInfo);
-
+        addTypeAttribute(cmdTag, childNode, parentNames);
         rootElement.appendChild(cmdTag);
+
         addNodeAndChildrenToXml(childNode, doc, cmdTag, childNameListFull);
     }
 }
