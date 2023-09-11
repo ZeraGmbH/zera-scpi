@@ -39,6 +39,7 @@ private:
     void removeRow(int row);
     static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode);
     static void addNodeSpecificAttributes(const ScpiNode *childNode, QDomElement &cmdTag);
+    static void addTypeAttribute(QDomElement &cmdTag, const ScpiNode *childNode, const QStringList parentNames);
 
     cSCPIObject* m_pScpiObject = nullptr;
     QString m_sScpiHeaderShort;
