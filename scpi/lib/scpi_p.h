@@ -15,7 +15,7 @@ public:
     void delSCPICmds(const QString& cmd);
     cSCPIObject* getSCPIObject(const QString& input);
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry);
-    void createFullNameList(QList<QStringList> &childNameList);
+    void createFullNonNodeNameList(QList<QStringList> &childNameList);
 private:
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);

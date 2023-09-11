@@ -65,7 +65,7 @@ public:
     cSCPIObject* getSCPIObject(const cSCPICommand &input) const;
 
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
-    void createFullNameList(QList<QStringList> &childNameList);
+    void createFullNonNodeNameList(QList<QStringList> &childNameList);
 private:
     cSCPIPrivate *d_ptr;
 };

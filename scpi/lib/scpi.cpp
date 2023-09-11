@@ -46,7 +46,7 @@ void cSCPI::exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBa
     d_ptr->exportSCPIModelXML(sxml, modelListBaseEntry);
 }
 
-void cSCPI::createFullNameList(QList<QStringList> &childNameList)
+void cSCPI::createFullNonNodeNameList(QList<QStringList> &childNameList)
 {
-    d_ptr->createFullNameList(childNameList);
+    d_ptr->createFullNonNodeNameList(childNameList);
 }

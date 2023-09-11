@@ -24,7 +24,7 @@ void test_scpishortformcmd::checkNamesForNonNodes()
     addScpiObjects(scpiInfos);
 
     QList<QStringList> scpiList;
-    m_scpiInterface->createFullNameList(scpiList);
+    m_scpiInterface->createFullNonNodeNameList(scpiList);
     QCOMPARE(scpiList.count(), 3);
     QVERIFY(scpiList.contains(list1));
     QVERIFY(scpiList.contains(list2));
