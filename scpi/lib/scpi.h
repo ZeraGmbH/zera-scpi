@@ -66,6 +66,7 @@ public:
 
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
+    QStringList checkDoubleShortNames();
 private:
     cSCPIPrivate *d_ptr;
 };

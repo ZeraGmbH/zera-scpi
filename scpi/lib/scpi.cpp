@@ -50,3 +50,8 @@ void cSCPI::createFullNonNodeNameList(QList<QStringList> &childNameList)
 {
     d_ptr->createFullNonNodeNameList(childNameList);
 }
+
+QStringList cSCPI::checkDoubleShortNames()
+{
+    return d_ptr->checkDoubleShortNames();
+}

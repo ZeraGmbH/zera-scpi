@@ -11,7 +11,12 @@ class test_scpishortformcmd : public QObject
     Q_OBJECT
 private slots:
     void init();
+    void cleanup();
+
     void checkNamesForNonNodes();
+    void checkZeroDoubleShort();
+    void checkOneDoubleShort();
+    void checkTwoDoubleShort();
 
 private:
     struct ScpiNodeInfo

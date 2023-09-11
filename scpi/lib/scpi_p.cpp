@@ -4,6 +4,7 @@
 #include <QDomDocument>
 #include <QDomElement>
 #include <QList>
+#include <QSet>
 
 cSCPIPrivate::cSCPIPrivate() :
     m_invisibleRootNode(QString(), nullptr)
@@ -70,6 +71,36 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml, QMap<QString, QString> mode
 void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
 {
     ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
+}
+
+QList<QStringList> cSCPIPrivate::makeShort(QList<QStringList> childNameListFull)
+{
+    QList<QStringList> childNameListShort;
+    for(const auto &fullNameList : qAsConst(childNameListFull)) {
+        QStringList namesShort;
+        for(const auto &fullName : fullNameList) {
+            namesShort.append(ScpiNode::createShortHeader(fullName));
+        }
+        childNameListShort.append(namesShort);
+    }
+    return childNameListShort;
+}
+
+QStringList cSCPIPrivate::checkDoubleShortNames()
+{
+    QList<QStringList> childNameListFull;
+    createFullNonNodeNameList(childNameListFull);
+    QList<QStringList> childNameListShort = makeShort(childNameListFull);
+    QSet<QStringList> checkShortNames;
+    QStringList errorInfos;
+    for(int i = 0; i<childNameListShort.count(); i++) {
+        if(checkShortNames.contains(childNameListShort[i])) {
+            QString errorNameInfo = childNameListFull[i].join(":") + " / " + childNameListShort[i].join(":");
+            errorInfos.append(errorNameInfo);
+        }
+        checkShortNames.insert(childNameListShort[i]);
+    }
+    return errorInfos;
 }
 
 ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
