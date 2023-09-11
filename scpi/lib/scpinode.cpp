@@ -103,16 +103,20 @@ void ScpiNode::add(ScpiNode *node)
     m_children.append(node);
 }
 
-QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode)
+void ScpiNode::addNodeSpecificAttributes(const ScpiNode *childNode, QDomElement &cmdTag)
 {
-    QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
-    if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
-        cmdTag.setAttribute("ScpiPath", childNames.join(":"));
     cSCPIObject::XmlKeyValueMap xmlAtributes;
     if(childNode->getScpiObject())
         xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
     for(auto attIter=xmlAtributes.constBegin(); attIter!=xmlAtributes.constEnd(); ++attIter)
         cmdTag.setAttribute(attIter.key(), attIter.value());
+}
+
+QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode)
+{
+    QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
+    if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
+        cmdTag.setAttribute("ScpiPath", childNames.join(":"));
 
     return cmdTag;
 }
@@ -125,6 +129,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
         QStringList childNames = parentNames + QStringList(childName);
 
         QDomElement cmdTag = createCmdTag(childNames, doc, childName, childNode);
+        addNodeSpecificAttributes(childNode, cmdTag);
 
         QString typeInfo;
         if(parentNames.isEmpty())
