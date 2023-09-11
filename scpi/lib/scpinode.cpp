@@ -125,10 +125,10 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNode *childNode = *iter;
-        QString childName = childNode->getFullHeader();
-        QStringList childNames = parentNames + QStringList(childName);
+        QString childNameFull = childNode->getFullHeader();
+        QStringList childNameListFull = parentNames + QStringList(childNameFull);
 
-        QDomElement cmdTag = createCmdTag(childNames, doc, childName, childNode);
+        QDomElement cmdTag = createCmdTag(childNameListFull, doc, childNameFull, childNode);
         addNodeSpecificAttributes(childNode, cmdTag);
 
         QString typeInfo;
@@ -138,7 +138,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
         cmdTag.setAttribute("Type", typeInfo);
 
         rootElement.appendChild(cmdTag);
-        addNodeAndChildrenToXml(childNode, doc, cmdTag, childNames);
+        addNodeAndChildrenToXml(childNode, doc, cmdTag, childNameListFull);
     }
 }
 
