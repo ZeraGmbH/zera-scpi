@@ -67,7 +67,7 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml, QMap<QString, QString> mode
     sxml = modelDoc.toString();
 }
 
-void cSCPIPrivate::createFullNameList(QList<QStringList> &childNameList)
+void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
 {
     ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
 }
