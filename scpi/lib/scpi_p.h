@@ -2,9 +2,8 @@
 #define SCPI_P_H
 
 #include "parse.h"
+#include "scpi.h"
 #include "scpinode.h"
-#include "scpinodestaticfunctions.h"
-#include <QStringList>
 #include <QDomDocument>
 
 class cSCPIPrivate
@@ -16,13 +15,14 @@ public:
     cSCPIObject* getSCPIObject(const QString& input);
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry);
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
-    QStringList checkDoubleShortNames();
-
+    ScpiAmbiguityMap checkAmbiguousShortNames();
 private:
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);
     QStringList removeEmptyNodes(const QStringList& parentNodeNames);
     static QList<QStringList> makeShortNameList(QList<QStringList> childNameListFull);
+    ScpiAmbiguityMap createAllShortLongListMap(QList<QStringList> childNameListFull, QList<QStringList> childNameListShort);
+    ScpiAmbiguityMap filterAmbigous(ScpiAmbiguityMap allShortLong);
 
     ScpiNode m_invisibleRootNode;
     cParse m_Parser;
