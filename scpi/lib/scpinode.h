@@ -30,6 +30,7 @@ public:
     bool isEmpty() const;
     void add(ScpiNode *node);
     static void addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
+    static void addNodeAndChildrenToNameListFull(const ScpiNode *node, const QStringList parentNames, QList<QStringList> &scpiPathList);
 
     static int getInstanceCount();
 private:

@@ -1,0 +1,27 @@
+#ifndef TEST_SCPISHORTFORMCMD_H
+#define TEST_SCPISHORTFORMCMD_H
+
+#include <QObject>
+#include "scpi.h"
+#include "scpiobject.h"
+#include "scpitestobjectstub.h"
+
+class test_scpishortformcmd : public QObject
+{
+    Q_OBJECT
+private slots:
+    void init();
+    void checkNamesForNonNodes();
+
+private:
+    struct ScpiNodeInfo
+    {
+        QStringList nodePath;
+        quint8 type;
+    };
+    void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
+
+    cSCPI *m_scpiInterface;
+};
+
+#endif // TEST_SCPISHORTFORMCMD_H
