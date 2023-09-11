@@ -146,6 +146,18 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
     }
 }
 
+void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNode *node, const QStringList parentNames, QList<QStringList> &scpiPathList)
+{
+    for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
+        const ScpiNode *childNode = *iter;
+        QString childName = childNode->getFullHeader();
+        QStringList childNameList = parentNames + QStringList(childName);
+        if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
+            scpiPathList.append(childNameList);
+        addNodeAndChildrenToNameListFull(childNode, childNameList, scpiPathList);
+    }
+}
+
 void ScpiNode::removeRow(int row)
 {
     delete m_children.takeAt(row);
