@@ -37,6 +37,7 @@ private:
     bool isLastShortAVowel();
     int row() const;
     void removeRow(int row);
+    static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode);
 
     cSCPIObject* m_pScpiObject = nullptr;
     QString m_sScpiHeaderShort;

@@ -103,6 +103,20 @@ void ScpiNode::add(ScpiNode *node)
     m_children.append(node);
 }
 
+QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode)
+{
+    QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
+    if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
+        cmdTag.setAttribute("ScpiPath", childNames.join(":"));
+    cSCPIObject::XmlKeyValueMap xmlAtributes;
+    if(childNode->getScpiObject())
+        xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
+    for(auto attIter=xmlAtributes.constBegin(); attIter!=xmlAtributes.constEnd(); ++attIter)
+        cmdTag.setAttribute(attIter.key(), attIter.value());
+
+    return cmdTag;
+}
+
 void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
@@ -110,14 +124,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
         QString childName = childNode->getFullHeader();
         QStringList childNames = parentNames + QStringList(childName);
 
-        QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
-        if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
-            cmdTag.setAttribute("ScpiPath", childNames.join(":"));
-        cSCPIObject::XmlKeyValueMap xmlAtributes;
-        if(childNode->getScpiObject())
-            xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
-        for(auto attIter=xmlAtributes.constBegin(); attIter!=xmlAtributes.constEnd(); ++attIter)
-            cmdTag.setAttribute(attIter.key(), attIter.value());
+        QDomElement cmdTag = createCmdTag(childNames, doc, childName, childNode);
 
         QString typeInfo;
         if(parentNames.isEmpty())
