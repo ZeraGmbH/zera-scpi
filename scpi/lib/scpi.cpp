@@ -51,7 +51,7 @@ void cSCPI::createFullNonNodeNameList(QList<QStringList> &childNameList)
     d_ptr->createFullNonNodeNameList(childNameList);
 }
 
-ScpiAmbiguityMap cSCPI::checkAmbiguousShortNames()
+ScpiAmbiguityMap cSCPI::checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction)
 {
-    return d_ptr->checkAmbiguousShortNames();
+    return d_ptr->checkAmbiguousShortNames(ignoreFunction);
 }

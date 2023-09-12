@@ -74,14 +74,14 @@ void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
     ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
 }
 
-ScpiAmbiguityMap cSCPIPrivate::checkAmbiguousShortNames()
+ScpiAmbiguityMap cSCPIPrivate::checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction)
 {
     QList<QStringList> childNameListFull;
     createFullNonNodeNameList(childNameListFull);
     QList<QStringList> childNameListShort = makeShortNameList(childNameListFull);
     Q_ASSERT(childNameListFull.size() == childNameListShort.size());
 
-    return filterAmbigous(createAllShortLongListMap(childNameListFull, childNameListShort));
+    return ignoreFunction(filterAmbigous(createAllShortLongListMap(childNameListFull, childNameListShort)));
 }
 
 ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)

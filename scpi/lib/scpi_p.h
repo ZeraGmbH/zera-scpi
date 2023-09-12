@@ -15,7 +15,7 @@ public:
     cSCPIObject* getSCPIObject(const QString& input);
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry);
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
-    ScpiAmbiguityMap checkAmbiguousShortNames();
+    ScpiAmbiguityMap checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction);
 private:
     ScpiNode *findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);

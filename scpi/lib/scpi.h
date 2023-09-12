@@ -51,6 +51,7 @@ enum eSCPINode { Node, Query, Cmd, CmdwP };
 class cSCPIPrivate;
 
 typedef QMap<QString /*short name*/, QStringList /*long name list*/> ScpiAmbiguityMap;
+typedef std::function<ScpiAmbiguityMap(ScpiAmbiguityMap)> ScpiAmbiguityIgnoreFunction;
 
 class SCPI_EXPORT cSCPI
 {
@@ -69,7 +70,7 @@ public:
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
 
-    ScpiAmbiguityMap checkAmbiguousShortNames();
+    ScpiAmbiguityMap checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction = [](ScpiAmbiguityMap inMap) { return inMap;});
 private:
     cSCPIPrivate *d_ptr;
 };
