@@ -10,29 +10,29 @@ jobs:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'ci skip')"
     strategy:
-      fail-fast: false
       matrix:
-        compiler:
-          - gcc
-          - clang
+        compiler: [gcc, clang]
 
     container:
       image: schnitzeltony/fedora-qt5:32
     steps:
-      - name: Download artifact
+      - name: Download zera-metaproject's install artifact
         uses: dawidd6/action-download-artifact@v2
         with:
           repo: ZeraGmbH/zera-metaproject
-          name: buildroot
+          name: install-artifact
           workflow: buildAndExportArtifact.yml
-          path: /github/home/install/
-      - uses: actions/checkout@master
+
+      - name: 'Untar install artifact'
+        run: tar -xf install_files.tar.xz -C /
+
+      - name: Checkout sources
+        uses: actions/checkout@master
         with:
           submodules: recursive
+
       - name: Build
         run: |
-          echo $HOME
-          echo $GITHUB_WORKSPACE
           cd $HOME
           mkdir -p "$HOME/targetbuild"
           cd "$HOME/targetbuild"
@@ -41,7 +41,6 @@ jobs:
             export CC=clang
             export CXX=clang++
           fi
-
           cmake $GITHUB_WORKSPACE \
            -DCMAKE_PREFIX_PATH="$HOME/install/usr;/usr" \
            -DCMAKE_INSTALL_PREFIX:PATH="$HOME/install/usr" \
