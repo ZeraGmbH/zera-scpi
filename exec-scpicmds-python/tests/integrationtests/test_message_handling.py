@@ -5,6 +5,7 @@ sys.path.insert(0, '.')
 import unittest
 import socket
 from src.message_parser import MessageParser
+from testlib.file_helper import FileHelper
 from src.message_handlers import TCPHandler
 from testlib.message_parser_helper import FileWriterHelper
 from testlib.tcp_server_helper import EchoVerboseTcpServer, PortNumberGenerator
@@ -19,7 +20,7 @@ def setUpModule():
 class TestMessageHandling(unittest.TestCase):
     def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
         # Prepare and read message file
-        filename = MessageParser.get_filename_from_class_and_method(self, self.test_read_message_file_and_send_receive_over_tcpip) + ".txt"
+        filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_message_file_and_send_receive_over_tcpip) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = list()
         lines.append("*IDN?")

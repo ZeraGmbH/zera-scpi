@@ -3,7 +3,7 @@ import os
 import sys
 sys.path.insert(0, '.')
 import unittest
-from src.message_parser import MessageParser
+from testlib.file_helper import FileHelper
 from testlib.message_parser_helper import FileWriterHelper
 from testlib.tcp_server_helper import PortNumberGenerator
 from testlib.scpi_instrument_stub import ScpiInstrumentStub
@@ -19,7 +19,7 @@ def setUpModule():
 class TestExecScpiCmds(unittest.TestCase):
     def test_program_exit_code_with_basic_commandline_arguments(self) -> None:
         # Prepare message file
-        filename = MessageParser.get_filename_from_class_and_method(self, self.test_program_exit_code_with_basic_commandline_arguments) + ".txt"
+        filename = FileHelper.get_filename_from_class_and_method(self, self.test_program_exit_code_with_basic_commandline_arguments) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = list()
         lines.append(" \t*IDN?| *IDN? \t ")

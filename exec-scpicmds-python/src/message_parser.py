@@ -56,10 +56,6 @@ class MessageParser:
             return None
 
     @staticmethod
-    def get_filename_from_class_and_method(c: type, m: callable):
-        return c.__class__.__name__ + "__" + m.__name__
-
-    @staticmethod
     def get_command_type_from_string(command: str) -> CommandType:
         if "?" in command:
             return CommandType.QUERY
