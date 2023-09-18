@@ -5,11 +5,12 @@ import sys
 sys.path.insert(0, '.')
 from src.message_parser import MessageParser, CommandType, CommandData, MessageData
 from testlib.message_parser_helper import FileWriterHelper
+from testlib.file_helper import FileHelper
 
 
 class TestMessageParser(unittest.TestCase):
     def test_read_messages_from_file(self) -> None:
-        filename = MessageParser.get_filename_from_class_and_method(self, self.test_read_messages_from_file) + ".txt"
+        filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_messages_from_file) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = list()
         lines.append("\t*IDN? |IDN?  ")
@@ -35,7 +36,7 @@ class TestMessageParser(unittest.TestCase):
         self.assertEqual(messages[3], lines[4].strip(), f"Message #4 \"{lines[4]}\" is not parsed correctly.")
 
     def test_read_messages_with_lines_from_file(self) -> None:
-        filename = MessageParser.get_filename_from_class_and_method(self, self.test_read_messages_with_lines_from_file) + ".txt"
+        filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_messages_with_lines_from_file) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = list()
         lines.append("# My comment")
