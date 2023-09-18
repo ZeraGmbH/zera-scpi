@@ -56,10 +56,10 @@ class ExecScpiCmdsProgram:
             if not message.is_valid:
                 for command in message.commands:
                     if command.command_type is CommandType.UNKNOWN:
-                        logging.info(f" > Invalid command found in line {message.file_line_number}:{command.position_in_message}")
+                        logging.info(f" > Invalid command found in line {message.file_line_number + 1}:{command.position_in_message + 1}")
                     elif command.command_type is CommandType.EMPTY:
-                        logging.info(f" > Empty command found in line {message.file_line_number}:{command.position_in_message}")
-                    # TODO Check for ASCII characters and allowed symboles only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
+                        logging.info(f" > Empty command found in line {message.file_line_number + 1}:{command.position_in_message + 1}")
+                    # TODO Check for ASCII characters and allowed symbols only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
                 invalid_message_found = True
         if not invalid_message_found:
             logging.info("... all messages are valid.")
@@ -77,20 +77,20 @@ class ExecScpiCmdsProgram:
         if len(messages) > 0:
             logging.info("Sending messages...")
             for message in messages:
-                line_number_string = str(message.file_line_number).zfill(message.command_count_string_width)
+                line_number_string = str(message.file_line_number + 1).zfill(message.command_count_string_width)
                 indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
                 expected_responses_count_string_width = len(str(len(indices_of_expected_responses)))
                 logging.info(f"==> [L{line_number_string}] {message.original_message}")
                 message_part_position = ""
                 for c, command in enumerate(message.commands):
                     message_part_position = message_part_position.ljust(command.position_in_message, " ")
-                    message_part_position += f"[{str(c).zfill(expected_responses_count_string_width)}]"
+                    message_part_position += f"[{str(c + 1).zfill(expected_responses_count_string_width)}]"
                 logging.info(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}")
                 tcp_handler.send_message(message.original_message + "\n")
                 for r in range(len(indices_of_expected_responses)):
                     response = tcp_handler.receive_response()
                     if response is not None:
-                        logging.info(f" <-[{str(indices_of_expected_responses[r]).zfill(expected_responses_count_string_width)}] {response}")
+                        logging.info(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_count_string_width)}] {response}")
                     else:
                         logging.info("Timeout on receiving response.")
         else:
