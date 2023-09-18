@@ -12,7 +12,7 @@ from src.message_handlers import TCPHandler
 
 class ExecScpiCmdsProgram:
     @staticmethod
-    def run() -> None:
+    def run() -> int:
         def check_positive_integer(value: str, excl_zero: bool = False) -> int:
             int_value = int(value)
             if (excl_zero and int_value <= 0) or (not excl_zero and int_value < 0):
@@ -34,16 +34,19 @@ class ExecScpiCmdsProgram:
                             help="Port number of instrument.")
         parser.add_argument("-t", "--receive-timeout", type=lambda x: check_positive_integer(x, excl_zero=True), default=3000,
                             help="Receive timeout [ms] of TCP/IP-connection to instrument.")
-        args = parser.parse_args()
+        try:
+            args = parser.parse_args()
+        except SystemExit:
+            return 1
 
         if not os.path.exists(args.input_file):
             logging.info(f"File \"{args.input_file}\" does not exist!")
-            exit(1)
+            return 2
 
         if (messages_and_lines := MessageParser.read_messages_with_lines_from_file(args.input_file)) is None:
             logging.info(f"Reading file \"{args.input_file}\" failed!")
-            exit(2)
-        
+            return 3
+
         messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line, len(messages_and_lines[0]))
                                        for message_and_line in zip(*messages_and_lines)]
 
@@ -69,7 +72,7 @@ class ExecScpiCmdsProgram:
             logging.info(f"... successfully connected to {args.ip_address}:{args.port_number}.")
         else:
             logging.info(f"... establishing connection failed!")
-            exit(3)
+            return 4
 
         if len(messages) > 0:
             logging.info("Sending messages...")
@@ -96,12 +99,15 @@ class ExecScpiCmdsProgram:
         logging.info(f"Disconnecting from {args.ip_address}:{args.port_number}...")
         del tcp_handler
 
+        return 0
 
-def main():
+
+def main() -> None:
     logging.getLogger().setLevel(logging.DEBUG)
     logging.basicConfig(format="[%(asctime)s.%(msecs)03d]: %(message)s", datefmt="%H:%M:%S")
     program = ExecScpiCmdsProgram
-    program.run()
+    result = program.run()
+    exit(result)
 
 
 if __name__ == "__main__":
