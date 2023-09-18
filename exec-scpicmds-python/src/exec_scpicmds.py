@@ -37,12 +37,15 @@ class ExecScpiCmdsProgram:
                             help="Port number of instrument.")
         parser.add_argument("-t", "--receive-timeout", type=lambda x: check_positive_integer(x, excl_zero=True), default=3000,
                             help="Receive timeout [ms] of TCP/IP-connection to instrument.")
+        parser.add_argument("--enable-formatted-output", action="store_true", default=False,
+                            help="Enable output formatted with colors and styles.")
+
         try:
             args = parser.parse_args()
         except SystemExit:
             return 1
 
-        Logging.enable_formatted_output(True)  # TODO add parameter
+        Logging.enable_formatted_output(args.enable_formatted_output)
 
         if not os.path.exists(args.input_file):
             Logging.log_debug_msg(f"File \"{args.input_file}\" does not exist!", LoggingColor.RED)
