@@ -39,12 +39,12 @@ class TestExecScpiCmds(unittest.TestCase):
             sys.argv[1:] = ["-i", ip_address, "-p", str(port_number), "-f", filename]
             logging.debug("Running program...")
             program = ExecScpiCmdsProgram()
-            program.run()
-        except SystemExit as e:
-            self.assertEqual(e.code, 0, f"Program returned with exit code {e.code}.")
-            # TODO modify program (add command line parameter to exit on errors like timeout?) to exit (with different codes) on errors
-        except Exception as e:
+            result = program.run()
+        except BaseException as e:
             raise e  # Propagate exception to unittest
+        else:
+            self.assertEqual(result, 0, f"Program returned with value {result}.")
+            # TODO modify program (add command line parameter to exit on errors like timeout?) to exit (with different codes) on errors
         finally:
             logging.debug("Cleanup...")
             instrument.quit()
