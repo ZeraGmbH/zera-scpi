@@ -39,6 +39,8 @@ class ExecScpiCmdsProgram:
                             help="Receive timeout [ms] of TCP/IP-connection to instrument.")
         parser.add_argument("--enable-formatted-output", action="store_true", default=False,
                             help="Enable output formatted with colors and styles.")
+        parser.add_argument("-r", "--number-of-repetitions", type=lambda x: check_positive_integer(x, excl_zero=False), default=1,
+                            help="Number of repetitions sending whole SCPI command file.")
 
         try:
             args = parser.parse_args()
@@ -83,24 +85,28 @@ class ExecScpiCmdsProgram:
             return 4
 
         if len(messages) > 0:
-            Logging.log_debug_msg("Sending messages...", LoggingColor.BLUE)
-            for message in messages:
-                line_number_string = str(message.file_line_number + 1).zfill(message.command_count_string_width)
-                indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
-                expected_responses_count_string_width = len(str(len(indices_of_expected_responses)))
-                Logging.log_debug_msg(f"==> [L{line_number_string}] {message.original_message}", style=LoggingStyle.BOLD)
-                message_part_position = ""
-                for c, command in enumerate(message.commands):
-                    message_part_position = message_part_position.ljust(command.position_in_message, " ")
-                    message_part_position += f"[{str(c + 1).zfill(expected_responses_count_string_width)}]"
-                Logging.log_debug_msg(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}", LoggingColor.GREEN)
-                tcp_handler.send_message(message.original_message + "\n")
-                for r in range(len(indices_of_expected_responses)):
-                    response = tcp_handler.receive_response()
-                    if response is not None:
-                        Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_count_string_width)}] {response}")
-                    else:
-                        Logging.log_debug_msg("Timeout on receiving response.", LoggingColor.RED)
+            for current_repetition in range(args.number_of_repetitions):
+                if args.number_of_repetitions == 1:
+                    Logging.log_debug_msg("Sending messages...", LoggingColor.BLUE)
+                else:
+                    Logging.log_debug_msg(f"Sending messages (#{current_repetition + 1}/{args.number_of_repetitions})...", LoggingColor.BLUE)
+                for message in messages:
+                    line_number_string = str(message.file_line_number + 1).zfill(message.command_count_string_width)
+                    indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
+                    expected_responses_count_string_width = len(str(len(indices_of_expected_responses)))
+                    Logging.log_debug_msg(f"==> [L{line_number_string}] {message.original_message}", style=LoggingStyle.BOLD)
+                    message_part_position = ""
+                    for c, command in enumerate(message.commands):
+                        message_part_position = message_part_position.ljust(command.position_in_message, " ")
+                        message_part_position += f"[{str(c + 1).zfill(expected_responses_count_string_width)}]"
+                    Logging.log_debug_msg(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}", LoggingColor.GREEN)
+                    tcp_handler.send_message(message.original_message + "\n")
+                    for r in range(len(indices_of_expected_responses)):
+                        response = tcp_handler.receive_response()
+                        if response is not None:
+                            Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_count_string_width)}] {response}")
+                        else:
+                            Logging.log_debug_msg("Timeout on receiving response.", LoggingColor.RED)
         else:
             Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
 
