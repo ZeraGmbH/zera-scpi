@@ -59,4 +59,5 @@ jobs:
           ctest -V
       - name: Test with pytest
         run: |
+          cd exec-scpicmds-python
           python3 -m unittest tests/unittests/test_logging_handler.py
