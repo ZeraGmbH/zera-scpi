@@ -12,7 +12,7 @@ jobs:
     container:
       image: schnitzeltony/fedora-qt5:32
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@master
 
       - name: Echo GitHub environment
         run: |
