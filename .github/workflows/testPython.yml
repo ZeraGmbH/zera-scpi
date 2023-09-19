@@ -12,6 +12,7 @@ jobs:
     container:
       image: schnitzeltony/fedora-qt5:32
     steps:
+      - uses: actions/checkout@v3
       - name: Echo GitHub environment
         run: |
           echo "Home: $HOME"
