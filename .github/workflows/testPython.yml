@@ -22,7 +22,6 @@ jobs:
 
       - name: Test with unittest
         run: |
-          pwd
           cd exec-scpicmds-python
           python3 -m unittest discover
 
