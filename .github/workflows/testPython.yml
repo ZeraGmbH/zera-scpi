@@ -1,0 +1,19 @@
+name: Python Applications Tests
+
+on:
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: schnitzeltony/fedora-qt5:32
+    steps:
+      - name: Test with unittest
+        run: |
+          cd exec-scpicmds-python
+          python3 -m unittest discover
+
