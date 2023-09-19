@@ -59,4 +59,4 @@ jobs:
           ctest -V
       - name: Test with pytest
         run: |
-          python -m unittest tests/unittests/test_logging_handler.py
+          python3 -m unittest tests/unittests/test_logging_handler.py
