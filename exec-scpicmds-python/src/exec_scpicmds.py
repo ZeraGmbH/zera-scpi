@@ -41,6 +41,10 @@ class ExecScpiCmdsProgram:
                             help="Enable output formatted with colors and styles.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file.")
+        parser.add_argument("--sync_cmds_with_opc", action="store_true", default=False,
+                            help="Add an \"|*OPC?\" query after each command to synchronize it. "\
+                                "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
+                                "\033[0;31mAttention:\033[0m this feature only makes sense when queueing of SCPI commands on the target instrument is activated.")
 
         try:
             args = parser.parse_args()
@@ -86,27 +90,16 @@ class ExecScpiCmdsProgram:
 
         if len(messages) > 0:
             for current_repetition in range(args.number_of_repetitions):
-                if args.number_of_repetitions == 1:
-                    Logging.log_debug_msg("Sending messages...", LoggingColor.BLUE)
-                else:
-                    Logging.log_debug_msg(f"Sending messages (#{current_repetition + 1}/{args.number_of_repetitions})...", LoggingColor.BLUE)
+                ExecScpiCmdsProgram._print_sending_messages(current_repetition, args.number_of_repetitions)
                 for message in messages:
-                    line_number_string = str(message.file_line_number + 1).zfill(message.command_count_string_width)
+                    message_part_indices_string_width = len(str(len(message.commands) + 1))
                     indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
-                    expected_responses_count_string_width = len(str(len(indices_of_expected_responses)))
-                    Logging.log_debug_msg(f"==> [L{line_number_string}] {message.original_message}", style=LoggingStyle.BOLD)
-                    message_part_position = ""
-                    for c, command in enumerate(message.commands):
-                        message_part_position = message_part_position.ljust(command.position_in_message, " ")
-                        message_part_position += f"[{str(c + 1).zfill(expected_responses_count_string_width)}]"
-                    Logging.log_debug_msg(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}", LoggingColor.GREEN)
-                    tcp_handler.send_message(message.original_message + "\n")
-                    for r in range(len(indices_of_expected_responses)):
-                        response = tcp_handler.receive_response()
-                        if response is not None:
-                            Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_count_string_width)}] {response}")
-                        else:
-                            Logging.log_debug_msg("Timeout on receiving response.", LoggingColor.RED)
+                    expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
+                    ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
+                    if not args.sync_cmds_with_opc:
+                        ExecScpiCmdsProgram._send_message_and_read_response(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
+                    else:
+                        ExecScpiCmdsProgram._send_message_and_read_response_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
         else:
             Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
 
@@ -114,6 +107,49 @@ class ExecScpiCmdsProgram:
         del tcp_handler
 
         return 0
+
+    @staticmethod
+    def _send_message_and_read_response(tcp_handler: TCPHandler, message: str, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
+        message_string = message.original_message
+        tcp_handler.send_message(message_string + "\n")
+        for r in range(len(indices_of_expected_responses)):
+            response = tcp_handler.receive_response()
+            if response is not None:
+                Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
+            else:
+                Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[r] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
+
+    @staticmethod
+    def _send_message_and_read_response_with_opc(tcp_handler: TCPHandler, message: str, expected_responses_max_idx_string_width: int) -> None:
+        message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
+        tcp_handler.send_message(message_string + "\n")
+        for r in range(len(message.commands)):
+            response = tcp_handler.receive_response()
+            if response is not None:
+                if message.commands[r].command_type is CommandType.QUERY:
+                    Logging.log_debug_msg(f" <-[{str(r + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
+            else:
+                if message.commands[r].command_type is CommandType.QUERY:
+                    Logging.log_debug_msg(f" <-[{str(r + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
+                else:
+                    Logging.log_debug_msg(f" <-[{str(r + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
+
+    @staticmethod
+    def _print_sending_messages(current_repetition: int, number_of_repetitions: int) -> None:
+        if number_of_repetitions == 1:
+            Logging.log_debug_msg("Sending messages...", LoggingColor.BLUE)
+        else:
+            Logging.log_debug_msg(f"Sending messages (#{current_repetition + 1}/{number_of_repetitions})...", LoggingColor.BLUE)
+
+    @staticmethod
+    def _print_message_with_part_indices(message: str, expected_responses_count_string_width: int) -> None:
+        line_number_string = str(message.file_line_number + 1).zfill(message.command_count_string_width)
+        Logging.log_debug_msg(f"==> [L{line_number_string}] {message.original_message}", style=LoggingStyle.BOLD)
+        message_part_position = ""
+        for c, command in enumerate(message.commands):
+            message_part_position = message_part_position.ljust(command.position_in_message, " ")
+            message_part_position += f"[{str(c + 1).zfill(expected_responses_count_string_width)}]"
+        Logging.log_debug_msg(f"{''.ljust(len(line_number_string) + 8)}{message_part_position}", LoggingColor.GREEN)
 
 
 def main() -> None:
