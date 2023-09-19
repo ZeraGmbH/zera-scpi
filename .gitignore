@@ -25,6 +25,7 @@ moc_*.cpp
 ui_*.h
 qrc_*.cpp
 Thumbs.db
+exec-scpicmds/scpi_msg_files
 
 # qtcreator generated files
 *.pro.user*
