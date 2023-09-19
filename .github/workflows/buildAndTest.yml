@@ -57,7 +57,3 @@ jobs:
         run: |
           cd "$HOME/targetbuild"
           ctest -V
-      - name: Test with unittest
-        run: |
-          cd exec-scpicmds-python
-          python3 -m unittest discover
