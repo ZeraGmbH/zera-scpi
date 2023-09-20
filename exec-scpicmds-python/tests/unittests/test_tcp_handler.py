@@ -1,4 +1,3 @@
-from typing import Optional
 import logging
 import sys
 sys.path.insert(0, '.')
@@ -7,7 +6,7 @@ from src.message_handlers import TCPHandler
 from testlib.tcp_server_helper import VerboseTcpServer, EchoVerboseTcpServer, PortNumberGenerator
 
 
-def setUpModule():
+def setUpModule():  # pylint: disable=invalid-name
     start_port = 16320
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -22,8 +21,8 @@ class TestTCPHandler(unittest.TestCase):
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)
         try:  # Make sure the TCP handler gets disconnected on assertion exception
             self.assertTrue(tcp_handler.connected)
-        except Exception as e:
-            raise e  # Propagate exception to unittest
+        except Exception as exception:
+            raise exception  # Propagate exception to unittest
         finally:
             del tcp_handler
             server.quit()
@@ -39,8 +38,8 @@ class TestTCPHandler(unittest.TestCase):
         response = tcp_handler.receive_response()
         try:  # Make sure the TCP handler gets disconnected on assertion exception
             self.assertEqual(message.rstrip('\n'), response)
-        except Exception as e:
-            raise e  # Propagate exception to unittest
+        except Exception as exception:
+            raise exception  # Propagate exception to unittest
         finally:
             del tcp_handler
             server.quit()
