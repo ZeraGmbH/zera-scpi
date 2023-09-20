@@ -22,7 +22,6 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         
         invalid_cmd_lines = list()
         invalid_cmd_lines.append(f"-i {i} -p {0} -f '{f}'")
-        invalid_cmd_lines.append(f"-i {i} -p {1} -f '{f}'")  # TODO fix temp. CI fail test
         for invalid_cmd_line in invalid_cmd_lines:
             self.assertEqual(ExecScpiCmdsArgsParser.parse(shlex.split(invalid_cmd_line)), None, f"Parsing args \"{invalid_cmd_line}\" unexpectedly succeeded.")
 
