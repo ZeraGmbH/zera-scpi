@@ -31,4 +31,4 @@ jobs:
         pip install pylint
     - name: Analyzing the code with pylint
       run: |
-          pylint **/*.py --disable=R0801,R0903,R0912,C0114,C0115,C0116,C0301,C0413 --fail-under=9
+          pylint `find . -name "*.py"` --disable=R0801,R0903,R0912,C0114,C0115,C0116,C0301,C0413 --fail-under=9
