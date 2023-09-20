@@ -22,7 +22,7 @@ class TestLogging(unittest.TestCase):
             os.remove(filename)
         Logging.setup(filename, log_level=logging.DEBUG, enable_formatted_output=False)
         Logging.log_debug_msg("DEBUG_TEST", LoggingColor.RED, LoggingStyle.BOLD)
-        lines = list()
+        lines = []
         with open(filename, "r") as file:
             lines = file.readlines()
         self.assertEqual(len(lines), 1, f"Unexpected number of lines in logging output file \"{filename}\".")

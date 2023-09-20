@@ -12,7 +12,7 @@ class TestMessageParser(unittest.TestCase):
     def test_read_messages_from_file(self) -> None:
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_messages_from_file) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
-        lines = list()
+        lines = []
         lines.append("\t*IDN? |IDN?  ")
         lines.append("|".join(["*IDN" for x in range(1000)]))
         lines.append("\t")
@@ -38,7 +38,7 @@ class TestMessageParser(unittest.TestCase):
     def test_read_messages_with_lines_from_file(self) -> None:
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_messages_with_lines_from_file) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
-        lines = list()
+        lines = []
         lines.append("# My comment")
         lines.append("\t*IDN? |IDN?  ")
         lines.append("\t")

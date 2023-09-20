@@ -19,7 +19,7 @@ class TCPHandler(IMessageHandler):
         self._port_number = port_number
         self._receive_timeout = receive_timeout
         self._receive_buffer = ""
-        self._responses = list()
+        self._responses = []
         self._socket = None
         self._connect()
 
@@ -65,7 +65,7 @@ class TCPHandler(IMessageHandler):
             try:
                 self._socket.connect((self._ip_address, self._port_number))
                 return True
-            except Exception as e:
+            except socket.error:
                 if self._socket is not None:
                     self._socket.close()
                     self._socket = None
@@ -79,5 +79,4 @@ class TCPHandler(IMessageHandler):
             self._socket.close()
             self._socket = None
             return True
-        else:
-            return False
+        return False

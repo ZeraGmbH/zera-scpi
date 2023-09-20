@@ -21,7 +21,7 @@ class TestExecScpiCmds(unittest.TestCase):
         # Prepare message file
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_program_exit_code_with_basic_commandline_arguments) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
-        lines = list()
+        lines = []
         lines.append(" \t*IDN?| *IDN? \t ")
         lines.append("*STB?")
         lines.append("MEASURE:FFT1:UL1?")

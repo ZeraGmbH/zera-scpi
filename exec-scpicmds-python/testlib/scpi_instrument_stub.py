@@ -6,6 +6,7 @@ import itertools
 from testlib.tcp_server_helper import VerboseTcpServer
 
 
+
 # This class only handles a subset of the commands and of the syntax (e.g. queries without parameters) and returns pseudo responses
 class ScpiInstrumentStub(VerboseTcpServer):
     def __init__(self, ip_address: str, port_number: int) -> None:
@@ -17,9 +18,14 @@ class ScpiInstrumentStub(VerboseTcpServer):
     def __str__(self):
         return repr(self)
 
+    @staticmethod
+    def _send(client: socket.socket, response: str) -> None:
+        client.send(response.encode())
+
     def on_client_receive_message(self, client: socket.socket, message: str) -> None:
         super().on_client_receive_message(client, message)
-        send = lambda response: client.send(response.encode())
+        def send(response: str) -> None:
+            client.send(response.encode())
         commands = [command.strip().upper() for command in message.split("|")]
         for command in commands:
             if command.endswith("?"):

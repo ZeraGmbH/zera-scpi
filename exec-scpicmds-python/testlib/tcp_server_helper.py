@@ -13,32 +13,30 @@ class PortNumberGenerator:
 
     @classmethod
     def set_port_range(cls, begin: int, end: int) -> bool:
-        if begin <= end and begin > 0 and end <= 65535:
+        if 0 < begin <= end <= 65535:
             cls._begin = begin
             cls._end = end
             cls._cur = begin
             return True
-        else:
-            return False
+        return False
 
     @classmethod
     def get_current_port_number(cls) -> Optional[int]:
         return cls._cur
-    
+
     @classmethod
     def get_next_port_number(cls) -> Optional[int]:
         cur = cls._cur
         if cur <= cls._end:
             cls._cur += 1
             return cur
-        else:
-            return None
+        return None
 
 
 @dataclass
 class ClientData:
     socket: socket.socket
-    id: int
+    client_id: int
     thread: threading.Thread
 
 
@@ -47,47 +45,47 @@ class TcpServer():
         self._ip_address = ip_address
         self._port_number = port_number
         self._socket = socket.socket()
-        self._clients: List[ClientData] = list()
+        self._clients: List[ClientData] = []
         self._next_client_id = 0
         self._quit = False
         self._socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         self._socket.setblocking(False)  # Allows for quitting the server while in the accept-loop
         self._socket.bind((self._ip_address, self._port_number))
         self._socket.listen(listen_backlog)
-    
+
     def __del__(self) -> None:
         self.quit()
 
     def run(self, run_in_background: bool = False) -> None:
         if run_in_background:
-            t = threading.Thread(target=self._run)
-            t.start()
+            thread = threading.Thread(target=self._run)
+            thread.start()
         else:
             self._run()
-    
+
     def _run(self) -> None:
         self.on_server_start()
         try:
             self._accept_clients()
-        except Exception as ex:
+        except Exception as ex:  # pylint: disable=broad-exception-caught
             logging.error(ex)
         finally:
             self.on_server_stop()
             for client_data in self._clients:
                 client_data.socket.close()
             self._socket.close()
-    
+
     def quit(self) -> None:
         self._quit = True
         for client_data in self._clients:
             client_data.thread.join()
-            logging.debug(f"Joined thread #{client_data.id}")
+            logging.debug("Joined thread #%d", client_data.client_id)
 
     def _accept_clients(self) -> None:
         while not self._quit:
             try:
                 client_socket, _address = self._socket.accept()
-            except:  # Timeout
+            except BlockingIOError:  # Timeout
                 pass
             else:
                 thread = threading.Thread(target=self.receive, args=(client_socket,))
@@ -106,9 +104,9 @@ class TcpServer():
             # TODO current simplified assumption: we read complete messages and messages only consist of single byte characters
             #      => correct would be: read byte-chunks, add them to a buffer, and on receiving a "\n", split the message of,
             #      then decode() it (multibyte characters) and pass it to on_client_receive_message()
-        for c, client_data in enumerate(self._clients):
+        for client_idx, client_data in enumerate(self._clients):
             if client_data.socket is client:
-                del self._clients[c]
+                del self._clients[client_idx]
                 break
         self.on_client_connection_close(client)
         client.close()
@@ -146,7 +144,7 @@ class VerboseTcpServer(TcpServer):
         logging.debug("Server closed.")
 
     def on_client_receive_message(self, _client: socket.socket, message: str) -> None:
-        logging.debug(f"Client sent message: {message}")
+        logging.debug("Client sent message: %s", message)
 
     def on_client_connection_open(self, _client: socket.socket) -> None:
         logging.debug("Client connected.")

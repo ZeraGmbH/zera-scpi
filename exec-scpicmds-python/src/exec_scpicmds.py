@@ -3,6 +3,7 @@
 from typing import List, Optional
 import os
 import sys
+sys.path.insert(0, '.')
 import argparse
 import logging
 import re
@@ -10,7 +11,6 @@ from src.logging_handler import Logging, LoggingColor, LoggingStyle
 from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
 
-sys.path.insert(0, '.')
 
 
 class ExecScpiCmdsArgsParser:
@@ -132,7 +132,7 @@ class ExecScpiCmdsProgram:
     def _send_message_and_read_response(tcp_handler: TCPHandler, message: str, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
         message_string = message.original_message
         tcp_handler.send_message(message_string + "\n")
-        for resp_idx in enumerate(indices_of_expected_responses):
+        for resp_idx, _ in enumerate(indices_of_expected_responses):
             response = tcp_handler.receive_response()
             if response is not None:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
@@ -143,7 +143,7 @@ class ExecScpiCmdsProgram:
     def _send_message_and_read_response_with_opc(tcp_handler: TCPHandler, message: str, expected_responses_max_idx_string_width: int) -> None:
         message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
         tcp_handler.send_message(message_string + "\n")
-        for resp_idx in enumerate(message.commands):
+        for resp_idx, _ in enumerate(message.commands):
             response = tcp_handler.receive_response()
             if response is not None:
                 if message.commands[resp_idx].command_type is CommandType.QUERY:
