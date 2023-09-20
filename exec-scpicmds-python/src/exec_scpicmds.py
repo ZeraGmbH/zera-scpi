@@ -12,7 +12,6 @@ from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
 
 
-
 class ExecScpiCmdsArgsParser:
     @staticmethod
     def _check_positive_integer(value: str, excl_zero: bool=False) -> int:
@@ -64,6 +63,7 @@ class ExecScpiCmdsArgsParser:
         except SystemExit:
             return None
 
+
 class ExecScpiCmdsProgram:
     @staticmethod
     def run() -> int:
@@ -84,6 +84,25 @@ class ExecScpiCmdsProgram:
         messages: List[MessageData] = [MessageParser.get_message_data_from_string(*message_and_line, len(messages_and_lines[0]))
                                        for message_and_line in zip(*messages_and_lines)]
 
+        ExecScpiCmdsProgram._check_messages(messages)
+
+        Logging.log_debug_msg(f"Connecting to {args.ip_address}:{args.port_number}...")
+        tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
+        if tcp_handler.connected:
+            Logging.log_debug_msg(f"... successfully connected to {args.ip_address}:{args.port_number}.", LoggingColor.GREEN)
+        else:
+            Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
+            return 4
+
+        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_opc)
+
+        Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
+        del tcp_handler
+
+        return 0
+
+    @staticmethod
+    def _check_messages(messages: List[MessageData]) -> None:
         Logging.log_debug_msg("Checking messages...")
         invalid_message_found = False
         for message in messages:
@@ -99,34 +118,6 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... all messages are valid.", LoggingColor.GREEN)
         else:
             Logging.log_debug_msg("... invalid messages(s) found!", LoggingColor.RED)
-
-        Logging.log_debug_msg(f"Connecting to {args.ip_address}:{args.port_number}...")
-        tcp_handler = TCPHandler(args.ip_address, args.port_number, args.receive_timeout)
-        if tcp_handler.connected:
-            Logging.log_debug_msg(f"... successfully connected to {args.ip_address}:{args.port_number}.", LoggingColor.GREEN)
-        else:
-            Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
-            return 4
-
-        if len(messages) > 0:
-            for current_repetition in range(args.number_of_repetitions):
-                ExecScpiCmdsProgram._print_sending_messages(current_repetition, args.number_of_repetitions)
-                for message in messages:
-                    message_part_indices_string_width = len(str(len(message.commands) + 1))
-                    indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
-                    expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
-                    ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
-                    if not args.sync_cmds_with_opc:
-                        ExecScpiCmdsProgram._send_message_and_read_response(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
-                    else:
-                        ExecScpiCmdsProgram._send_message_and_read_response_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
-        else:
-            Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
-
-        Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
-        del tcp_handler
-
-        return 0
 
     @staticmethod
     def _send_message_and_read_response(tcp_handler: TCPHandler, message: str, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
@@ -153,6 +144,23 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
                 else:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
+
+    @staticmethod
+    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_opc: bool) -> None:
+        if len(messages) > 0:
+            for current_repetition in range(number_of_repetitions):
+                ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
+                for message in messages:
+                    message_part_indices_string_width = len(str(len(message.commands) + 1))
+                    indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
+                    expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
+                    ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
+                    if not sync_cmds_with_opc:
+                        ExecScpiCmdsProgram._send_message_and_read_response(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
+                    else:
+                        ExecScpiCmdsProgram._send_message_and_read_response_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
+        else:
+            Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
 
     @staticmethod
     def _print_sending_messages(current_repetition: int, number_of_repetitions: int) -> None:
