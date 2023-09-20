@@ -4,19 +4,19 @@ from enum import Enum
 
 
 class LoggingColor(Enum):
-    NONE = 1,
-    RED = 2,
-    GREEN = 3,
-    BLUE = 4,
-    YELLOW = 5,
+    NONE = 1
+    RED = 2
+    GREEN = 3
+    BLUE = 4
+    YELLOW = 5
 
 
 class LoggingStyle(Enum):
-    NONE = 1,
-    BOLD = 2,
-    ITALIC = 3,
-    UNDERLINE = 4,
-    STRIKETHROUGH = 5,
+    NONE = 1
+    BOLD = 2
+    ITALIC = 3
+    UNDERLINE = 4
+    STRIKETHROUGH = 5
 
 
 class Logging():
@@ -28,16 +28,16 @@ class Logging():
         cls._logger = logging.getLogger()
         cls._logger.setLevel(log_level)
         cls._enable_formatted_output = enable_formatted_output
-        format = "[%(asctime)s.%(msecs)03d]: %(message)s"
+        message_format = "[%(asctime)s.%(msecs)03d]: %(message)s"
         date_format = "%H:%M:%S"
 
         if log_filename is not None:
             file_handler = logging.FileHandler(log_filename)
-            file_handler.setFormatter(logging.Formatter(fmt=format, datefmt=date_format))
+            file_handler.setFormatter(logging.Formatter(fmt=message_format, datefmt=date_format))
             cls._logger.addHandler(file_handler)
 
         console_handler = logging.StreamHandler()
-        console_handler.setFormatter(logging.Formatter(fmt=format, datefmt=date_format))
+        console_handler.setFormatter(logging.Formatter(fmt=message_format, datefmt=date_format))
         cls._logger.addHandler(console_handler)
 
     @classmethod

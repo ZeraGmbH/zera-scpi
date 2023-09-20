@@ -22,7 +22,7 @@ class TestMessageHandling(unittest.TestCase):
         # Prepare and read message file
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_message_file_and_send_receive_over_tcpip) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
-        lines = list()
+        lines = []
         lines.append("*IDN?")
         lines.append("*STB?")
         lines.append("MEASURE:FFT1:UL1?")

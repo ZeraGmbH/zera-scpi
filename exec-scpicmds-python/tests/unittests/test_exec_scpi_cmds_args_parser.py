@@ -16,7 +16,7 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         sys.argv[1:] = argv
         self.assertEqual(ExecScpiCmdsArgsParser.parse(), ExecScpiCmdsArgsParser.parse(argv), f"Parsing args with sys.argv and as function argument are not equal.")
         self.assertNotEqual(ExecScpiCmdsArgsParser.parse(), None, f"Parsing args with sys.argv {sys.argv[1:]} failed.")
-        valid_cmd_lines = list()
+        valid_cmd_lines = []
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}'")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 0")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 1")
@@ -27,7 +27,7 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         for valid_cmd_line in valid_cmd_lines:
             self.assertNotEqual(ExecScpiCmdsArgsParser.parse(shlex.split(valid_cmd_line)), None, f"Parsing args \"{valid_cmd_line}\" failed.")
 
-        invalid_cmd_lines = list()
+        invalid_cmd_lines = []
         invalid_cmd_lines.append(f"-i {i} -p {0}")
         invalid_cmd_lines.append(f"-i {i} -f '{f}'")
         invalid_cmd_lines.append(f"-p {0} -f '{f}'")

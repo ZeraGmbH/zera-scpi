@@ -4,10 +4,10 @@ from dataclasses import dataclass, field
 
 
 class CommandType(Enum):
-    UNKNOWN = 1,
-    COMMAND = 2,
-    QUERY = 3,
-    EMPTY = 4,
+    UNKNOWN = 1
+    COMMAND = 2
+    QUERY = 3
+    EMPTY = 4
 
 
 @dataclass
@@ -35,15 +35,14 @@ class MessageParser:
         if result is not None:
             lines, _ = result
             return lines
-        else:
-            return None
+        return None
 
     @staticmethod
     def read_messages_with_lines_from_file(file_path: str) -> Optional[Tuple[List[str], List[int]]]:
         try:
-            with open(file_path, "r") as file:
-                lines = list()
-                line_numbers = list()
+            with open(file_path, "r", encoding="utf-8") as file:
+                lines = []
+                line_numbers = []
                 current_line_number = 0
                 while line := file.readline():
                     line_stipped = line.strip()
@@ -59,10 +58,9 @@ class MessageParser:
     def get_command_type_from_string(command: str) -> CommandType:
         if "?" in command:
             return CommandType.QUERY
-        elif len(command.strip()) == 0:
+        if len(command.strip()) == 0:
             return CommandType.EMPTY
-        else:
-            return CommandType.COMMAND
+        return CommandType.COMMAND
 
     @staticmethod
     def check_message_is_valid(message_data: MessageData) -> bool:
