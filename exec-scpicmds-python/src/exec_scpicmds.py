@@ -4,6 +4,7 @@ from typing import List, Optional
 import os
 import sys
 sys.path.insert(0, '.')
+import signal
 import argparse
 import logging
 import re
@@ -66,8 +67,14 @@ class ExecScpiCmdsArgsParser:
 
 class ExecScpiCmdsProgram:
     @staticmethod
+    def signal_handler(_sig, _frame):
+        Logging.log_debug_msg("Ctrl+C pressed!", LoggingColor.RED, LoggingStyle.BOLD)
+        sys.exit(0)
+
+    @staticmethod
     def run() -> int:
         Logging.setup(log_level=logging.DEBUG)
+        signal.signal(signal.SIGINT, ExecScpiCmdsProgram.signal_handler)
         args = ExecScpiCmdsArgsParser.parse()
         if args is None:
             return 1
