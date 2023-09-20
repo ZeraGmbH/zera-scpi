@@ -6,6 +6,7 @@ import sys
 sys.path.insert(0, '.')
 import argparse
 import logging
+import re
 from src.logging_handler import Logging, LoggingColor, LoggingStyle
 from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
@@ -24,12 +25,19 @@ class ExecScpiCmdsArgsParser:
             raise argparse.ArgumentTypeError(f"{value} is not a valid port number!")
         return int_value
     
+    def _check_ip_address_or_hostname(value: str) -> str:
+        ip_pattern = "^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$"
+        hostname_pattern = "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])$"
+        if not (re.match(ip_pattern, value) or re.match(hostname_pattern, value)):
+            raise argparse.ArgumentTypeError(f"{value} is not a valid ip address or hostname!")
+        return value
+    
     @staticmethod
     def parse(args: Optional[List[str]]=None) -> Optional[argparse.Namespace]:
         parser = argparse.ArgumentParser(description="Execute SCPI commands and optionally check results.")
         parser.add_argument("-f", "--input-file", required=True,
                             help="Path to file containing SCPI commands.")
-        parser.add_argument("-i", "--ip-address", required=True,
+        parser.add_argument("-i", "--ip-address", required=True, type=ExecScpiCmdsArgsParser._check_ip_address_or_hostname,
                             help="IP-address of instrument.")
         parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number,
                             help="Port number of instrument.")
