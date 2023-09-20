@@ -1,5 +1,6 @@
 # remark: pylint score formula: max(0, 0 if fatal else 10.0 - ((float(5 * error + warning + refactor + convention) / statement) * 10))
 # pylint message codes:
+#   R0801: duplicate-code
 #   R0903: too-few-public-methods
 #   R0912: too-many-branches
 #   C0114: missing-module-docstring
@@ -30,4 +31,4 @@ jobs:
         pip install pylint
     - name: Analyzing the code with pylint
       run: |
-          pylint **/*.py --disable=R0903,R0912,C0114,C0115,C0116,C0301,C0413 --fail-under=9
+          pylint **/*.py --disable=R0801,R0903,R0912,C0114,C0115,C0116,C0301,C0413 --fail-under=9

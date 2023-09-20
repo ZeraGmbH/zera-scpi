@@ -3,15 +3,14 @@ import os
 import sys
 sys.path.insert(0, '.')
 import unittest
-import socket
 from src.message_parser import MessageParser
-from testlib.file_helper import FileHelper
 from src.message_handlers import TCPHandler
+from testlib.file_helper import FileHelper
 from testlib.message_parser_helper import FileWriterHelper
 from testlib.tcp_server_helper import EchoVerboseTcpServer, PortNumberGenerator
 
 
-def setUpModule():
+def setUpModule():  # pylint: disable=invalid-name
     start_port = 16420
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -32,10 +31,10 @@ class TestMessageHandling(unittest.TestCase):
             with FileWriterHelper(filename, lines):
                 try:
                     messages = MessageParser.read_messages_from_file(filename)
-                except Exception as e:
-                    self.assertTrue(False, f"Reading temporary test file \"{filename}\" failed with exception \"{e}\".")
-        except Exception as e:
-            self.assertTrue(False, f"Writing temporary test file \"{filename}\" failed with exception \"{e}\".")
+                except OSError as exception:
+                    self.fail(f"Reading temporary test file \"{filename}\" failed with exception \"{exception}\".")
+        except OSError as exception:
+            self.fail(f"Writing temporary test file \"{filename}\" failed with exception \"{exception}\".")
         # Send messages over TCP/IP and read echo
         ip_address = "localhost"
         port_number = PortNumberGenerator.get_next_port_number()  # Use different port for each test to allow them being executed in parallel
@@ -43,12 +42,12 @@ class TestMessageHandling(unittest.TestCase):
         server.run(run_in_background=True)
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)
         try:  # Make sure the TCP handler gets disconnected on assertion exception
-            for m, message in enumerate(lines):
+            for message_idx, message in enumerate(lines):
                 tcp_handler.send_message(message + "\n")
                 response = tcp_handler.receive_response()
-                self.assertEqual(message, response, f"Message #{m} \"{message}\" is not received as it was sent.")
-        except Exception as e:
-            raise e  # Propagate exception to unittest
+                self.assertEqual(message, response, f"Message #{message_idx} \"{message}\" is not received as it was sent.")
+        except Exception as exception:
+            raise exception  # Propagate exception to unittest
         finally:
             del tcp_handler
             server.quit()

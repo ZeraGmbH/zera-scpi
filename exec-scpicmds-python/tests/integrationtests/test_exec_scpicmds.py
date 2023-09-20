@@ -10,7 +10,7 @@ from testlib.scpi_instrument_stub import ScpiInstrumentStub
 from src.exec_scpicmds import ExecScpiCmdsProgram
 
 
-def setUpModule():
+def setUpModule():  # pylint: disable=invalid-name
     start_port = 16520
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -40,8 +40,8 @@ class TestExecScpiCmds(unittest.TestCase):
             logging.debug("Running program...")
             program = ExecScpiCmdsProgram()
             result = program.run()
-        except BaseException as e:
-            raise e  # Propagate exception to unittest
+        except BaseException as exception:
+            raise exception  # Propagate exception to unittest
         else:
             self.assertEqual(result, 0, f"Program returned with value {result}.")
             # TODO modify program (add command line parameter to exit on errors like timeout?) to exit (with different codes) on errors

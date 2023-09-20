@@ -8,13 +8,13 @@ from src.exec_scpicmds import ExecScpiCmdsArgsParser
 
 class TestExecScpiCmdsArgsParser(unittest.TestCase):
     def test_parse_command_line_arguments(self) -> None:
-        i = "localhost"      # ip_address
-        p = 6320             # port_number
-        f = "scpi_cmds.txt"  # filename
+        i = "localhost"      # ip_address  # pylint: disable=invalid-name
+        p = 6320             # port_number # pylint: disable=invalid-name
+        f = "scpi_cmds.txt"  # filename    # pylint: disable=invalid-name
         # Note: shlex.split() cannot properly split short options with values that are not separated by space(s), e.g. -ilocalhost
         argv = shlex.split(f"-i {i} -p {p} -f 'space test {f}'")
         sys.argv[1:] = argv
-        self.assertEqual(ExecScpiCmdsArgsParser.parse(), ExecScpiCmdsArgsParser.parse(argv), f"Parsing args with sys.argv and as function argument are not equal.")
+        self.assertEqual(ExecScpiCmdsArgsParser.parse(), ExecScpiCmdsArgsParser.parse(argv), "Parsing args with sys.argv and as function argument are not equal.")
         self.assertNotEqual(ExecScpiCmdsArgsParser.parse(), None, f"Parsing args with sys.argv {sys.argv[1:]} failed.")
         valid_cmd_lines = []
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}'")
