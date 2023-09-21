@@ -60,7 +60,7 @@ class TCPHandler(IMessageHandler):
     def _connect(self) -> bool:
         if not self.connected:
             self._socket = socket.socket()
-            if self._receive_timeout is not None and self._receive_timeout >= 0:
+            if self._receive_timeout is not None and self._receive_timeout > 0:
                 self._socket.settimeout(self._receive_timeout / 1000)
             try:
                 self._socket.connect((self._ip_address, self._port_number))

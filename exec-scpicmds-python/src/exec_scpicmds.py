@@ -46,15 +46,15 @@ class ExecScpiCmdsArgsParser:
                             help="IP-address of instrument.")
         parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number,
                             help="Port number of instrument.")
-        parser.add_argument("-t", "--receive-timeout", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=True), default=3000,
-                            help="Receive timeout [ms] of TCP/IP-connection to instrument.")
+        parser.add_argument("-t", "--receive-timeout", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=3000,
+                            help="Receive timeout [ms] of TCP/IP-connection to instrument. If set to 0, it will wait forever (but in this case the OS timeout might trigger anyway).")
         parser.add_argument("--enable-formatted-output", action="store_true", default=False,
                             help="Enable output formatted with colors and styles.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file.")
         parser.add_argument("--sync_cmds_with_opc", type=int, choices=range(0, 3), default=0,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available: " \
-                                "0 = No use of *OPC?     [Default]. " \
+                                "0 = No use of *OPC? [Default]. " \
                                 "1 = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
                                     "For each non-query *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument. " \
                                 "2 = Insert an \"|*OPC?\" query after each command in the SCPI message to synchronize these commands. "\
@@ -65,6 +65,8 @@ class ExecScpiCmdsArgsParser:
                 parser_args = parser.parse_args()
             else:
                 parser_args = parser.parse_args(args)
+            if parser_args.receive_timeout == 0:
+                parser_args.receive_timeout = None
             return parser_args
         except SystemExit:
             return None
@@ -143,7 +145,7 @@ class ExecScpiCmdsProgram:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
 
     @staticmethod
-    def _send_split_message_and_read_response_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: int) -> None:
+    def _send_split_message_and_read_response_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> None:
         for resp_idx, command in enumerate(message.commands):
             tcp_handler.send_message(command.command_trimmed + "\n")
             if command.command_type is CommandType.QUERY:
@@ -156,10 +158,11 @@ class ExecScpiCmdsProgram:
                 while True:
                     tcp_handler.send_message("*OPC?\n")
                     response = tcp_handler.receive_response()
-                    elapsed_time = time.time() - start
-                    if response is None or elapsed_time > timeout / 1000:
-                        Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
-                        break
+                    if timeout is not None:
+                        elapsed_time = time.time() - start
+                        if response is None or elapsed_time > timeout / 1000:
+                            Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
+                            break
                     if response == "+1":
                         break
                     time.sleep(0.01)
@@ -180,7 +183,7 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
 
     @staticmethod
-    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_opc: int, timeout: int) -> None:
+    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_opc: int, timeout: Optional[int]) -> None:
         if len(messages) > 0:
             for current_repetition in range(number_of_repetitions):
                 ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
