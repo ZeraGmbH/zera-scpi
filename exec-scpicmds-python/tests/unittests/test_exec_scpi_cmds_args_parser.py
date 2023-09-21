@@ -18,6 +18,8 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         self.assertNotEqual(ExecScpiCmdsArgsParser.parse(), None, f"Parsing args with sys.argv {sys.argv[1:]} failed.")
         valid_cmd_lines = []
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}'")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -t 0")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -t 50000")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 0")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 1")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 1000")
@@ -34,7 +36,6 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         invalid_cmd_lines.append(f"-i {i} -f '{f}'")
         invalid_cmd_lines.append(f"-p {0} -f '{f}'")
         invalid_cmd_lines.append(f"-i {i} -p {0} -f '{f}'")
-        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -t 0")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -t a")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r a")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc")
