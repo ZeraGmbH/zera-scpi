@@ -1,10 +1,8 @@
 #ifndef PARSE_H
 #define PARSE_H
 
-#include <qstring.h>
 #include "scpi_export.h"
-
-class cParsePrivate;
+#include <QString>
 
 /**
   @brief
@@ -16,27 +14,16 @@ class cParsePrivate;
 class SCPI_EXPORT cParse {
 public:
     cParse();
-    ~cParse();
-    /**
-      @b Searches for the next keyword starting from s.
-      @param[in] s the string to search from
-      */
     const QString& GetKeyword(const QChar **s);
-    /**
-      @b Returns the next character starting from s ignoring whitespace.
-      @param[in] s the characters to read from
-      */
     QChar GetChar(const QChar **s); // read next character string
-    /**
-      @b Sets the new delimiter characters from s for parsing and returns the old one.
-      */
+
     const QString SetDelimiter(const QString s);
-    /**
-      @b Sets the new whitespace characters from s for parsing and returns the old one.
-      */
     const QString SetWhiteSpace(const QString s);
 private:
-    cParsePrivate *d_ptr;
+    void ignoreWhitespace(const QChar **s);
+    QString keyw;
+    QString delimiter;
+    QString whitespace;
 };
 
 #endif
