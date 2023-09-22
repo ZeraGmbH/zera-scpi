@@ -50,11 +50,11 @@ class ExecScpiCmdsArgsParser:
                             help="Port number of instrument.")
         parser.add_argument("-t", "--receive-timeout", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=3000,
                             help="Receive timeout [ms] of TCP/IP-connection to instrument. If set to 0, it will wait forever (but in this case the OS timeout might trigger anyway).")
-        parser.add_argument("--enable-formatted-output", action="store_true", default=False,
+        parser.add_argument("--enable-formatted-output", action="store_true", default=True,
                             help="Enable output formatted with colors and styles.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file.")
-        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 4), default=0,
+        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 4), default=1,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available: " \
                                 "0 = No use of *OPC? [Default]. " \
                                 "1 = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
