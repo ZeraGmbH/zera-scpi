@@ -27,7 +27,11 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 0")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 1")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -s 2")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --send-delays 0 0")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -d 5000 0")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -d 0 1000")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output")
+
         for valid_cmd_line in valid_cmd_lines:
             self.assertNotEqual(ExecScpiCmdsArgsParser.parse(shlex.split(valid_cmd_line)), None, f"Parsing args \"{valid_cmd_line}\" failed.")
 
@@ -40,6 +44,10 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r a")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 4")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --send-delays")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --send-delays 0")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --send-delays 0 0 0")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --send-delays a")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output 0")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output 1")
         for invalid_cmd_line in invalid_cmd_lines:
