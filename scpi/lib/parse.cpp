@@ -1,40 +1,61 @@
-// implementation für keyword parser
-
 #include "parse.h"
-#include "parse_p.h"
 
-
-cParse::cParse()
-    :d_ptr(new cParsePrivate())
+cParse::cParse() :
+    delimiter(" :?;"),
+    whitespace(" :;")
 {
 }
-
-
-cParse::~cParse()
-{
-    delete d_ptr;
-}
-
 
 const QString &cParse::GetKeyword(const QChar** s)
 {
-    return d_ptr->GetKeyword(s);
+    bool escape = false;
+    keyw ="";
+    ignoreWhitespace(s);
+    for (;;) {
+       QChar tc = **s;
+       if (tc.isNull())
+           break; // we are at end of string
+       if (!escape && tc == QChar('\\'))
+           escape = true;
+       else {
+           if (escape)
+               escape = false;
+           else if (delimiter.contains(tc, Qt::CaseInsensitive))
+               break; // if next char is delimiter, we are ready
+           keyw += tc;
+       }
+       (*s)++;
+    }
+    return keyw; // keyword without delimiter
 }
-
 
 QChar cParse::GetChar(const QChar** s)
 {
-    return d_ptr->GetChar(s);
+    ignoreWhitespace(s);
+    return **s; // return = 0 or char != whitespace
 }
-
 
 const QString cParse::SetDelimiter(const QString s)
 {
-    return d_ptr->SetDelimiter(s);
+    QString r = delimiter;
+    delimiter = s;
+    return(r); // return old delimiter ....
 }
-
 
 const QString cParse::SetWhiteSpace(const QString s)
 {
-    return d_ptr->SetWhiteSpace(s);
+    QString r = whitespace;
+    whitespace = s;
+    return(r); // return old whitespace
+}
+
+void cParse::ignoreWhitespace(const QChar **s)
+{
+    for (;;) {
+        if ((**s).isNull())
+            break;
+        if ( !whitespace.contains(**s, Qt::CaseInsensitive) )
+            break; // if next char is whitespace
+        (*s)++; // pointer to next char
+    }
 }
