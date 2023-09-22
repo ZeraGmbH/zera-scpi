@@ -16,6 +16,8 @@ def setUpModule():  # pylint: disable=invalid-name
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
 
 
+# TODO fix logic: variable "messages" is not used after setting it, but most likely should be used to complete the whole test cycle: file -> send -> receive -> compare
+# TODO split function into smaller parts: make two helper functions e.g. called prepare_and_read_message_file() and send_messages__and_read_echo() and remove the corresponding comments above each of these blocks
 class TestMessageHandling(unittest.TestCase):
     def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
         # Prepare and read message file

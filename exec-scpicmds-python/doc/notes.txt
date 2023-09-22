@@ -1,0 +1,51 @@
+# TODOS
+#######
+* Check and handle all TODO markers in the code.
+* Possible new feature: conversion from standard-SCPI to ZERA-SCPI (und vice vesa?)
+  -> Are there mutliple zSCPI dialects? Difference e.g. in that in some version all commands get any response like ack, nak, etc. Or is there are a difference in terminating the response?
+  -> The goal might be to convert entered zSCPI into standard SCPI and use standard SCPI internally (or vice versa?). This seems only to be possible for SCPI input, as the output is used and is very unlikely to get changed without any side effects.
+* Add remove invalid functions (see --handle-erroneous-messages in Qt-version of this program)
+* Add optional check of the error-queue's entries to check if a command was valid (see --check_error_queue from the Qt-version of this program)
+* Commands like "DEVICE:IFACE?" do not return their resonpses in a single line, but multiple lines where each one has its own "\n". So there's no proper way for the controller to know when the messages has ended. It's also possible that more than one XML-structure gets returned and maybe in different command or modules there is a termination of this response (";"?) or not. A side-effect of this is also that all the lines from the XML are interpreted by the controller as responses for the following queries.
+  -> Find a logic how to know/define when this command has finished? Maybe that way: wait (limited by the normal timeout) until the first data arrive and then wait until for a max. amount of time no more packages have arrived. The assumption there is that all data get send without a long delay between them.
+  -> Can we learn something from the following script on how to solve this problem? https://github.com/ZeraGmbH/zera-scpi/blob/master/scripts/read_dev_iface
+  -> How to know, for which commands this is valid? Maybe add some parameter that has a variable number of arguments where each argument is a valid to treat that way.
+  -> Check section "SCPI Command Terminators" in https://rfmw.em.keysight.com/spdhelpfiles/truevolt/webhelp/US/Content/__I_SCPI/Scpi_introduction.htm
+* Check for incoming "SQR\n" strings. They are not a query's response but an interrupt when some bits in the status byte register STB are set. Setting the service request enable register (SRE) is necessary to make it work and especially bit 6 (which in undefined in the SCPI standard) needs to be set to 1.
+* Improve check for valid command / query syntax, e.g. SCPI-header with colon-separated keywords, space-separator, parameters, termination?
+* Extent the program so that it can read a file that in fact is a python script using a predefined interface to execute SCPI command. This allows for a very flexible way to e.g. repeat a command multiple times, to sleep, to measure time, to check responses, to make parts of commands/code depending in some variables/responses, etc.
+  -> Prepare an interface to feed scpi-commands from a plain SCPI command file in the same way as it will be done from an SCPI python file.
+  -> Add some additional command line flag that indicated that the file (specified with -f) is not a plain file, but a python file.
+  -> To get this python SCPI file loaded as module, just link it into the program folder and import it at runtime. Then execute a predefined function in this file that holds all commands.
+* Check if the separation of concerns is done properly, especially regarding logging.
+* Check if some or all code in the if __name__ == "__main__": section os the test_*.py files can get (partially) removed or moved into setUpModule(), which is already used for other things in some test_*.py files.
+* How to handle various types of errors that happen in sending SCPI commands, e.g. invalid command format, timeout, errors in error queue after a command/query, etc.
+  -> Exit the program on the first error?
+  -> Store errors, continue execution and return the error at the end of the program?
+  -> Only use the exit-value of the program or use something more sophisticated to return information about occurred errors?
+  -> Add a command line parameter to defined the desired behavior?
+  -> How to handle erros in more complex cases, e.g. when the error occurs in some nestes code?
+* Check if and how the *WAI command is implemented and if it is useful for us?
+* Think about implementing a blocking version of *OPC?, maybe with a similar name like *OPC2?" or with a parameter like "*OPC 1?" (are queries with parameters even supported in ze ZERA SCPI implementation?).
+* Add some additional block to the tools help text that informs about the valid input file format (# = comment lines, empty (stripped) lines are ignored).
+
+# NOTES
+#######
+pylint `find -name "*.py" -not -path "./.venv/*"` --disable=R0801,R0903,R0912,R0912,C0114,C0115,C0116,C0301,C0413,fixme --fail-under=9
+
+Sync/Queueing
+-------------
+There's an optional queueing-mechanism on the server side. This waits for a command, executes it, wait until its finished and sends back the response if there's such. This is especially useful when sending multiple query commands in a single message to get the responses back in the right order.
+On the client side there's also a way to synchronize things by sending a command and waiting for its response if there is such. If there is no response, there's no direct way to synchronize it, just waiting some time and hope the commands is finished executing. Alternative options might be using *OPC? in some way.
+=> For a full synchronization, the queueing on the server side and the synchronization on the client side both need to be active.
+
+There are two points where synchronization can happen:
+* Target Sync (queueing active, means correct order of answers, but takes longer time to execute commands that might run in parallel)
+* Tool Sync (wait for answers)
+
+So there are four combinations possible:
+* Target Sync: yes, Tool Sync: no -> Makes no sense
+* Target Sync: yes, Tool Sync: yes -> Perfekt for user output
+* Target Sync: no, Tool Sync: no -> Makes no sense
+* Target Sync: no, Tool Sync: yes -> Send message; collect # of answers in any order
+=> The tool waits for all answers of each single message individually
