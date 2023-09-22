@@ -10,6 +10,8 @@ import argparse
 import logging
 import re
 import textwrap
+import traceback
+from importlib import import_module
 from src.logging_handler import Logging, LoggingColor, LoggingStyle
 from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
@@ -76,6 +78,8 @@ class ExecScpiCmdsArgsParser:
                                 "See parameter --send-delays for more details on how to set these delays.")
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
                             help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message. Default: %(default)s.")
+        parser.add_argument("--python-scripting", action="store_true", default=False,
+                            help="Interpreted the file given by --input-file as python script instead of a plain text file. This python script needs to implement a certain interface to be compatible with this program. Default: %(default)s.")
         try:
             if args is None:
                 parser_args = parser.parse_args()
@@ -124,7 +128,10 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
             return 4
 
-        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
+        if not args.python_scripting:
+            ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
+        else:
+            ExecScpiCmdsProgram._print_and_send_messages_and_read_responses_from_python_scripting_interface(args.input_file, tcp_handler, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
 
         Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
         del tcp_handler
@@ -132,17 +139,23 @@ class ExecScpiCmdsProgram:
         return 0
 
     @staticmethod
+    def _check_message(message: MessageData) -> bool:
+        if not message.is_valid:
+            for command in message.commands:
+                if command.command_type is CommandType.UNKNOWN:
+                    Logging.log_debug_msg(f" > Invalid command found in line {message.file_line_number + 1}:{command.position_in_message + 1}", LoggingColor.YELLOW)
+                elif command.command_type is CommandType.EMPTY:
+                    Logging.log_debug_msg(f" > Empty command found in line {message.file_line_number + 1}:{command.position_in_message + 1}", LoggingColor.YELLOW)
+                # TODO Check for ASCII characters and allowed symbols only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
+            return False
+        return True
+
+    @staticmethod
     def _check_messages(messages: List[MessageData]) -> None:
         Logging.log_debug_msg("Checking messages...")
         invalid_message_found = False
         for message in messages:
-            if not message.is_valid:
-                for command in message.commands:
-                    if command.command_type is CommandType.UNKNOWN:
-                        Logging.log_debug_msg(f" > Invalid command found in line {message.file_line_number + 1}:{command.position_in_message + 1}", LoggingColor.YELLOW)
-                    elif command.command_type is CommandType.EMPTY:
-                        Logging.log_debug_msg(f" > Empty command found in line {message.file_line_number + 1}:{command.position_in_message + 1}", LoggingColor.YELLOW)
-                    # TODO Check for ASCII characters and allowed symbols only: a-zA-z0-9.:,;*?-+[[:blank:]] (even more symbols?)
+            if not ExecScpiCmdsProgram._check_message(message):
                 invalid_message_found = True
         if not invalid_message_found:
             Logging.log_debug_msg("... all messages are valid.", LoggingColor.GREEN)
@@ -150,22 +163,28 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... invalid messages(s) found!", LoggingColor.RED)
 
     @staticmethod
-    def _send_message_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
+    def _send_message_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> List[str]:
+        responses = []
         message_string = message.original_message
         tcp_handler.send_message(message_string + "\n")
         for resp_idx, _ in enumerate(indices_of_expected_responses):
             response = tcp_handler.receive_response()
+            responses.append(response)
             if response is not None:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
             else:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
+        return responses
 
     @staticmethod
-    def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> None:
+    def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> List[str]:
+        responses = []
         for resp_idx, command in enumerate(message.commands):
             tcp_handler.send_message(command.command_trimmed + "\n")
             if command.command_type is CommandType.QUERY:
-                if (response := tcp_handler.receive_response()) is not None:
+                response = tcp_handler.receive_response()
+                responses.append(response)
+                if response is not None:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
                 else:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
@@ -182,13 +201,16 @@ class ExecScpiCmdsProgram:
                     if response == "+1":
                         break
                     time.sleep(0.01)
+        return responses
 
     @staticmethod
-    def _send_message_and_read_responses_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int) -> None:
+    def _send_message_and_read_responses_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int) -> List[str]:
+        responses = []
         message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
         tcp_handler.send_message(message_string + "\n")
         for resp_idx, _ in enumerate(message.commands):
             response = tcp_handler.receive_response()
+            responses.append(response)
             if response is not None:
                 if message.commands[resp_idx].command_type is CommandType.QUERY:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
@@ -197,23 +219,28 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
                 else:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
+        return responses
 
     @staticmethod
-    def _send_message_and_commands_delayed_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int, send_delays: Tuple[int, int]) -> None:
+    def _send_message_and_commands_delayed_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int, send_delays: Tuple[int, int]) -> List[str]:
+        responses = []
         if send_delays[0] <= 0:  # No delay, so send normally
             message_string = message.original_message
             tcp_handler.send_message(message_string + "\n")
             for resp_idx, _ in enumerate(indices_of_expected_responses):
                 response = tcp_handler.receive_response()
+                responses.append(response)
                 if response is not None:
                     Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
                 else:
                     Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
-        else:  # delay, so splitting message is necessary
+        else:  # Delay, so splitting message is necessary
             for resp_idx, command in enumerate(message.commands):
                 tcp_handler.send_message(command.command_trimmed + "\n")
                 if command.command_type is CommandType.QUERY:
-                    if (response := tcp_handler.receive_response()) is not None:
+                    response = tcp_handler.receive_response()
+                    responses.append(response)
+                    if response is not None:
                         Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
                     else:
                         Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
@@ -221,6 +248,22 @@ class ExecScpiCmdsProgram:
                     time.sleep(send_delays[0] / 1000)
         if send_delays[1] > 0:
             time.sleep(send_delays[1] / 1000)
+        return responses
+
+    @staticmethod
+    def _send_message_and_read_responses_variants(tcp_handler: TCPHandler, message: str, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> List[str]:
+        message_part_indices_string_width = len(str(len(message.commands)))
+        indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
+        expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
+        ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
+        if sync_cmds_with_instrument == 0:
+            return ExecScpiCmdsProgram._send_message_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
+        elif sync_cmds_with_instrument == 1:
+            return ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
+        elif sync_cmds_with_instrument == 2:
+            return ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
+        elif sync_cmds_with_instrument == 3:
+            return ExecScpiCmdsProgram._send_message_and_commands_delayed_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width, send_delays)
 
     @staticmethod
     def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
@@ -228,20 +271,64 @@ class ExecScpiCmdsProgram:
             for current_repetition in range(number_of_repetitions):
                 ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
                 for message in messages:
-                    message_part_indices_string_width = len(str(len(message.commands) + 1))
-                    indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
-                    expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
-                    ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
-                    if sync_cmds_with_instrument == 0:
-                        ExecScpiCmdsProgram._send_message_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
-                    elif sync_cmds_with_instrument == 1:
-                        ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
-                    elif sync_cmds_with_instrument == 2:
-                        ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
-                    elif sync_cmds_with_instrument == 3:
-                        ExecScpiCmdsProgram._send_message_and_commands_delayed_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width, send_delays)
+                    ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
         else:
             Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
+
+    @staticmethod
+    def load_scpi_script(input_file: str) -> Optional[object]:
+        scpi_script_name = "scpi_script.py"  # The internally used module filename
+        run_function_name = "run"
+        exec_script_path = os.path.dirname(os.path.abspath(__file__))
+        scpi_script_path = os.path.join(exec_script_path, scpi_script_name)
+        if os.path.islink(scpi_script_path):
+            os.remove(scpi_script_path)
+            if os.path.exists(scpi_script_path):
+                Logging.log_debug_msg(f"Removing internal placeholder link \"{scpi_script_path}\" for SCPI scripting file was not successful.", LoggingColor.RED)
+                return None
+        else:
+            if os.path.exists(scpi_script_path):
+                Logging.log_debug_msg(f"Internal placeholder \"{scpi_script_path}\" for SCPI scripting file is not a link and therefore will not get deleted.", LoggingColor.RED)
+                return None
+        os.symlink(os.path.abspath(input_file), scpi_script_path)
+        if not os.path.islink(scpi_script_path):
+            Logging.log_debug_msg(f"Creating internal placeholder link \"{scpi_script_path}\" for SCPI scripting file was not successful.", LoggingColor.RED)
+            return None
+        try:
+            scpi_script_module = import_module(os.path.splitext(scpi_script_name)[0])
+            scpi_script_object_name = scpi_script_module.ScpiScript.__name__
+        except (ModuleNotFoundError, ImportError):
+            Logging.log_debug_msg(f"Importing SCPI scripting module from internal placeholder link \"{scpi_script_path}\" was not successful.", LoggingColor.RED)
+            return None
+        try:
+            ScpiScript = getattr(scpi_script_module, scpi_script_object_name)
+        except AttributeError:
+            Logging.log_debug_msg(f"Loading class \"{scpi_script_object_name}\" from SCPI scripting module from internal placeholder link \"{scpi_script_path}\" was not successful.", LoggingColor.RED)
+            return None
+        if not hasattr(ScpiScript, run_function_name) or run_function_name in ScpiScript.__abstractmethods__ or not callable(getattr(ScpiScript, run_function_name)):
+            Logging.log_debug_msg(f"The class \"{scpi_script_object_name}\" from SCPI scripting module from internal placeholder link \"{scpi_script_path}\" has no function named \"{run_function_name}\".", LoggingColor.RED)
+            return None
+        return ScpiScript
+
+    @staticmethod
+    def _print_and_send_messages_and_read_responses_from_python_scripting_interface(input_file: str, tcp_handler: TCPHandler, number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
+        def send_recevie_message(message_string) -> List[str]:
+            message = MessageParser.get_message_data_from_string(message_string, 0, 1)
+            if ExecScpiCmdsProgram._check_message(message):
+                return ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
+        if (ScpiScript := ExecScpiCmdsProgram.load_scpi_script(input_file)) is not None:
+            try:
+                for current_repetition in range(number_of_repetitions):
+                    ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
+                    ScpiScript(send_callback=send_recevie_message, log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
+            except Exception as exception:
+                Logging.log_debug_msg(f"While executing SCPI scripting, an error occurred: {exception}.", LoggingColor.RED)
+                trace_back = traceback.format_exc()
+                for line in trace_back.split("\n"):
+                    Logging.log_debug_msg(f"{line}", LoggingColor.YELLOW)
+        else:
+            Logging.log_debug_msg(f"Stopping execution.", LoggingColor.RED)
+            return
 
     @staticmethod
     def _print_sending_messages(current_repetition: int, number_of_repetitions: int) -> None:

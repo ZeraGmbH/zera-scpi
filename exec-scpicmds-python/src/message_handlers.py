@@ -43,11 +43,12 @@ class TCPHandler(IMessageHandler):
 
     def receive_response(self) -> Optional[str]:
         if len(self._responses) == 0:
-            try:
-                chunk = self._socket.recv(2048).decode()
-            except socket.timeout:
-                return None
-            self._receive_buffer += chunk
+            while "\n" not in self._receive_buffer:
+                try:
+                    chunk = self._socket.recv(2048).decode()
+                except socket.timeout:
+                    return None
+                self._receive_buffer += chunk
             # Split up complete responses and add them to the result list
             # There might also be some results from further queries of the current message
             while "\n" in self._receive_buffer:

@@ -27,6 +27,8 @@ qrc_*.cpp
 Thumbs.db
 exec-scpicmds/scpi_msg_files
 exec-scpicmds-python/scpi_msg_files
+exec-scpicmds-python/src/scpi_script.py
+exec-scpicmds-python/src/_scpi_script.py
 
 # qtcreator generated files
 *.pro.user*
