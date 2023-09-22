@@ -60,7 +60,7 @@ class ExecScpiCmdsArgsParser:
                                 "2 = Insert an \"|*OPC?\" query after each command in the SCPI message to synchronize these commands. "\
                                 "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
                                 "Attention: this feature only works properly when queueing of SCPI commands on the instrument is activated. "\
-                                "3 = Use delays for pseudo synchronization (i.e. give each command or message enough time to complete before the next commands gets sent). This might help to prevent interfering with *OPC? queries for a more reliable behaviour. "\
+                                "3 = Use delays for pseudo synchronization, i.e. give each command/message enough time to complete before the next command/message gets sent. This might help to prevent interfering with *OPC? queries for a more reliable behavior. "\
                                 "See parameter --send-delays for more details on how to set these delays.")
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
                             help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message.")
