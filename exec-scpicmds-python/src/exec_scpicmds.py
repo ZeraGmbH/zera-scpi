@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-from typing import List, Optional
+from typing import List, Optional, Tuple
 import os
 import sys
 import time
@@ -52,14 +52,18 @@ class ExecScpiCmdsArgsParser:
                             help="Enable output formatted with colors and styles.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file.")
-        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 3), default=0,
+        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 4), default=0,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available: " \
                                 "0 = No use of *OPC? [Default]. " \
                                 "1 = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
                                 "For each non-query *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument. " \
                                 "2 = Insert an \"|*OPC?\" query after each command in the SCPI message to synchronize these commands. "\
                                 "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
-                                "\033[0;31mAttention:\033[0m this feature only works properly when queueing of SCPI commands on the instrument is activated.")
+                                "Attention: this feature only works properly when queueing of SCPI commands on the instrument is activated. "\
+                                "3 = Use delays for pseudo synchronization (i.e. give each command or message enough time to complete before the next commands gets sent). This might help to prevent interfering with *OPC? queries for a more reliable behaviour. "\
+                                "See parameter --send-delays for more details on how to set these delays.")
+        parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
+                            help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message.")
         try:
             if args is None:
                 parser_args = parser.parse_args()
@@ -108,7 +112,7 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
             return 4
 
-        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout)
+        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
 
         Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
         del tcp_handler
@@ -134,7 +138,7 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... invalid messages(s) found!", LoggingColor.RED)
 
     @staticmethod
-    def _send_message_and_read_response(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
+    def _send_message_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int) -> None:
         message_string = message.original_message
         tcp_handler.send_message(message_string + "\n")
         for resp_idx, _ in enumerate(indices_of_expected_responses):
@@ -145,7 +149,7 @@ class ExecScpiCmdsProgram:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
 
     @staticmethod
-    def _send_split_message_and_read_response_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> None:
+    def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> None:
         for resp_idx, command in enumerate(message.commands):
             tcp_handler.send_message(command.command_trimmed + "\n")
             if command.command_type is CommandType.QUERY:
@@ -168,7 +172,7 @@ class ExecScpiCmdsProgram:
                     time.sleep(0.01)
 
     @staticmethod
-    def _send_message_and_read_response_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int) -> None:
+    def _send_message_and_read_responses_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int) -> None:
         message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
         tcp_handler.send_message(message_string + "\n")
         for resp_idx, _ in enumerate(message.commands):
@@ -183,7 +187,31 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
 
     @staticmethod
-    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int]) -> None:
+    def _send_message_and_commands_delayed_and_read_responses(tcp_handler: TCPHandler, message: MessageData, indices_of_expected_responses: List[int], expected_responses_max_idx_string_width: int, send_delays: Tuple[int, int]) -> None:
+        if send_delays[0] <= 0:  # No delay, so send normally
+            message_string = message.original_message
+            tcp_handler.send_message(message_string + "\n")
+            for resp_idx, _ in enumerate(indices_of_expected_responses):
+                response = tcp_handler.receive_response()
+                if response is not None:
+                    Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
+                else:
+                    Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
+        else:  # delay, so splitting message is necessary
+            for resp_idx, command in enumerate(message.commands):
+                tcp_handler.send_message(command.command_trimmed + "\n")
+                if command.command_type is CommandType.QUERY:
+                    if (response := tcp_handler.receive_response()) is not None:
+                        Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
+                    else:
+                        Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
+                else:
+                    time.sleep(send_delays[0] / 1000)
+        if send_delays[1] > 0:
+            time.sleep(send_delays[1] / 1000)
+
+    @staticmethod
+    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
         if len(messages) > 0:
             for current_repetition in range(number_of_repetitions):
                 ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
@@ -193,11 +221,13 @@ class ExecScpiCmdsProgram:
                     expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
                     ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
                     if sync_cmds_with_instrument == 0:
-                        ExecScpiCmdsProgram._send_message_and_read_response(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
+                        ExecScpiCmdsProgram._send_message_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
                     elif sync_cmds_with_instrument == 1:
-                        ExecScpiCmdsProgram._send_split_message_and_read_response_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
+                        ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
                     elif sync_cmds_with_instrument == 2:
-                        ExecScpiCmdsProgram._send_message_and_read_response_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
+                        ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
+                    elif sync_cmds_with_instrument == 3:
+                        ExecScpiCmdsProgram._send_message_and_commands_delayed_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width, send_delays)
         else:
             Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
 
