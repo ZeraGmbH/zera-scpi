@@ -24,9 +24,9 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 1")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r 1000")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --number-of-repetitions 1000")
-        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc 0")
-        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc 1")
-        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc 2")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 0")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 1")
+        valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -s 2")
         valid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output")
         for valid_cmd_line in valid_cmd_lines:
             self.assertNotEqual(ExecScpiCmdsArgsParser.parse(shlex.split(valid_cmd_line)), None, f"Parsing args \"{valid_cmd_line}\" failed.")
@@ -38,8 +38,8 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         invalid_cmd_lines.append(f"-i {i} -p {0} -f '{f}'")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -t a")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' -r a")
-        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc")
-        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync_cmds_with_opc 4")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument")
+        invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --sync-cmds-with-instrument 4")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output 0")
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output 1")
         for invalid_cmd_line in invalid_cmd_lines:

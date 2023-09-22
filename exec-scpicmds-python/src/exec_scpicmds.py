@@ -52,11 +52,11 @@ class ExecScpiCmdsArgsParser:
                             help="Enable output formatted with colors and styles.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file.")
-        parser.add_argument("--sync_cmds_with_opc", type=int, choices=range(0, 3), default=0,
+        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 3), default=0,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available: " \
                                 "0 = No use of *OPC? [Default]. " \
                                 "1 = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
-                                    "For each non-query *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument. " \
+                                "For each non-query *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument. " \
                                 "2 = Insert an \"|*OPC?\" query after each command in the SCPI message to synchronize these commands. "\
                                 "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
                                 "\033[0;31mAttention:\033[0m this feature only works properly when queueing of SCPI commands on the instrument is activated.")
@@ -108,7 +108,7 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
             return 4
 
-        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_opc, args.receive_timeout)
+        ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout)
 
         Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
         del tcp_handler
@@ -183,7 +183,7 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
 
     @staticmethod
-    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_opc: int, timeout: Optional[int]) -> None:
+    def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int]) -> None:
         if len(messages) > 0:
             for current_repetition in range(number_of_repetitions):
                 ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
@@ -192,11 +192,11 @@ class ExecScpiCmdsProgram:
                     indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
                     expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
                     ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
-                    if sync_cmds_with_opc == 0:
+                    if sync_cmds_with_instrument == 0:
                         ExecScpiCmdsProgram._send_message_and_read_response(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
-                    elif sync_cmds_with_opc == 1:
+                    elif sync_cmds_with_instrument == 1:
                         ExecScpiCmdsProgram._send_split_message_and_read_response_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
-                    elif sync_cmds_with_opc == 2:
+                    elif sync_cmds_with_instrument == 2:
                         ExecScpiCmdsProgram._send_message_and_read_response_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
         else:
             Logging.log_debug_msg("No messages to send.", LoggingColor.BLUE)
