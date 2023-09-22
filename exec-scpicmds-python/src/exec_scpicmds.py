@@ -39,12 +39,14 @@ class ExecScpiCmdsArgsParser:
 
     @staticmethod
     def parse(args: Optional[List[str]]=None) -> Optional[argparse.Namespace]:
-        parser = argparse.ArgumentParser(description="Execute SCPI commands and optionally check results.")
-        parser.add_argument("-f", "--input-file", required=True,
+        parser = argparse.ArgumentParser(add_help=False, description="Execute SCPI commands and optionally check results.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
+                            help="Show this help message and exit.")
+        parser.add_argument("-f", "--input-file", required=True, default=argparse.SUPPRESS,
                             help="Path to file containing SCPI commands.")
-        parser.add_argument("-i", "--ip-address", required=True, type=ExecScpiCmdsArgsParser._check_ip_address_or_hostname,
+        parser.add_argument("-i", "--ip-address", required=True, type=ExecScpiCmdsArgsParser._check_ip_address_or_hostname, default=argparse.SUPPRESS,
                             help="IP-address of instrument.")
-        parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number,
+        parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number, default=argparse.SUPPRESS,
                             help="Port number of instrument.")
         parser.add_argument("-t", "--receive-timeout", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=3000,
                             help="Receive timeout [ms] of TCP/IP-connection to instrument. If set to 0, it will wait forever (but in this case the OS timeout might trigger anyway).")
