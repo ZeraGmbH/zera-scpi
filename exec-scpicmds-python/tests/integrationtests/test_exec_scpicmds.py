@@ -36,7 +36,7 @@ class TestExecScpiCmds(unittest.TestCase):
         instrument = ScpiInstrumentStub(ip_address, port_number)
         instrument.run(run_in_background=True)
         try:  # Make sure to cleanup on assertion exception
-            sys.argv[1:] = ["-i", ip_address, "-p", str(port_number), "-f", filename]
+            sys.argv[1:] = ["-i", ip_address, "-p", str(port_number), "-f", filename, "-s", "0"]
             logging.debug("Running program...")
             program = ExecScpiCmdsProgram()
             result = program.run()
