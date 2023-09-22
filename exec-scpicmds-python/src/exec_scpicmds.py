@@ -9,6 +9,7 @@ import signal
 import argparse
 import logging
 import re
+import textwrap
 from src.logging_handler import Logging, LoggingColor, LoggingStyle
 from src.message_parser import MessageParser, CommandType, MessageData
 from src.message_handlers import TCPHandler
@@ -39,7 +40,16 @@ class ExecScpiCmdsArgsParser:
 
     @staticmethod
     def parse(args: Optional[List[str]]=None) -> Optional[argparse.Namespace]:
-        parser = argparse.ArgumentParser(add_help=False, description="Execute SCPI commands and optionally check results.", formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+        help_epilog = """\
+            Plane-Input-File-Format:
+              The plane input files are in text format and consist of one or more lines.
+              When parsing lines, they get trimmed, which means, that leading and trailing whitespaces get removed.
+              Each line is classified into following types:
+              * Comment lines: Lines starting with #. These lines get ignored.
+              * Empty lines: Lines containing only whitespaces. These lines get ignored.
+              * SCPI message lines: All other lines. These lines get sent as SCPI messages to the instrument.
+              """
+        parser = argparse.ArgumentParser(add_help=False, description="Send SCPI commands and receive responses.", formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent(help_epilog))
         parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
                             help="Show this help message and exit.")
         parser.add_argument("-f", "--input-file", required=True, default=argparse.SUPPRESS,
@@ -49,15 +59,15 @@ class ExecScpiCmdsArgsParser:
         parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number, default=argparse.SUPPRESS,
                             help="Port number of instrument.")
         parser.add_argument("-t", "--receive-timeout", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=3000,
-                            help="Receive timeout [ms] of TCP/IP-connection to instrument. If set to 0, it will wait forever (but in this case the OS timeout might trigger anyway).")
+                            help="Receive timeout [ms] of TCP/IP-connection to instrument. If set to 0, it will wait forever (but in this case the OS timeout might trigger anyway). Default: %(default)s.")
         parser.add_argument("--enable-formatted-output", action="store_true", default=True,
-                            help="Enable output formatted with colors and styles.")
+                            help="Enable output formatted with colors and styles. Default: %(default)s.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
-                            help="Number of repetitions sending whole SCPI command file.")
+                            help="Number of repetitions sending whole SCPI command file. Default: %(default)s.")
         parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 4), default=1,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available: " \
-                                "0 = No use of *OPC? [Default]. " \
-                                "1 = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
+                                "0 = No use of *OPC?. " \
+                                "1 [Default] = Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response. "\
                                 "For each non-query *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument. " \
                                 "2 = Insert an \"|*OPC?\" query after each command in the SCPI message to synchronize these commands. "\
                                 "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
@@ -65,7 +75,7 @@ class ExecScpiCmdsArgsParser:
                                 "3 = Use delays for pseudo synchronization, i.e. give each command/message enough time to complete before the next command/message gets sent. This might help to prevent interfering with *OPC? queries for a more reliable behavior. "\
                                 "See parameter --send-delays for more details on how to set these delays.")
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
-                            help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message.")
+                            help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message. Default: %(default)s.")
         try:
             if args is None:
                 parser_args = parser.parse_args()
