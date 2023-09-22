@@ -19,7 +19,10 @@ public:
     typedef QMap<QString, QString> XmlKeyValueMap;
     const XmlKeyValueMap &getXmlAttibuteMap();
 private:
-    cSCPIObjectPrivate *d_ptr;
+    QString m_sName;
+    quint8 m_nType;
+    QString m_description;
+    cSCPIObject::XmlKeyValueMap m_xmlAtttibuteMap;
 };
 
 #endif // SCPIOBJECT_H
