@@ -177,6 +177,22 @@ class ExecScpiCmdsProgram:
         return responses
 
     @staticmethod
+    def wait_for_opc(tcp_handler: TCPHandler, expected_responses_max_idx_string_width: int, timeout: Optional[int], resp_idx: int) -> None:
+        start = time.time()
+        while True:
+            tcp_handler.send_message("*OPC?\n")
+            response = tcp_handler.receive_response()
+            if timeout is not None:
+                elapsed_time = time.time() - start
+                if response is None or elapsed_time > timeout / 1000:
+                    if resp_idx >= 0:
+                        Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
+                    break
+            if response == "+1":
+                break
+            time.sleep(0.01)
+
+    @staticmethod
     def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> List[str]:
         responses = []
         for resp_idx, command in enumerate(message.commands):
@@ -189,18 +205,7 @@ class ExecScpiCmdsProgram:
                 else:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
             else:
-                start = time.time()
-                while True:
-                    tcp_handler.send_message("*OPC?\n")
-                    response = tcp_handler.receive_response()
-                    if timeout is not None:
-                        elapsed_time = time.time() - start
-                        if response is None or elapsed_time > timeout / 1000:
-                            Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
-                            break
-                    if response == "+1":
-                        break
-                    time.sleep(0.01)
+                ExecScpiCmdsProgram.wait_for_opc(tcp_handler, expected_responses_max_idx_string_width, timeout, resp_idx)
         return responses
 
     @staticmethod
@@ -312,15 +317,15 @@ class ExecScpiCmdsProgram:
 
     @staticmethod
     def _print_and_send_messages_and_read_responses_from_python_scripting_interface(input_file: str, tcp_handler: TCPHandler, number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
-        def send_recevie_message(message_string) -> List[str]:
-            message = MessageParser.get_message_data_from_string(message_string, 0, 1)
+        def send_receive_message(message_string: str, file_line_number: int) -> List[str]:
+            message = MessageParser.get_message_data_from_string(message_string, file_line_number, 1)
             if ExecScpiCmdsProgram._check_message(message):
                 return ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
         if (ScpiScript := ExecScpiCmdsProgram.load_scpi_script(input_file)) is not None:
             try:
                 for current_repetition in range(number_of_repetitions):
                     ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
-                    ScpiScript(send_callback=send_recevie_message, log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
+                    ScpiScript(send_callback=send_receive_message, wait_for_opc_callback=lambda: ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1), log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
             except Exception as exception:
                 Logging.log_debug_msg(f"While executing SCPI scripting, an error occurred: {exception}.", LoggingColor.RED)
                 trace_back = traceback.format_exc()
