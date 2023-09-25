@@ -7,7 +7,7 @@ from testlib.file_helper import FileHelper
 from testlib.message_parser_helper import FileWriterHelper
 from testlib.tcp_server_helper import PortNumberGenerator
 from testlib.scpi_instrument_stub import ScpiInstrumentStub
-from src.exec_scpicmds import ExecScpiCmdsProgram
+from exec_scpicmds import ExecScpiCmdsProgram
 
 
 def setUpModule():  # pylint: disable=invalid-name

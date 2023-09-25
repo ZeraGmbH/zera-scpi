@@ -3,7 +3,7 @@ import logging
 import sys
 sys.path.insert(0, '.')
 import shlex
-from src.exec_scpicmds import ExecScpiCmdsArgsParser
+from exec_scpicmds import ExecScpiCmdsArgsParser
 
 
 class TestExecScpiCmdsArgsParser(unittest.TestCase):

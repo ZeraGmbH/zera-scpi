@@ -282,7 +282,7 @@ class ExecScpiCmdsProgram:
 
     @staticmethod
     def load_scpi_script(input_file: str) -> Optional[object]:
-        scpi_script_name = "scpi_script.py"  # The internally used module filename
+        scpi_script_name = "src/scpi_script.py"  # The internally used module filename
         run_function_name = "run"
         exec_script_path = os.path.dirname(os.path.abspath(__file__))
         scpi_script_path = os.path.join(exec_script_path, scpi_script_name)
@@ -300,7 +300,7 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg(f"Creating internal placeholder link \"{scpi_script_path}\" for SCPI scripting file was not successful.", LoggingColor.RED)
             return None
         try:
-            scpi_script_module = import_module(os.path.splitext(scpi_script_name)[0])
+            scpi_script_module = import_module(os.path.splitext(scpi_script_name)[0].replace("/", "."))
             scpi_script_object_name = scpi_script_module.ScpiScript.__name__
         except (ModuleNotFoundError, ImportError):
             Logging.log_debug_msg(f"Importing SCPI scripting module from internal placeholder link \"{scpi_script_path}\" was not successful.", LoggingColor.RED)
