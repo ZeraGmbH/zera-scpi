@@ -50,6 +50,13 @@ class ExecScpiCmdsArgsParser:
               * Comment lines: Lines starting with #. These lines get ignored.
               * Empty lines: Lines containing only whitespaces. These lines get ignored.
               * SCPI message lines: All other lines. These lines get sent as SCPI messages to the instrument.
+
+            Python-Input-File-Format:
+              The python input files are python files implementing a certain interface:
+              * Essentially it's the run() function of the ScpiScript class.
+              * Basis for the interaction with the main program is the ScpiScript.send() functions and its return value. Otherwise this list will be empty.
+              * This return value is a list holding the responses of all queries in the sent message, if there were such.
+              * To exit the program with a certain error code, just leave ScpiScript.run() with return <ERROR_CODE>. This will then terminate the execution, clean up and exit the program with the given code. Make sure to choose values not interfering with the program's other exit values. So, it's best to use values starting at 100.
               """
         parser = argparse.ArgumentParser(add_help=False, description="Send SCPI commands and receive responses.", formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent(help_epilog))
         parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
@@ -79,7 +86,7 @@ class ExecScpiCmdsArgsParser:
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
                             help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message. Default: %(default)s.")
         parser.add_argument("--python-scripting", action="store_true", default=False,
-                            help="Interpreted the file given by --input-file as python script instead of a plain text file. This python script needs to implement a certain interface to be compatible with this program. Default: %(default)s.")
+                            help="Interpretes the file specified by --input-file as python script instead of a plain text file. This python script needs to implement a certain interface to be compatible with this program. See description in section Python-Input-File-Format. Default: %(default)s.")
         try:
             if args is None:
                 parser_args = parser.parse_args()
