@@ -57,6 +57,7 @@ class ExecScpiCmdsArgsParser:
               * Basis for the interaction with the main program is the ScpiScript.send() functions and its return value. Otherwise this list will be empty.
               * This return value is a list holding the responses of all queries in the sent message, if there were such.
               * To exit the program with a certain error code, just leave ScpiScript.run() with return <ERROR_CODE>. This will then terminate the execution, clean up and exit the program with the given code. Make sure to choose values not interfering with the program's other exit values. So, it's best to use values starting at 100.
+              With these files one can use functionalities provided by the ScpiScript-class, like send() (incl. response), log(), sleep(), wait_for_opc(), etc. Furthermore the whole power of python can get used, e.g. to repeat commands, make time measurements, conditional execution, etc.
               """
         parser = argparse.ArgumentParser(add_help=False, description="Send SCPI commands and receive responses.", formatter_class=argparse.RawDescriptionHelpFormatter, epilog=textwrap.dedent(help_epilog))
         parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
@@ -135,15 +136,16 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg("... establishing connection failed!", LoggingColor.RED)
             return 4
 
+        return_value = 0
         if not args.python_scripting:
             ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
         else:
-            ExecScpiCmdsProgram._print_and_send_messages_and_read_responses_from_python_scripting_interface(args.input_file, tcp_handler, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
+            return_value = ExecScpiCmdsProgram._print_and_send_messages_and_read_responses_from_python_scripting_interface(args.input_file, tcp_handler, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
 
         Logging.log_debug_msg(f"Disconnecting from {args.ip_address}:{args.port_number}...")
         del tcp_handler
 
-        return 0
+        return return_value
 
     @staticmethod
     def _check_message(message: MessageData) -> bool:
@@ -323,7 +325,7 @@ class ExecScpiCmdsProgram:
         return ScpiScript
 
     @staticmethod
-    def _print_and_send_messages_and_read_responses_from_python_scripting_interface(input_file: str, tcp_handler: TCPHandler, number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
+    def _print_and_send_messages_and_read_responses_from_python_scripting_interface(input_file: str, tcp_handler: TCPHandler, number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> int:
         def send_receive_message(message_string: str, file_line_number: int) -> List[str]:
             message = MessageParser.get_message_data_from_string(message_string, file_line_number, 1)
             if ExecScpiCmdsProgram._check_message(message):
@@ -332,7 +334,9 @@ class ExecScpiCmdsProgram:
             try:
                 for current_repetition in range(number_of_repetitions):
                     ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
-                    ScpiScript(send_callback=send_receive_message, wait_for_opc_callback=lambda: ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1), log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
+                    return_value = ScpiScript(send_callback=send_receive_message, wait_for_opc_callback=lambda: ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1), log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
+                    if return_value is not None and return_value > 0:
+                        return return_value
             except Exception as exception:
                 Logging.log_debug_msg(f"While executing SCPI scripting, an error occurred: {exception}.", LoggingColor.RED)
                 trace_back = traceback.format_exc()
@@ -340,7 +344,7 @@ class ExecScpiCmdsProgram:
                     Logging.log_debug_msg(f"{line}", LoggingColor.YELLOW)
         else:
             Logging.log_debug_msg(f"Stopping execution.", LoggingColor.RED)
-            return
+            return 5
 
     @staticmethod
     def _print_sending_messages(current_repetition: int, number_of_repetitions: int) -> None:

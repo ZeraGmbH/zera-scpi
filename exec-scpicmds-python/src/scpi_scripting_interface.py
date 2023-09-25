@@ -27,5 +27,5 @@ class IScpiScripting(ABC):
         self._wait_for_opc_callback()
 
     @abstractmethod
-    def run(self) -> None:
+    def run(self) -> int:
         raise NotImplementedError
