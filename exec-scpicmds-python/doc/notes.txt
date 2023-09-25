@@ -13,10 +13,6 @@
   -> Check section "SCPI Command Terminators" in https://rfmw.em.keysight.com/spdhelpfiles/truevolt/webhelp/US/Content/__I_SCPI/Scpi_introduction.htm
 * Check for incoming "SQR\n" strings. They are not a query's response but an interrupt when some bits in the status byte register STB are set. Setting the service request enable register (SRE) is necessary to make it work and especially bit 6 (which in undefined in the SCPI standard) needs to be set to 1.
 * Improve check for valid command / query syntax, e.g. SCPI-header with colon-separated keywords, space-separator, parameters, termination?
-* Extent the program so that it can read a file that in fact is a python script using a predefined interface to execute SCPI command. This allows for a very flexible way to e.g. repeat a command multiple times, to sleep, to measure time, to check responses, to make parts of commands/code depending in some variables/responses, etc.
-  -> Prepare an interface to feed scpi-commands from a plain SCPI command file in the same way as it will be done from an SCPI python file.
-  -> Add some additional command line flag that indicated that the file (specified with -f) is not a plain file, but a python file.
-  -> To get this python SCPI file loaded as module, just link it into the program folder and import it at runtime. Then execute a predefined function in this file that holds all commands.
 * Check if the separation of concerns is done properly, especially regarding logging.
 * Check if some or all code in the if __name__ == "__main__": section os the test_*.py files can get (partially) removed or moved into setUpModule(), which is already used for other things in some test_*.py files.
 * How to handle various types of errors that happen in sending SCPI commands, e.g. invalid command format, timeout, errors in error queue after a command/query, etc.
