@@ -43,7 +43,7 @@ class TCPHandler(IMessageHandler):
 
     def receive_response(self, command_string: Optional[str]=None) -> Optional[str]:
         if len(self._responses) == 0:
-            if command_string.strip().upper() not in ["DEVICE:IFACE?", "DEV:IFACE?"]:  # TODO make these values configurable
+            if command_string is None or command_string.strip().upper() not in ["DEVICE:IFACE?", "DEV:IFACE?"]:  # TODO make these values configurable
                 while "\n" not in self._receive_buffer:
                     try:
                         chunk = self._socket.recv(2048).decode()
