@@ -66,9 +66,8 @@ class TCPHandler(IMessageHandler):
                 self._socket.settimeout(old_timeout)
                 if len(self._receive_buffer) == 0:
                     return None
-                else:
-                     if self._receive_buffer[-1] == "\r":
-                        self._receive_buffer = self._receive_buffer[:-1] + "\n"
+                if self._receive_buffer[-1] == "\r":
+                    self._receive_buffer = self._receive_buffer[:-1] + "\n"
             # Split up complete responses and add them to the result list
             # There might also be some results from further queries of the current message
             while "\n" in self._receive_buffer:
