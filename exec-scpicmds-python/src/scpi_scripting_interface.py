@@ -6,7 +6,7 @@ from src.logging_handler import LoggingColor, LoggingStyle
 
 
 class IScpiScripting(ABC):
-    def __init__(self, send_callback: Callable[[str, int], List[str]], wait_for_opc_callback: Callable[[], None], log_callback: Callable[[str, LoggingColor, LoggingStyle], None]) -> None:
+    def __init__(self, send_callback: Callable[[str, int], List[str]], wait_for_opc_callback: Callable[[bool], None], log_callback: Callable[[str, LoggingColor, LoggingStyle], None]) -> None:
         self._send_callback = send_callback
         self._wait_for_opc_callback = wait_for_opc_callback
         self._log_callback = log_callback
@@ -22,8 +22,8 @@ class IScpiScripting(ABC):
     def sleep(self, seconds: float) -> None:
         time.sleep(seconds)
 
-    def wait_for_opc(self) -> None:
-        self._wait_for_opc_callback()
+    def wait_for_opc(self, log_polling: bool=False) -> None:
+        self._wait_for_opc_callback(log_polling)
 
     @abstractmethod
     def run(self) -> int:

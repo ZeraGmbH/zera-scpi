@@ -81,15 +81,17 @@ class ExecScpiCmdsArgsParser:
                             help="Enable output formatted with colors and styles. Default: %(default)s.")
         parser.add_argument("-r", "--number-of-repetitions", type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=1,
                             help="Number of repetitions sending whole SCPI command file. Default: %(default)s.")
-        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 4), default=1,
+        parser.add_argument("-s", "--sync-cmds-with-instrument", type=int, choices=range(0, 6), default=1,
                             help="Specifies if and how the SCPI common command *OPC? is used to synchronize commands, which by their nature do not have a response. Following modes are available:\n" \
                                 "0 = No synchronization used.\n" \
                                 "1 [Default] = Polling using *OPC?. Split messages into its parts and handles them separately. Queries are handled normally by waiting for their corresponding response."\
                                 "For each non-query an *OPC? is used to poll until the current command has finished. This mode does not depend on an activated queueing of SCPI commands on the instrument.\n" \
-                                "2 = Insert a *OPC? query after each command into SCPI message. After each command in the SCPI message an |*OPC? is inserted to synchronize these commands. "\
+                                "2 = Same as 1, but logs *OPC? polling message.\n"\
+                                "3 = Insert a *OPC? query after each command into SCPI message. After each command in the SCPI message an |*OPC? is inserted to synchronize these commands. "\
                                 "Also expects more responses, which will be hidden from the user. Only that way a timeout can get detected. "\
                                 "Attention: this feature only works properly when queueing of SCPI commands on the instrument is activated.\n"\
-                                "3 = Use delays for pseudo synchronization. This gives each command/message enough time to complete before the next command/message gets sent. This might help to prevent interfering with *OPC? queries for a more reliable behavior. "\
+                                "4 = Same as 3, but logs *OPC? synchronization message.\n"\
+                                "5 = Use delays for pseudo synchronization. This gives each command/message enough time to complete before the next command/message gets sent. This might help to prevent interfering with *OPC? queries for a more reliable behavior. "\
                                 "See parameter --send-delays for more details on how to set these delays.")
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
                             help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message. Default: %(default)s.")
@@ -191,23 +193,26 @@ class ExecScpiCmdsProgram:
         return responses
 
     @staticmethod
-    def wait_for_opc(tcp_handler: TCPHandler, expected_responses_max_idx_string_width: int, timeout: Optional[int], resp_idx: int) -> None:
+    def wait_for_opc(tcp_handler: TCPHandler, expected_responses_max_idx_string_width: int, timeout: Optional[int], resp_idx: int, log_polling: bool=False) -> None:
         start = time.time()
+        elapsed_time = 0.0
         while True:
+            if log_polling:
+                Logging.log_debug_msg(f"{Logging.format_message('   > *OPC? polling ', color=LoggingColor.YELLOW)}{Logging.format_message(f'[{resp_idx + 1}] ', color=LoggingColor.GREEN) if resp_idx >= 0 else ''}{Logging.format_message(f'{elapsed_time:.3f}s...', color=LoggingColor.YELLOW)}")
             tcp_handler.send_message("*OPC?\n")
             response = tcp_handler.receive_response()
+            elapsed_time = time.time() - start
             if timeout is not None:
-                elapsed_time = time.time() - start
                 if response is None or elapsed_time > timeout / 1000:
                     if resp_idx >= 0:
                         Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on executing command.", LoggingColor.RED)
                     break
             if response == "+1":
                 break
-            time.sleep(0.01)
+            time.sleep(0.1)
 
     @staticmethod
-    def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int]) -> List[str]:
+    def _send_split_message_and_read_responses_with_opc_polling(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, timeout: Optional[int], log_polling: bool) -> List[str]:
         responses = []
         for resp_idx, command in enumerate(message.commands):
             tcp_handler.send_message(command.command_trimmed + "\n")
@@ -219,11 +224,11 @@ class ExecScpiCmdsProgram:
                 else:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
             else:
-                ExecScpiCmdsProgram.wait_for_opc(tcp_handler, expected_responses_max_idx_string_width, timeout, resp_idx)
+                ExecScpiCmdsProgram.wait_for_opc(tcp_handler, expected_responses_max_idx_string_width, timeout, resp_idx, log_polling)
         return responses
 
     @staticmethod
-    def _send_message_and_read_responses_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int) -> List[str]:
+    def _send_message_and_read_responses_with_opc(tcp_handler: TCPHandler, message: MessageData, expected_responses_max_idx_string_width: int, log_sync: bool) -> List[str]:
         responses = []
         message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
         tcp_handler.send_message(message_string + "\n")
@@ -233,6 +238,9 @@ class ExecScpiCmdsProgram:
             if response is not None:
                 if message.commands[resp_idx].command_type is CommandType.QUERY:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
+                else:
+                    if log_sync:
+                        Logging.log_debug_msg(f"{Logging.format_message('   > *OPC? synchronization ', color=LoggingColor.YELLOW)}{Logging.format_message(f'[{resp_idx + 1}]', color=LoggingColor.GREEN)}")
             else:
                 if message.commands[resp_idx].command_type is CommandType.QUERY:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] Timeout on receiving response.", LoggingColor.RED)
@@ -278,10 +286,14 @@ class ExecScpiCmdsProgram:
         if sync_cmds_with_instrument == 0:
             return ExecScpiCmdsProgram._send_message_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
         if sync_cmds_with_instrument == 1:
-            return ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
+            return ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout, False)
         if sync_cmds_with_instrument == 2:
-            return ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
+            return ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout, True)
         if sync_cmds_with_instrument == 3:
+            return ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width, False)
+        if sync_cmds_with_instrument == 4:
+            return ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width, True)
+        if sync_cmds_with_instrument == 5:
             return ExecScpiCmdsProgram._send_message_and_commands_delayed_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width, send_delays)
         return []
 
@@ -337,8 +349,8 @@ class ExecScpiCmdsProgram:
             message = MessageParser.get_message_data_from_string(message_string, file_line_number, 1)
             ExecScpiCmdsProgram._check_message(message)
             return ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
-        def wait_for_opc() -> None:
-            ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1)
+        def wait_for_opc(log_polling:bool) -> None:
+            ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1, log_polling)
         def log(message: str, color: LoggingColor=LoggingColor.NONE, style: LoggingStyle=LoggingStyle.NONE) -> None:
             Logging.log_debug_msg(message, color, style)
         if (ScpiScript := ExecScpiCmdsProgram.load_scpi_script(input_file)) is not None:  # pylint: disable=invalid-name
