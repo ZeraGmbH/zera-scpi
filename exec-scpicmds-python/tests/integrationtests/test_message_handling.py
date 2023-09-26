@@ -44,10 +44,10 @@ class TestMessageHandling(unittest.TestCase):
         server.run(run_in_background=True)
         tcp_handler = TCPHandler(ip_address, port_number, receive_timeout=1000)
         try:  # Make sure the TCP handler gets disconnected on assertion exception
-            for message_idx, message in enumerate(lines):
+            for message_idx, message in enumerate(messages):
                 tcp_handler.send_message(message + "\n")
                 response = tcp_handler.receive_response()
-                self.assertEqual(message, response, f"Message #{message_idx} \"{message}\" is not received as it was sent.")
+                self.assertEqual(lines[message_idx], response, f"Message #{message_idx} \"{message}\" is not received as it was sent.")
         except Exception as exception:
             raise exception  # Propagate exception to unittest
         finally:

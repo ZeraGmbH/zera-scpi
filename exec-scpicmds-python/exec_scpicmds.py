@@ -279,6 +279,7 @@ class ExecScpiCmdsProgram:
 
     @staticmethod
     def _send_message_and_read_responses_variants(tcp_handler: TCPHandler, message: str, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> List[str]:
+        # pylint: disable=too-many-return-statements
         message_part_indices_string_width = len(str(len(message.commands)))
         indices_of_expected_responses = [idx for idx, command in enumerate(message.commands) if command.command_type is CommandType.QUERY]
         expected_responses_max_idx_string_width = len(str(max(indices_of_expected_responses) + 1)) if len(indices_of_expected_responses) > 0 else 0
