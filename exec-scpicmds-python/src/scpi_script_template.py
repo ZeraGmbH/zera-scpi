@@ -12,4 +12,4 @@ class ScpiScript(IScpiScripting):
         else:
             self.log(f"STB = {stb}", color=LoggingColor.RED, style=LoggingStyle.BOLD)
             return 100  # exit code
-
+        return 0

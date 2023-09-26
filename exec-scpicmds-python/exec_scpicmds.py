@@ -10,6 +10,7 @@ import argparse
 import logging
 import re
 import textwrap
+from itertools import chain
 import traceback
 from importlib import import_module
 from src.logging_handler import Logging, LoggingColor, LoggingStyle
@@ -44,8 +45,6 @@ class ExecScpiCmdsArgsParser:
     def parse(args: Optional[List[str]]=None) -> Optional[argparse.Namespace]:
         class _RawDescriptionHelpFormatterWithNewlines(argparse.RawDescriptionHelpFormatter):
             def _split_lines(self, text, width):
-                import textwrap
-                from itertools import chain
                 return list(chain.from_iterable([textwrap.wrap(t, width) for t in text.splitlines()]))
 
         help_epilog = """\
@@ -278,12 +277,13 @@ class ExecScpiCmdsProgram:
         ExecScpiCmdsProgram._print_message_with_part_indices(message, message_part_indices_string_width)
         if sync_cmds_with_instrument == 0:
             return ExecScpiCmdsProgram._send_message_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width)
-        elif sync_cmds_with_instrument == 1:
+        if sync_cmds_with_instrument == 1:
             return ExecScpiCmdsProgram._send_split_message_and_read_responses_with_opc_polling(tcp_handler, message, expected_responses_max_idx_string_width, timeout)
-        elif sync_cmds_with_instrument == 2:
+        if sync_cmds_with_instrument == 2:
             return ExecScpiCmdsProgram._send_message_and_read_responses_with_opc(tcp_handler, message, expected_responses_max_idx_string_width)
-        elif sync_cmds_with_instrument == 3:
+        if sync_cmds_with_instrument == 3:
             return ExecScpiCmdsProgram._send_message_and_commands_delayed_and_read_responses(tcp_handler, message, indices_of_expected_responses, expected_responses_max_idx_string_width, send_delays)
+        return []
 
     @staticmethod
     def _print_and_send_messages_and_read_responses(tcp_handler: TCPHandler, messages: List[str], number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> None:
@@ -297,6 +297,7 @@ class ExecScpiCmdsProgram:
 
     @staticmethod
     def load_scpi_script(input_file: str) -> Optional[object]:
+        # pylint: disable=too-many-return-statements
         scpi_script_name = "src/scpi_script.py"  # The internally used module filename
         run_function_name = "run"
         exec_script_path = os.path.dirname(os.path.abspath(__file__))
@@ -321,7 +322,7 @@ class ExecScpiCmdsProgram:
             Logging.log_debug_msg(f"Importing SCPI scripting module from internal placeholder link \"{scpi_script_path}\" was not successful.", LoggingColor.RED)
             return None
         try:
-            ScpiScript = getattr(scpi_script_module, scpi_script_object_name)
+            ScpiScript = getattr(scpi_script_module, scpi_script_object_name)  # pylint: disable=invalid-name
         except AttributeError:
             Logging.log_debug_msg(f"Loading class \"{scpi_script_object_name}\" from SCPI scripting module from internal placeholder link \"{scpi_script_path}\" was not successful.", LoggingColor.RED)
             return None
@@ -334,23 +335,28 @@ class ExecScpiCmdsProgram:
     def _print_and_send_messages_and_read_responses_from_python_scripting_interface(input_file: str, tcp_handler: TCPHandler, number_of_repetitions: int, sync_cmds_with_instrument: int, timeout: Optional[int], send_delays : Tuple[int, int]) -> int:
         def send_receive_message(message_string: str, file_line_number: int) -> List[str]:
             message = MessageParser.get_message_data_from_string(message_string, file_line_number, 1)
-            if ExecScpiCmdsProgram._check_message(message):
-                return ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
-        if (ScpiScript := ExecScpiCmdsProgram.load_scpi_script(input_file)) is not None:
+            ExecScpiCmdsProgram._check_message(message)
+            return ExecScpiCmdsProgram._send_message_and_read_responses_variants(tcp_handler, message, sync_cmds_with_instrument, timeout, send_delays)
+        def wait_for_opc() -> None:
+            ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1)
+        def log(message: str, color: LoggingColor=LoggingColor.NONE, style: LoggingStyle=LoggingStyle.NONE) -> None:
+            Logging.log_debug_msg(message, color, style)
+        if (ScpiScript := ExecScpiCmdsProgram.load_scpi_script(input_file)) is not None:  # pylint: disable=invalid-name
             try:
                 for current_repetition in range(number_of_repetitions):
                     ExecScpiCmdsProgram._print_sending_messages(current_repetition, number_of_repetitions)
-                    return_value = ScpiScript(send_callback=send_receive_message, wait_for_opc_callback=lambda: ExecScpiCmdsProgram.wait_for_opc(tcp_handler, 1, timeout, -1), log_callback=lambda message, color, style: Logging.log_debug_msg(message, color, style)).run()
+                    return_value = ScpiScript(send_callback=send_receive_message, wait_for_opc_callback=wait_for_opc, log_callback=log).run()
                     if return_value is not None and return_value > 0:
                         return return_value
-            except Exception as exception:
+            except Exception as exception:  # pylint: disable=broad-exception-caught
                 Logging.log_debug_msg(f"While executing SCPI scripting, an error occurred: {exception}.", LoggingColor.RED)
                 trace_back = traceback.format_exc()
                 for line in trace_back.split("\n"):
                     Logging.log_debug_msg(f"{line}", LoggingColor.YELLOW)
         else:
-            Logging.log_debug_msg(f"Stopping execution.", LoggingColor.RED)
+            Logging.log_debug_msg("Stopping execution.", LoggingColor.RED)
             return 5
+        return 0
 
     @staticmethod
     def _print_sending_messages(current_repetition: int, number_of_repetitions: int) -> None:
