@@ -184,7 +184,7 @@ class ExecScpiCmdsProgram:
         message_string = message.original_message
         tcp_handler.send_message(message_string + "\n")
         for resp_idx, _ in enumerate(indices_of_expected_responses):
-            response = tcp_handler.receive_response()
+            response = tcp_handler.receive_response(message.commands[resp_idx].command_trimmed)
             responses.append(response)
             if response is not None:
                 Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
@@ -217,7 +217,7 @@ class ExecScpiCmdsProgram:
         for resp_idx, command in enumerate(message.commands):
             tcp_handler.send_message(command.command_trimmed + "\n")
             if command.command_type is CommandType.QUERY:
-                response = tcp_handler.receive_response()
+                response = tcp_handler.receive_response(command.command_trimmed)
                 responses.append(response)
                 if response is not None:
                     Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
@@ -232,8 +232,8 @@ class ExecScpiCmdsProgram:
         responses = []
         message_string = "|".join([cmd.command if cmd.command_type is CommandType.QUERY else cmd.command + "|" + "*OPC?" for cmd in message.commands])
         tcp_handler.send_message(message_string + "\n")
-        for resp_idx, _ in enumerate(message.commands):
-            response = tcp_handler.receive_response()
+        for resp_idx, command in enumerate(message.commands):
+            response = tcp_handler.receive_response(command.command_trimmed)
             responses.append(response)
             if response is not None:
                 if message.commands[resp_idx].command_type is CommandType.QUERY:
@@ -254,8 +254,8 @@ class ExecScpiCmdsProgram:
         if send_delays[0] <= 0:  # No delay, so send normally
             message_string = message.original_message
             tcp_handler.send_message(message_string + "\n")
-            for resp_idx, _ in enumerate(indices_of_expected_responses):
-                response = tcp_handler.receive_response()
+            for resp_idx, command in enumerate(indices_of_expected_responses):
+                response = tcp_handler.receive_response(message.commands[resp_idx].command_trimmed)
                 responses.append(response)
                 if response is not None:
                     Logging.log_debug_msg(f" <-[{str(indices_of_expected_responses[resp_idx] + 1).zfill(expected_responses_max_idx_string_width)}] {response}")
@@ -265,7 +265,7 @@ class ExecScpiCmdsProgram:
             for resp_idx, command in enumerate(message.commands):
                 tcp_handler.send_message(command.command_trimmed + "\n")
                 if command.command_type is CommandType.QUERY:
-                    response = tcp_handler.receive_response()
+                    response = tcp_handler.receive_response(command.command_trimmed)
                     responses.append(response)
                     if response is not None:
                         Logging.log_debug_msg(f" <-[{str(resp_idx + 1).zfill(expected_responses_max_idx_string_width)}] {response}")

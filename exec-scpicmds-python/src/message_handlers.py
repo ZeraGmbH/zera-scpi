@@ -41,19 +41,39 @@ class TCPHandler(IMessageHandler):
         if self._socket is not None:
             self._socket.send(message.encode())
 
-    def receive_response(self) -> Optional[str]:
+    def receive_response(self, command_string: Optional[str]=None) -> Optional[str]:
         if len(self._responses) == 0:
-            while "\n" not in self._receive_buffer:
-                try:
-                    chunk = self._socket.recv(2048).decode()
-                except socket.timeout:
+            if command_string.strip().upper() not in ["DEVICE:IFACE?", "DEV:IFACE?"]:  # TODO make these values configurable
+                while "\n" not in self._receive_buffer:
+                    try:
+                        chunk = self._socket.recv(2048).decode()
+                        self._receive_buffer += chunk
+                    except socket.timeout:
+                        return None
+            else:
+                timeout_cnt = 0
+                old_timeout = self._socket.gettimeout()
+                self._socket.settimeout(0.1)
+                while True:
+                    try:
+                        chunk = self._socket.recv(2048).decode().replace("\n", "\r")
+                        self._receive_buffer += chunk
+                        timeout_cnt = 0
+                    except socket.timeout:
+                        timeout_cnt += 1
+                        if timeout_cnt > 3:
+                            break
+                self._socket.settimeout(old_timeout)
+                if len(self._receive_buffer) == 0:
                     return None
-                self._receive_buffer += chunk
+                else:
+                     if self._receive_buffer[-1] == "\r":
+                        self._receive_buffer = self._receive_buffer[:-1] + "\n"
             # Split up complete responses and add them to the result list
             # There might also be some results from further queries of the current message
             while "\n" in self._receive_buffer:
                 idx = self._receive_buffer.index("\n")
-                answer = self._receive_buffer[:idx]
+                answer = self._receive_buffer[:idx].replace("\r", "\n")
                 self._responses.append(answer)
                 self._receive_buffer = self._receive_buffer[idx + 1:]
         return self._responses.pop(0) if len(self._responses) > 0 else None
