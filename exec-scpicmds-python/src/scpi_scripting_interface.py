@@ -14,8 +14,7 @@ class IScpiScripting(ABC):
     def send(self, message: str) -> Optional[List[str]]:
         if len(message.strip()) > 0:
             return self._send_callback(message, getframeinfo(currentframe().f_back).lineno - 1)
-        else:
-            return None
+        return None
 
     def log(self, message: str, color: LoggingColor=LoggingColor.NONE, style: LoggingStyle=LoggingStyle.NONE) -> None:
         self._log_callback(message, color, style)
