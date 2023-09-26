@@ -11,6 +11,8 @@ from exec_scpicmds import ExecScpiCmdsProgram
 
 
 def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
     start_port = 16520
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -49,9 +51,3 @@ class TestExecScpiCmds(unittest.TestCase):
             logging.debug("Cleanup...")
             instrument.quit()
             file_writer.remove_file()
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()

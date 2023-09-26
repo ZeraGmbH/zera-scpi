@@ -9,7 +9,6 @@
 * Check for incoming "SQR\n" strings. They are not a query's response but an interrupt when some bits in the status byte register STB are set. Setting the service request enable register (SRE) is necessary to make it work and especially bit 6 (which in undefined in the SCPI standard) needs to be set to 1.
 * Improve check for valid command / query syntax, e.g. SCPI-header with colon-separated keywords, space-separator, parameters, termination?
 * Check if the separation of concerns is done properly, especially regarding logging.
-* Check if some or all code in the if __name__ == "__main__": section os the test_*.py files can get (partially) removed or moved into setUpModule(), which is already used for other things in some test_*.py files.
 * How to handle various types of errors that happen in sending SCPI commands, e.g. invalid command format, timeout, errors in error queue after a command/query, etc.
   -> Exit the program on the first error?
   -> Store errors, continue execution and return the error at the end of the program?

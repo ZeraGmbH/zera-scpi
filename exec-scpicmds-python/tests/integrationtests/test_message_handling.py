@@ -12,6 +12,8 @@ from testlib.tcp_server_helper import EchoVerboseTcpServer, PortNumberGenerator
 
 
 def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
     start_port = 16420
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -59,9 +61,3 @@ class TestMessageHandling(unittest.TestCase):
     def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
         lines, messages = self._prepare_and_read_message_file()
         self._send_messages_and_read_echo(lines, messages)
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()

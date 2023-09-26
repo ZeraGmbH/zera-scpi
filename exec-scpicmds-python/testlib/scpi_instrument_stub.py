@@ -6,7 +6,6 @@ import itertools
 from testlib.tcp_server_helper import VerboseTcpServer
 
 
-
 # This class only handles a subset of the commands and of the syntax (e.g. queries without parameters) and returns pseudo responses
 class ScpiInstrumentStub(VerboseTcpServer):
     def __init__(self, ip_address: str, port_number: int) -> None:

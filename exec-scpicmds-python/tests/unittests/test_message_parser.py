@@ -8,6 +8,11 @@ from testlib.message_parser_helper import FileWriterHelper
 from testlib.file_helper import FileHelper
 
 
+def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
+
+
 class TestMessageParser(unittest.TestCase):
     def test_read_messages_from_file(self) -> None:
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_messages_from_file) + ".txt"
@@ -96,9 +101,3 @@ class TestMessageParser(unittest.TestCase):
             self.assertEqual(message_data.commands[result_idx].command_trimmed, result[1], f"Command data {result_idx}: command_trimmed-property parsed incorrectly.")
             self.assertEqual(message_data.commands[result_idx].command_type, result[2], f"Command data {result_idx}: command_type-property parsed incorrectly.")
             self.assertEqual(message_data.commands[result_idx].position_in_message, result[3], f"Command data {result_idx}: position_in_message-property parsed incorrectly.")
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()

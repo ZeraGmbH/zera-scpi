@@ -6,6 +6,11 @@ import shlex
 from exec_scpicmds import ExecScpiCmdsArgsParser
 
 
+def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
+
+
 class TestExecScpiCmdsArgsParser(unittest.TestCase):
     def test_parse_command_line_arguments(self) -> None:
         i = "localhost"      # ip_address  # pylint: disable=invalid-name
@@ -53,9 +58,3 @@ class TestExecScpiCmdsArgsParser(unittest.TestCase):
         invalid_cmd_lines.append(f"-i {i} -p {p} -f '{f}' --enable-formatted-output 1")
         for invalid_cmd_line in invalid_cmd_lines:
             self.assertEqual(ExecScpiCmdsArgsParser.parse(shlex.split(invalid_cmd_line)), None, f"Parsing args \"{invalid_cmd_line}\" unexpectedly succeeded.")
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()
