@@ -1,3 +1,4 @@
+from typing import List
 import logging
 import os
 import sys
@@ -19,8 +20,7 @@ def setUpModule():  # pylint: disable=invalid-name
 # TODO fix logic: variable "messages" is not used after setting it, but most likely should be used to complete the whole test cycle: file -> send -> receive -> compare
 # TODO split function into smaller parts: make two helper functions e.g. called prepare_and_read_message_file() and send_messages__and_read_echo() and remove the corresponding comments above each of these blocks
 class TestMessageHandling(unittest.TestCase):
-    def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
-        # Prepare and read message file
+    def _prepare_and_read_message_file(self) -> List[str]:
         filename = FileHelper.get_filename_from_class_and_method(self, self.test_read_message_file_and_send_receive_over_tcpip) + ".txt"
         filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), filename)
         lines = []
@@ -28,16 +28,18 @@ class TestMessageHandling(unittest.TestCase):
         lines.append("*STB?")
         lines.append("MEASURE:FFT1:UL1?")
         lines.append("TEST;")
-        messages = None
+        messages = []
         try:
             with FileWriterHelper(filename, lines):
                 try:
                     messages = MessageParser.read_messages_from_file(filename)
+                    return lines, messages
                 except OSError as exception:
                     self.fail(f"Reading temporary test file \"{filename}\" failed with exception \"{exception}\".")
         except OSError as exception:
             self.fail(f"Writing temporary test file \"{filename}\" failed with exception \"{exception}\".")
-        # Send messages over TCP/IP and read echo
+
+    def _send_messages_and_read_echo(self, lines: List[str], messages: List[str]) -> None:
         ip_address = "localhost"
         port_number = PortNumberGenerator.get_next_port_number()  # Use different port for each test to allow them being executed in parallel
         server = EchoVerboseTcpServer(ip_address, port_number)
@@ -53,6 +55,10 @@ class TestMessageHandling(unittest.TestCase):
         finally:
             del tcp_handler
             server.quit()
+
+    def test_read_message_file_and_send_receive_over_tcpip(self) -> None:
+        lines, messages = self._prepare_and_read_message_file()
+        self._send_messages_and_read_echo(lines, messages)
 
 
 if __name__ == "__main__":
