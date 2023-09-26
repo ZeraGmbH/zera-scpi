@@ -6,11 +6,6 @@
   -> The goal might be to convert entered zSCPI into standard SCPI and use standard SCPI internally (or vice versa?). This seems only to be possible for SCPI input, as the output is used and is very unlikely to get changed without any side effects.
 * Add remove invalid functions (see --handle-erroneous-messages in Qt-version of this program)
 * Add optional check of the error-queue's entries to check if a command was valid (see --check_error_queue from the Qt-version of this program)
-* Commands like "DEVICE:IFACE?" do not return their resonpses in a single line, but multiple lines where each one has its own "\n". So there's no proper way for the controller to know when the messages has ended. It's also possible that more than one XML-structure gets returned and maybe in different command or modules there is a termination of this response (";"?) or not. A side-effect of this is also that all the lines from the XML are interpreted by the controller as responses for the following queries.
-  -> Find a logic how to know/define when this command has finished? Maybe that way: wait (limited by the normal timeout) until the first data arrive and then wait until for a max. amount of time no more packages have arrived. The assumption there is that all data get send without a long delay between them.
-  -> Can we learn something from the following script on how to solve this problem? https://github.com/ZeraGmbH/zera-scpi/blob/master/scripts/read_dev_iface
-  -> How to know, for which commands this is valid? Maybe add some parameter that has a variable number of arguments where each argument is a valid to treat that way.
-  -> Check section "SCPI Command Terminators" in https://rfmw.em.keysight.com/spdhelpfiles/truevolt/webhelp/US/Content/__I_SCPI/Scpi_introduction.htm
 * Check for incoming "SQR\n" strings. They are not a query's response but an interrupt when some bits in the status byte register STB are set. Setting the service request enable register (SRE) is necessary to make it work and especially bit 6 (which in undefined in the SCPI standard) needs to be set to 1.
 * Improve check for valid command / query syntax, e.g. SCPI-header with colon-separated keywords, space-separator, parameters, termination?
 * Check if the separation of concerns is done properly, especially regarding logging.
