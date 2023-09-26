@@ -1,0 +1,17 @@
+# ------------------
+# 6320: adj-module
+
+# adjust offset IAUX
+*cls|*stb?
+calc:adj1:init IAUX,C200A;
+calc:adj1:offs IAUX,C200A,100.0;|*stb?
+calc:adj1:comp 1;|*stb?
+
+
+# adjust offset UAUX
+*cls|*stb?
+calc:adj1:init UAUX,C1000V;|*stb?
+calc:adj1:offs UAUX,C1000V,800.0;|*stb?
+calc:adj1:comp 1;|*stb?
+
+
