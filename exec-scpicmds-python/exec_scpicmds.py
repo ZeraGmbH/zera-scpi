@@ -58,7 +58,7 @@ class ExecScpiCmdsArgsParser:
               * SCPI message lines: All other lines. These lines get sent as SCPI messages to the instrument.
 
             Python-Input-File-Format:
-              The python input files are python files implementing a certain interface:
+              The python input files are python files implementing a certain interface (which is a prerequisite forbeing executed successfully):
               * Essentially it's the run() function of the ScpiScript class.
               * Basis for the interaction with the main program is the ScpiScript.send() functions and its return value. Otherwise this list will be empty.
               * This return value is a list holding the responses of all queries in the sent message, if there were such.
@@ -69,7 +69,9 @@ class ExecScpiCmdsArgsParser:
         parser.add_argument("-h", "--help", action="help", default=argparse.SUPPRESS,
                             help="Show this help message and exit.")
         parser.add_argument("-f", "--input-file", required=True, default=argparse.SUPPRESS,
-                            help="Path to file containing SCPI commands.")
+                            help="Path to file containing SCPI commands. Depending on the file extension its either interpreted as\n"
+                            "* Plain SCPI command file [not *.py] (see description in section Plain-Input-File-Format below) or as\n"
+                            "* Python SCPI command file [*.py] (see description in section Python-Input-File-Format below).")
         parser.add_argument("-i", "--ip-address", required=True, type=ExecScpiCmdsArgsParser._check_ip_address_or_hostname, default=argparse.SUPPRESS,
                             help="IP-address of instrument.")
         parser.add_argument("-p", "--port-number", required=True, type=ExecScpiCmdsArgsParser._check_port_number, default=argparse.SUPPRESS,
@@ -92,8 +94,6 @@ class ExecScpiCmdsArgsParser:
                                 "See parameter --send-delays for more details on how to set these delays.")
         parser.add_argument("-d", "--send-delays", nargs=2, metavar=("COMMAND_DELAY", "MESSAGE_DELAY"), type=lambda x: ExecScpiCmdsArgsParser._check_positive_integer(x, excl_zero=False), default=[0, 0],
                             help="A delay of COMMAND_DELAY [ms] is performed after each command (i.e. not for queries) and a delay of MESSAGE_DELAY [ms] is performed after each message. Default: %(default)s.")
-        parser.add_argument("--python-scripting", action="store_true", default=False,
-                            help="Interpretes the file specified by --input-file as python script instead of a plain text file. This python script needs to implement a certain interface to be compatible with this program. See description in section Python-Input-File-Format. Default: %(default)s.")
         try:
             if args is None:
                 parser_args = parser.parse_args()
@@ -143,7 +143,7 @@ class ExecScpiCmdsProgram:
             return 4
 
         return_value = 0
-        if not args.python_scripting:
+        if not args.input_file.strip().endswith(".py"):
             ExecScpiCmdsProgram._print_and_send_messages_and_read_responses(tcp_handler, messages, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
         else:
             return_value = ExecScpiCmdsProgram._print_and_send_messages_and_read_responses_from_python_scripting_interface(args.input_file, tcp_handler, args.number_of_repetitions, args.sync_cmds_with_instrument, args.receive_timeout, args.send_delays)
