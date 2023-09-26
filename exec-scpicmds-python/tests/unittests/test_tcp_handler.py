@@ -7,6 +7,8 @@ from testlib.tcp_server_helper import VerboseTcpServer, EchoVerboseTcpServer, Po
 
 
 def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
     start_port = 16320
     port_cnt = 100
     PortNumberGenerator.set_port_range(start_port, start_port + port_cnt - 1)
@@ -43,9 +45,3 @@ class TestTCPHandler(unittest.TestCase):
         finally:
             del tcp_handler
             server.quit()
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()

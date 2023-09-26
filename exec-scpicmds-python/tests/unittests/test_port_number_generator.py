@@ -5,6 +5,11 @@ import unittest
 from testlib.tcp_server_helper import PortNumberGenerator
 
 
+def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
+
+
 # We need a separate file as in the proper test file the PortNumberGenerator is part of the module set up
 class TestPortNumberGenerator(unittest.TestCase):
     def test_set_port_range(self) -> None:
@@ -29,9 +34,3 @@ class TestPortNumberGenerator(unittest.TestCase):
         self.assertEqual(PortNumberGenerator.get_current_port_number(), 4711, "Valid current port number.")
         PortNumberGenerator.get_next_port_number()
         self.assertEqual(PortNumberGenerator.get_next_port_number(), 4712, "Valid next port number.")
-
-
-if __name__ == "__main__":
-    logging.getLogger().setLevel(logging.DEBUG)
-    logging.basicConfig(format="%(message)s")
-    unittest.main()

@@ -2,9 +2,15 @@
 import sys
 sys.path.insert(0, '.')
 import unittest
-#import logging
+import logging
 from src.logging_handler import Logging, LoggingColor, LoggingStyle
 #from testlib.file_helper import FileHelper
+
+
+def setUpModule():  # pylint: disable=invalid-name
+    logging.getLogger().setLevel(logging.DEBUG)
+    logging.basicConfig(format="%(message)s")
+
 
 class TestLogging(unittest.TestCase):
     def test_message_formatting(self) -> None:
