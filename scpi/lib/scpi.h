@@ -30,17 +30,17 @@
 namespace SCPI
 {
 enum eSCPICmdResult { ack, nak, busy, erraut, errval, errxml,
-                      errpath, errexec, errtimo, last };
+                      errpath, errexec,
+                      resultcount };
 
-const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command recognized and executed)
-                                        "nak",     ///< not acknowledge (kommando not recognized)
-                                        "busy",    ///< device busy
-                                        "erraut",  ///< error authorization (command recognized but client is not auth. )
-                                        "errval",  ///< error value (command recognized but incorrect parameter)
-                                        "errxml",  ///< error xml (used xml file was incorrect)
-                                        "errpath", ///< error path
-                                        "errexec", ///< error execution
-                                        "errtimo" ///< error timeout
+const QString scpiAnswer[resultcount] = { "ack",     ///< acknowledge (command recognized and executed)
+                                          "nak",     ///< not acknowledge (kommando not recognized)
+                                          "busy",    ///< device busy
+                                          "erraut",  ///< error authorization (command recognized but client is not auth. )
+                                          "errval",  ///< error value (command recognized but incorrect parameter)
+                                          "errxml",  ///< error xml (used xml file was incorrect)
+                                          "errpath", ///< error path
+                                          "errexec", ///< error execution
                                       };
 enum eSCPINodeType { isNode = 1, isQuery = 2, isCmd = 4, isCmdwP = 8, isXMLCmd = 16};
 enum eSCPINode { Node, Query, Cmd, CmdwP };
