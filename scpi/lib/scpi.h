@@ -29,13 +29,12 @@
 
 namespace SCPI
 {
-enum eSCPICmdResult { ack, nak, busy, errcon, erraut, errval, errxml,
+enum eSCPICmdResult { ack, nak, busy, erraut, errval, errxml,
                       errpath, errexec, errtimo, last };
 
 const QString scpiAnswer[errtimo+1] = { "ack",     ///< acknowledge (command recognized and executed)
                                         "nak",     ///< not acknowledge (kommando not recognized)
                                         "busy",    ///< device busy
-                                        "errcon",  ///< error connection (command recognized but no connection to device)
                                         "erraut",  ///< error authorization (command recognized but client is not auth. )
                                         "errval",  ///< error value (command recognized but incorrect parameter)
                                         "errxml",  ///< error xml (used xml file was incorrect)
