@@ -41,7 +41,6 @@ function(SETUP_TESTS)
 endfunction()
 
 add_subdirectory(scpi)
-add_subdirectory(exec-scpicmds)
 
 write_basic_package_version_file(
     SCPIConfigVersion.cmake
