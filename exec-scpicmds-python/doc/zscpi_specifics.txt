@@ -10,5 +10,6 @@ Die Antworten enthalten Strings, anstatt nur die eigtl. abgefragte Zahl, z.B. be
 *WAI ist nicht implementiert, wäre aber durchaus sinnvoll.
 Nodes wie z.B. MEASURE werden auch als Command/Query verwendet. Ist das erlaubt?
 Kann es sein, dass Queries nie overlapped sind, die aber in zSCPI ohne Queue der Fall war und die Antworten durcheinandern eintrudelten?
-Das System scheint sich nicht den SCPI-Pfad des letzten Befehls zu merken. Z.B. müsste das hier funktionieren: system:error:count?|all?
+Das System scheint sich nicht den SCPI-Pfad des letzten Befehls zu merken. Z.B. müsste das hier funktionieren: "system:error:count?|all?".
+Im Standard-SCPI würde das absetzen von stets vollen Pfaden dafür sorgen, dass nach einem Befehl der SCPI-Server auf dem Instrument dort im SCPI-Befehlsbaum stheen bleibt, wo ihn der letzte Befehl hingeführt hatte. Um also mit stehts absoluten Pfaden zu arbeiten, muss man immer ein ":" voranstellen (abgesehen von Common Commands). Dies ist vermutl. nicht in zSCPI implementiert.
 Z.B. wird "DEVICE:IFACE?" nicht in einer Zeile zurückgegeben, sondern in mehreren Zeilen, die alle mit "\n" terminiert sind. Somit wird ggf. nur die erste Zeile gelesen und die anderen als Responses der darauf folgenden Queries gewertet.
