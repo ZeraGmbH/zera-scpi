@@ -30,7 +30,7 @@ void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNode *delNode)
 
 ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *parser, const QChar *pInput)
 {
-    QString searchHeader = parser->GetKeyword(&pInput).toUpper();
+    const QString &searchHeader = parser->GetKeyword(&pInput).toUpper();
     ScpiNode *childNode = parentNode->findChildFull(searchHeader);
     if(childNode) {
         if(*pInput == ':') // in case input is not parsed completely
@@ -38,12 +38,11 @@ ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *
         else
             return childNode;
     }
-    QList<ScpiNode*> shortChildren = parentNode->findAllChildrenShort(searchHeader);
+    const QList<ScpiNode*> shortChildren = parentNode->findAllChildrenShort(searchHeader);
     if(!shortChildren.isEmpty()) {
         if(*pInput == ':') { // in case input is not parsed completely
-            while(!shortChildren.isEmpty()) {
-                ScpiNode* shorChild = shortChildren.takeFirst();
-                childNode = findNode(shorChild, parser, pInput);
+            for(ScpiNode* shortChild : shortChildren) {
+                childNode = findNode(shortChild, parser, pInput);
                 if(childNode)
                     return childNode;
             }
