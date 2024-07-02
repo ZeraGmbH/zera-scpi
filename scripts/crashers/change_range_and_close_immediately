@@ -1,0 +1,13 @@
+#!/bin/sh
+
+host=$1
+port=6320
+
+( echo open ${host} ${port}
+sleep 1
+echo 'SENSE:RNG1:Il1:RANGE 25mA;'
+echo '*STB?'
+sleep 0.05
+ ) | telnet
+
+
