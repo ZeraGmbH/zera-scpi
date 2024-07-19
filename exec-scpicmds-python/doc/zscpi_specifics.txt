@@ -1,15 +1,29 @@
-Es wird ein "|" als Separator mehrerer Message-Parts verwenden, anstatt dem ";" (dieses Zeichen wurde wiederum anderweitig vergeben)
-";" wird als Terminator von Commands mit Parametern (nicht Queries) verwendet. Es gibt normal keinen Terminator.
-Alle Antworten enden mit ";", was auch hier lediglich als Separator mehrerer kombinierter Antworten in einer Antwort-Message dienen sollte und sonst nicht verwendet wird.
-*OPC? ist nicht-blockend, sollte es aber sein. Dies verhindert eine Synchronisierung des Controllers mit dem Instrument.
-Alle Befehle wurden direkt parallel abgearbeitet (wenn die nachträglich eingebaute Queue deaktiviert ist). Eigtl. sollte es overlapping und synchronous Befehle geben (ist für jeden Befehl bereits implizit festgelegt) und auch eine Input-Queue.
-Die Antworten von Messages mit mehreren Queries sollten in einem Antwort-String zurückgegeben werden
-Die Antworten mit SYSTEM:ERROR? haben keine "" um den String-Teil der Antwort. Sollte z.B. so sein: 0, "No error."
-Es wird in Antworten bei positiven Zahlen ein "+" vorangestellt. Vllt. ist es aber sogar erlaubt (optional).
-Die Antworten enthalten Strings, anstatt nur die eigtl. abgefragte Zahl, z.B. bei "MEASure:RMS1:UL1?" erhält man "RMS1:UL1:[V]:243.329;". Vllt. liegt dies darin begründet, da es Befehle gibt, die Sammlungen von Einzelwerten zurückgeben, die mit entsprechenden Befehlen abgefragt werden könnten. Da vllt. nicht immer klar ist, welche Werte im jeweiligen Gerät zur Verfügung stehen, werden die SCPI-Header und die Einheit vorangehängt.
-*WAI ist nicht implementiert, wäre aber durchaus sinnvoll.
-Nodes wie z.B. MEASURE werden auch als Command/Query verwendet. Ist das erlaubt?
-Kann es sein, dass Queries nie overlapped sind, die aber in zSCPI ohne Queue der Fall war und die Antworten durcheinandern eintrudelten?
-Das System scheint sich nicht den SCPI-Pfad des letzten Befehls zu merken. Z.B. müsste das hier funktionieren: "system:error:count?|all?".
-Im Standard-SCPI würde das absetzen von stets vollen Pfaden dafür sorgen, dass nach einem Befehl der SCPI-Server auf dem Instrument dort im SCPI-Befehlsbaum stheen bleibt, wo ihn der letzte Befehl hingeführt hatte. Um also mit stehts absoluten Pfaden zu arbeiten, muss man immer ein ":" voranstellen (abgesehen von Common Commands). Dies ist vermutl. nicht in zSCPI implementiert.
-Z.B. wird "DEVICE:IFACE?" nicht in einer Zeile zurückgegeben, sondern in mehreren Zeilen, die alle mit "\n" terminiert sind. Somit wird ggf. nur die erste Zeile gelesen und die anderen als Responses der darauf folgenden Queries gewertet.
+Syntax Request:
+* Es wird ein "|" als Separator mehrerer Message-Parts verwendet, anstatt dem ";" (dieses Zeichen wurde wiederum anderweitig zur Terminierung von Befehlen vergeben)
+* ";" wird als Terminator von Commands mit Parametern (nicht Queries) verwendet. Es gibt normal keinen Terminator (außer eben "\n").
+* Nicht ganz sicher: Befehle ohne Parameter müssen auch mit einem ";" terminiert werden? Blick in den Code werden, um den Spezialfall genau zu definieren.
+* Alle Antworten enden mit ";", was auch hier lediglich als Separator mehrerer kombinierter Antworten in einer Antwort-Message dienen sollte und sonst nicht verwendet wird.
+
+Syntax Response:
+* Die Antworten von Messages mit mehreren Queries sollten in einem Antwort-String zurückgegeben werden. zSCPI gibt sie jedoch in einzelnen Antworten (mit "\n" terminiert") zurück.
+* Die Antworten mit SYSTEM:ERROR? haben keine "" um den String-Teil der Antwort. Sollte z.B. so sein: 0, "No error."
+* Die Antworten enthalten Strings, anstatt nur die eigtl. abgefragte Zahl, z.B. bei "MEASure:RMS1:UL1?" erhält man "RMS1:UL1:[V]:243.329;". Vllt. liegt dies darin begründet, da es Befehle gibt, die Sammlungen von Einzelwerten zurückgeben, die mit entsprechenden Befehlen abgefragt werden könnten. Da vllt. nicht immer klar ist, welche Werte im jeweiligen Gerät zur Verfügung stehen, werden die SCPI-Header und die Einheit vorangehängt.
+* Z.B. wird "DEVice:IFACE?" nicht in einer Zeile zurückgegeben, sondern in mehreren Zeilen, die alle mit "\n" terminiert sind. Somit wird ggf. nur die erste Zeile gelesen und die anderen als Responses der darauf folgenden Queries gewertet. Dies könnte als Sonderfall betrachtet werden und da es keinen eindeutigen Terminator gibt (normal ist "\n" der Terminator, den es in diesem Falle eben N mal gibt) muss mit einem Timeout gelesen werden, d.h. wenn X Millisekunden verstrichen sind ohne dass ein weiterer Teil der Antwort bei Controller eingeht, dann nehmen wir an, dass der Response fertig übertragen ist und hoffen auf das Beste...
+
+Overlapped vs. Sequential Commands:
+*OPC? ist nicht-blockend, sollte es aber sein. Dies verhindert eine Synchronisierung des Controllers mit dem Instrument. Um dies dennoch zu erreichen, muss solange mit einem wiederholten Aufruf von *OPC? gepollt werden, bis der Befehl +1 zurückgibt.
+* Oftmals wird zSCPI so verwendet, dass ein Befehl direkt von "|*STB?" gefolgt ist. Erstens müsste vorher *CLS ausgeführt werden, sonst könnte noch ein alter Fehlerwert drin stehen. Des weiteren könnte hier *STB? bestensfalls zurückliefern, ob der Befehl erkannt wurden bzw. gültig ist, aber nicht, ob dessen Ausführung erfolgreich war, da der Befehl noch läuft, während *STB? bereits fertig ist. In Standard-SCPI sieht es meist wie folgt aus: "*CLS", "MEIN:BEFEHL;*OPC?;*STB?". Hierbei ist *OPC? blockend.
+* Alle Befehle werden direkt parallel abgearbeitet (wenn die nachträglich eingebaute, und noch nicht veröffentlichte, Queue deaktiviert ist). Eigtl. sollte es overlapping und synchronous Befehle geben (welches der beiden, ist für jeden Befehl bereits implizit festgelegt) und auch eine Input-Queue.
+* Kann es sein, dass Queries laut Standard nie overlapped sind, die aber in zSCPI (ohne aktivierte Queue) overlapped ausgeführt wurden und die Antworten durcheinandern eintrafen?
+* Die Reihenfolge der Antworten einer kombinierten Nachricht, die mehrere Queries enthält, scheinen manchmal in falscher Reihenfolge zurückzukommen. Solange die integrierte Queue nicht releast wird, hilft am ehesten, die Befehle einzeln nacheinander zu schicken. Interessanterweise wird z.B. auch unter https://scdn.rohde-schwarz.com/ur/pws/dl_downloads/pdm/cl_manuals/getting_started/1179_4592_01/Remote_Control_SCPI_GettingStarted_en_03.pdf Seite 34 erwähnt, dass selbst bei kombinierten Befehlen mit rein sequentiellen Befehlen die Antwortreihenfolge nicht garantiert ist. Klingt unglaublich, daher noch zu klären, was der Standard in IEEE 488.2 sagt.
+
+Behavior:
+* Der Common Command *WAI ist nicht implementiert, wäre aber durchaus sinnvoll.
+* Das System scheint sich nicht den SCPI-Pfad des letzten Befehls zu merken. Z.B. müsste das hier funktionieren: "system:error:count?|all?".
+* Wenn der Befehl mit einem ":" Beginnt, muss hingegehn auf den root-Pfad zurückgekehrt werden. Unklar, ob dies implementiert ist.
+* Wenn Bit6 im SRE-Register gesetzt ist, schickt das Instrument asynchron den String "SQR" an den Controller zurück. Dies soll eine intelligente Alternative zur Interrupt-Leitung mit SCPI-Kommunikationshardware sein. Dies sieht der Standard nicht vor. Nutzbar, ohne Probleme mit der Kommunikation zu bekommen? Alternative Idee: SCPI öffnet einen zweiten Port, der genau dafür genutzt wird, ob das "SRQ" zu schicken. Somit kann teilweise eventgesteuert programmiert werden, ohne pollen zu müssen.
+
+Done / Notes:
+* Es wird in Antworten bei positiven Zahlen ein "+" vorangestellt. Vllt. ist es aber sogar erlaubt (optional). -> Machen auch herstellen wie Keysight, also okay.
+* Nodes wie z.B. MEASURE werden auch als Command/Query verwendet. Ist das erlaubt?
+
