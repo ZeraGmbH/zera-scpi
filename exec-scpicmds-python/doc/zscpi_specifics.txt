@@ -1,5 +1,5 @@
 Syntax Request:
-* Es wird ein "|" als Separator mehrerer Message-Parts verwendet, anstatt dem ";" (dieses Zeichen wurde wiederum anderweitig zur Terminierung von Befehlen vergeben)
+* Es wird ein "|" als Separator mehrerer Message-Parts verwendet, anstatt dem ";" (dieses Zeichen wurde wiederum anderweitig zur Terminierung von Befehlen vergeben); der COM5003 (?) verwendet korrekter noch ";"
 * ";" wird als Terminator von Commands mit Parametern (nicht Queries) verwendet. Es gibt normal keinen Terminator (außer eben "\n").
 * Nicht ganz sicher: Befehle ohne Parameter müssen auch mit einem ";" terminiert werden? Blick in den Code werden, um den Spezialfall genau zu definieren.
 * Alle Antworten enden mit ";", was auch hier lediglich als Separator mehrerer kombinierter Antworten in einer Antwort-Message dienen sollte und sonst nicht verwendet wird.
