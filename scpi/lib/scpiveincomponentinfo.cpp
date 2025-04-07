@@ -1,0 +1,26 @@
+#include "scpiveincomponentinfo.h"
+
+ScpiVeinComponentInfo::ScpiVeinComponentInfo(QString model,
+                                             QString cmd,
+                                             int cmdTypeMask,
+                                             QString veinComponentName,
+                                             SCPI::eSCPIEntryType entryType) :
+    m_sSCPIModel(model),
+    m_sSCPICmd(cmd),
+    m_sSCPICmdType(QString::number(cmdTypeMask)),
+    m_veinComponentName(veinComponentName),
+    m_sRefType(entryType==SCPI::isCatalog ? "1" : "0")
+{
+}
+
+void ScpiVeinComponentInfo::appendSCPIInfo(QJsonArray &jsArr)
+{
+    QJsonArray jsonSCPIArr;
+    jsonSCPIArr.append(m_sSCPIModel);
+    jsonSCPIArr.append(m_sSCPICmd);
+    jsonSCPIArr.append(m_sSCPICmdType);
+    jsonSCPIArr.append(m_veinComponentName);
+    jsonSCPIArr.append(m_sRefType);
+
+    jsArr.append(jsonSCPIArr);
+}
