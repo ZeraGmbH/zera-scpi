@@ -14,11 +14,10 @@ enum eSCPIEntryType {
 class ScpiVeinComponentInfo
 {
 public:
-    explicit ScpiVeinComponentInfo(const QString &model,
-                                   const QString &cmd,
+    explicit ScpiVeinComponentInfo(const QString &model, const QString &cmd,
                                    int cmdTypeMask, // e.g SCPI::isQuery|SCPI::isCmdwP
                                    const QString &veinComponentName,
-                                   SCPI::eSCPIEntryType entryType);
+                                   SCPI::eSCPIEntryType entryType = SCPI::isComponent);
     void appendSCPIInfo(QJsonArray &jsArr);
 
 private:
