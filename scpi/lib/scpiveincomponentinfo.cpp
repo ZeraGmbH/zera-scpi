@@ -1,9 +1,9 @@
 #include "scpiveincomponentinfo.h"
 
-ScpiVeinComponentInfo::ScpiVeinComponentInfo(QString model,
-                                             QString cmd,
+ScpiVeinComponentInfo::ScpiVeinComponentInfo(const QString &model,
+                                             const QString &cmd,
                                              int cmdTypeMask,
-                                             QString veinComponentName,
+                                             const QString &veinComponentName,
                                              SCPI::eSCPIEntryType entryType) :
     m_sSCPIModel(model),
     m_sSCPICmd(cmd),
