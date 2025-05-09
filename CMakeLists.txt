@@ -17,6 +17,7 @@ include(CMakePackageConfigHelpers)
 include(GenerateExportHeader)
 
 find_package(Qt5 COMPONENTS Core Xml Network Test CONFIG REQUIRED)
+find_package(ZenuxCore REQUIRED)
 
 enable_testing()
 
@@ -35,7 +36,7 @@ function(SETUP_TESTS)
             PUBLIC
             Qt5::Test
             scpi-testlib
-            xml-compare-testlib
+            Zera::xml-compare-testlib
             )
     endforeach()
 endfunction()
