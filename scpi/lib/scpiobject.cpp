@@ -1,17 +1,22 @@
 #include "scpiobject.h"
 
+int cSCPIObject::m_instanceCount = 0;
+
 cSCPIObject::cSCPIObject()
 {
+    m_instanceCount++;
 }
 
 cSCPIObject::cSCPIObject(const QString &name, quint8 type) :
     m_sName(name),
     m_nType(type)
 {
+    m_instanceCount++;
 }
 
 cSCPIObject::~cSCPIObject()
 {
+    m_instanceCount--;
 }
 
 const QString cSCPIObject::getName() const
@@ -27,6 +32,11 @@ quint8 cSCPIObject::getType() const
 void cSCPIObject::setXmlAttribute(const QString &key, const QString &value)
 {
     m_xmlAtttibuteMap[key] = value;
+}
+
+int cSCPIObject::getInstanceCount()
+{
+    return m_instanceCount;
 }
 
 const cSCPIObject::XmlKeyValueMap &cSCPIObject::getXmlAttibuteMap()

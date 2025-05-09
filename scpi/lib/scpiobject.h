@@ -18,11 +18,14 @@ public:
     void setXmlAttribute(const QString &key, const QString &value);
     typedef QMap<QString, QString> XmlKeyValueMap;
     const XmlKeyValueMap &getXmlAttibuteMap();
+
+    static int getInstanceCount();
 private:
     QString m_sName;
     quint8 m_nType;
     QString m_description;
     cSCPIObject::XmlKeyValueMap m_xmlAtttibuteMap;
+    static int m_instanceCount;
 };
 
 #endif // SCPIOBJECT_H
