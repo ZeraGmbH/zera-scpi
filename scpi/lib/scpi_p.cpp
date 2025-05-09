@@ -8,13 +8,18 @@
 #include <QSet>
 
 cSCPIPrivate::cSCPIPrivate() :
-    m_invisibleRootNode(QString(), nullptr)
+    m_invisibleRootNode(std::make_shared<ScpiNode>(QString(), nullptr))
 {
 }
 
-void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject *pSCPIObject)
+cSCPIPrivate::~cSCPIPrivate()
 {
-    ScpiNode *parentNode = &m_invisibleRootNode;
+    m_invisibleRootNode->removeAllChildren();
+}
+
+void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject)
+{
+    ScpiNodePtr parentNode = m_invisibleRootNode;
     const QStringList parentNamesCleaned = removeEmptyNodes(parentNodeNames);
     int nodesRemoved = parentNodeNames.size() - parentNamesCleaned.size();
     if(nodesRemoved)
@@ -39,9 +44,9 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
     findAndDeleteNode(delNodePath);
 }
 
-cSCPIObject* cSCPIPrivate::getSCPIObject(const QString& input)
+ScpiObjectPtr cSCPIPrivate::getSCPIObject(const QString& input)
 {
-    ScpiNode *childNode = ScpiNodeStaticFunctions::findNode(&m_invisibleRootNode, &m_Parser, (QChar*) input.data());
+    ScpiNodePtr childNode = ScpiNodeStaticFunctions::findNode(m_invisibleRootNode, &m_Parser, (QChar*) input.data());
     if(childNode)
         return childNode->getScpiObject();
     return nullptr;
@@ -64,14 +69,14 @@ void cSCPIPrivate::exportSCPIModelXML(QString& sxml, QMap<QString, QString> mode
     QDomElement modelsTag = modelDoc.createElement("MODELS");
     rootTag.appendChild(modelsTag);
 
-    ScpiNode::addNodeAndChildrenToXml(&m_invisibleRootNode, modelDoc, modelsTag, QStringList());
+    ScpiNode::addNodeAndChildrenToXml(m_invisibleRootNode, modelDoc, modelsTag, QStringList());
 
     sxml = modelDoc.toString();
 }
 
 void cSCPIPrivate::createFullNonNodeNameList(QList<QStringList> &childNameList)
 {
-    ScpiNode::addNodeAndChildrenToNameListFull(&m_invisibleRootNode, QStringList(), childNameList);
+    ScpiNode::addNodeAndChildrenToNameListFull(m_invisibleRootNode, QStringList(), childNameList);
 }
 
 ScpiAmbiguityMap cSCPIPrivate::checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction)
@@ -84,14 +89,14 @@ ScpiAmbiguityMap cSCPIPrivate::checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunct
     return ignoreFunction(filterAmbigous(createAllShortLongListMap(childNameListFull, childNameListShort)));
 }
 
-ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
+ScpiNodePtr cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePath)
 {
-    ScpiNode *parentNode = &m_invisibleRootNode;
+    ScpiNodePtr parentNode = m_invisibleRootNode;
     for(const QString &parentName : parentNodePath) {
-        ScpiNode *child = parentNode->findChildFull(parentName.toUpper());
+        ScpiNodePtr child = parentNode->findChildFull(parentName.toUpper());
         if(!child) {
             child = ScpiNodeStaticFunctions::createNode(parentName, nullptr);
-            parentNode->add(child);
+            parentNode->add(child, parentNode);
         }
         parentNode = child;
     }
@@ -101,9 +106,9 @@ ScpiNode *cSCPIPrivate::findParentAndCreatePath(const QStringList &parentNodePat
 void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
 {
     if(nodePath.count() > 0 ) {
-        ScpiNode *parentNode = &m_invisibleRootNode;
+        ScpiNodePtr parentNode = m_invisibleRootNode;
         for(const auto &nodeName: nodePath) {
-            ScpiNode *childNode = parentNode->findChildFull(nodeName);
+            ScpiNodePtr childNode = parentNode->findChildFull(nodeName);
             parentNode = childNode;
             if(!parentNode)
                 break;

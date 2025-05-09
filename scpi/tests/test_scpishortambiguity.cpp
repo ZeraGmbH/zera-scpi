@@ -8,6 +8,7 @@ QTEST_MAIN(test_scpishortambiguity)
 void test_scpishortambiguity::init()
 {
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
+    QCOMPARE(ScpiObject::getInstanceCount(), 0);
     m_scpiInterface = new cSCPI();
 }
 
@@ -15,6 +16,7 @@ void test_scpishortambiguity::cleanup()
 {
     delete m_scpiInterface;
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
+    QCOMPARE(ScpiObject::getInstanceCount(), 0);
 }
 
 void test_scpishortambiguity::checkCreateFullNonNodeNameList()
@@ -53,11 +55,11 @@ void test_scpishortambiguity::checkNoAmbiguity()
     ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
     QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
-    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    ScpiObjectPtr scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
-    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:bar");
+    ScpiObjectPtr scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:bar");
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
-    cSCPIObject *scpiObject3 = m_scpiInterface->getSCPIObject("chil:chil:boo");
+    ScpiObjectPtr scpiObject3 = m_scpiInterface->getSCPIObject("chil:chil:boo");
     QCOMPARE(scpiObject3->getType(), SCPI::isCmdwP);
 }
 
@@ -113,9 +115,9 @@ void test_scpishortambiguity::checkNodeOnOtherPath1()
     ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
     QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
-    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    ScpiObjectPtr scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
-    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
+    ScpiObjectPtr scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
@@ -132,9 +134,9 @@ void test_scpishortambiguity::checkNodeOnOtherPath2()
     ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
     QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
-    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
+    ScpiObjectPtr scpiObject2 = m_scpiInterface->getSCPIObject("chil:foo");
     QCOMPARE(scpiObject2->getType(), SCPI::isQuery);
-    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    ScpiObjectPtr scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isCmd);
 }
 
@@ -151,9 +153,9 @@ void test_scpishortambiguity::checkNodeOnOtherPathSameShortName1()
     ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
     QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
-    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    ScpiObjectPtr scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
-    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil");
+    ScpiObjectPtr scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil");
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
@@ -170,9 +172,9 @@ void test_scpishortambiguity::checkNodeOnOtherPathSameShortName2()
     ScpiAmbiguityMap shortLongAmbiguityMap = m_scpiInterface->checkAmbiguousShortNames();
     QCOMPARE(shortLongAmbiguityMap.count(), 0);
 
-    cSCPIObject *scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil");
+    ScpiObjectPtr scpiObject1 = m_scpiInterface->getSCPIObject("chil:chil");
     QCOMPARE(scpiObject1->getType(), SCPI::isQuery);
-    cSCPIObject *scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:foo");
+    ScpiObjectPtr scpiObject2 = m_scpiInterface->getSCPIObject("chil:chil:foo");
     QCOMPARE(scpiObject2->getType(), SCPI::isCmd);
 }
 
@@ -214,7 +216,7 @@ void test_scpishortambiguity::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
-        SCPITestObjectStub* tmpScpiObject = new SCPITestObjectStub(nodePath.takeLast(), scpiNode.type);
+        std::shared_ptr<SCPITestObjectStub> tmpScpiObject = std::make_shared<SCPITestObjectStub>(nodePath.takeLast(), scpiNode.type);
         m_scpiInterface->insertScpiCmd(nodePath, tmpScpiObject);
     }
 }

@@ -15,8 +15,7 @@ void test_scpibenchmark::initTestCase()
 
 void test_scpibenchmark::cleanupTestCase()
 {
-    while(!m_perTestScpiObjects.isEmpty())
-        delete m_perTestScpiObjects.takeLast();
+    m_perTestScpiObjects.clear();
     delete m_scpiInterface;
 }
 
@@ -27,7 +26,7 @@ void test_scpibenchmark::listInsertLayer(int layer, QStringList parentPath)
     for(int node=0; node<perLayerNodes; node++) {
         QString name = QString("node%1_%2").arg(layer).arg(node);
         if(layer == treeDepth-1) {
-            SCPITestObjectStub* tmpScpiObject = new SCPITestObjectStub(name, SCPI::isQuery);
+            std::shared_ptr<SCPITestObjectStub> tmpScpiObject = std::make_shared<SCPITestObjectStub>(name, SCPI::isQuery);
             m_perTestScpiObjects.append(tmpScpiObject);
             m_scpiInterface->insertScpiCmd(parentPath, tmpScpiObject);
             m_listObjectsAdded++;

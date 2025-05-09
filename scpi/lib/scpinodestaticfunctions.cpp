@@ -2,25 +2,25 @@
 #include "scpi.h"
 #include <QString>
 
-ScpiNode *ScpiNodeStaticFunctions::createNode(const QString &name, cSCPIObject *scpiObject)
+ScpiNodePtr ScpiNodeStaticFunctions::createNode(const QString &name, ScpiObjectPtr scpiObject)
 {
-    return new ScpiNode(name, scpiObject);
+    return std::make_shared<ScpiNode>(name, scpiObject);
 }
 
-void ScpiNodeStaticFunctions::addOrReplaceChild(ScpiNode *node, cSCPIObject *pSCPIObject)
+void ScpiNodeStaticFunctions::addOrReplaceChild(ScpiNodePtr node, ScpiObjectPtr pSCPIObject)
 {
     QString fullHeader = pSCPIObject->getName();
-    ScpiNode *childNode = node->findChildFull(fullHeader);
+    ScpiNodePtr childNode = node->findChildFull(fullHeader);
     if(childNode)
         childNode->setScpiObject(pSCPIObject);
     else
-        node->add(createNode(pSCPIObject->getName(), pSCPIObject));
+        node->add(createNode(pSCPIObject->getName(), pSCPIObject), node);
 }
 
-void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNode *delNode)
+void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNodePtr delNode)
 {
     while(delNode->parent()) {
-        ScpiNode *parent = delNode->parent();
+        ScpiNodePtr parent = delNode->parent();
         parent->removeChild(delNode);
         if(!parent->isEmpty())
             return;
@@ -28,20 +28,20 @@ void ScpiNodeStaticFunctions::delNodeAndEmptyParents(ScpiNode *delNode)
     }
 }
 
-ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *parser, const QChar *pInput)
+ScpiNodePtr ScpiNodeStaticFunctions::findNode(const ScpiNodePtr parentNode, cParse *parser, const QChar *pInput)
 {
     const QString &searchHeader = parser->GetKeyword(&pInput).toUpper();
-    ScpiNode *childNode = parentNode->findChildFull(searchHeader);
+    ScpiNodePtr childNode = parentNode->findChildFull(searchHeader);
     if(childNode) {
         if(*pInput == ':') // in case input is not parsed completely
             return findNode(childNode, parser, pInput);
         else
             return childNode;
     }
-    const QList<ScpiNode*> shortChildren = parentNode->findAllChildrenShort(searchHeader);
+    const QList<ScpiNodePtr> shortChildren = parentNode->findAllChildrenShort(searchHeader);
     if(!shortChildren.isEmpty()) {
         if(*pInput == ':') { // in case input is not parsed completely
-            for(ScpiNode* shortChild : shortChildren) {
+            for(ScpiNodePtr shortChild : shortChildren) {
                 childNode = findNode(shortChild, parser, pInput);
                 if(childNode)
                     return childNode;
@@ -53,7 +53,7 @@ ScpiNode *ScpiNodeStaticFunctions::findNode(const ScpiNode *parentNode, cParse *
     return nullptr;
 }
 
-bool ScpiNodeStaticFunctions::isNodeTypeOnly(const ScpiNode *node)
+bool ScpiNodeStaticFunctions::isNodeTypeOnly(const ScpiNodePtr node)
 {
     return node->getType() == SCPI::isNode;
 }

@@ -44,13 +44,13 @@ public:
     cSCPI();
     virtual ~cSCPI();
 
-    void insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject* pSCPIObject);
+    void insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject);
 
     void delSCPICmds(const QString& cmd);
     void delSCPICmds(cSCPICommand &cmd);
 
-    cSCPIObject* getSCPIObject(const QString& input) const;
-    cSCPIObject* getSCPIObject(const cSCPICommand &input) const;
+    ScpiObjectPtr getSCPIObject(const QString& input) const;
+    ScpiObjectPtr getSCPIObject(const cSCPICommand &input) const;
 
     void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
     void createFullNonNodeNameList(QList<QStringList> &childNameList);

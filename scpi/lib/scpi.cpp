@@ -16,7 +16,7 @@ cSCPI::~cSCPI()
     delete d_ptr;
 }
 
-void cSCPI::insertScpiCmd(const QStringList& parentNodeNames, cSCPIObject *pSCPIObject)
+void cSCPI::insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject)
 {
     d_ptr->insertScpiCmd(parentNodeNames, pSCPIObject);
 }
@@ -31,12 +31,12 @@ void cSCPI::delSCPICmds(cSCPICommand &cmd)
     delSCPICmds(cmd.getCommand());
 }
 
-cSCPIObject* cSCPI::getSCPIObject(const QString &input) const
+ScpiObjectPtr cSCPI::getSCPIObject(const QString &input) const
 {
     return d_ptr->getSCPIObject(input);
 }
 
-cSCPIObject* cSCPI::getSCPIObject(const cSCPICommand &input) const
+ScpiObjectPtr cSCPI::getSCPIObject(const cSCPICommand &input) const
 {
     return getSCPIObject(input.getCommand());
 }

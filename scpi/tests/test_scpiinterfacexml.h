@@ -52,7 +52,7 @@ private:
     void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
     QString createScpiString(QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
 
-    QList<SCPITestObjectStub*> m_perTestScpiObjects;
+    QList<std::shared_ptr<SCPITestObjectStub>> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;
 };
 

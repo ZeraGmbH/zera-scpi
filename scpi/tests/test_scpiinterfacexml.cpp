@@ -466,8 +466,7 @@ void test_scpiinterfacexml::init()
 
 void test_scpiinterfacexml::cleanup()
 {
-    while(!m_perTestScpiObjects.isEmpty())
-        delete m_perTestScpiObjects.takeLast();
+    m_perTestScpiObjects.clear();
     delete m_scpiInterface;
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
 }
@@ -476,7 +475,7 @@ void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
-        SCPITestObjectStub* tmpScpiObject = new SCPITestObjectStub(nodePath.takeLast(), scpiNode.type);
+        std::shared_ptr<SCPITestObjectStub> tmpScpiObject = std::make_shared<SCPITestObjectStub>(nodePath.takeLast(), scpiNode.type);
         m_perTestScpiObjects.append(tmpScpiObject);
         m_scpiInterface->insertScpiCmd(nodePath, tmpScpiObject);
     }

@@ -4,7 +4,7 @@
 
 int ScpiNode::m_instanceCount = 0;
 
-ScpiNode::ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject) :
+ScpiNode::ScpiNode(const QString& scpiHeader, ScpiObjectPtr pSCPIObject) :
     m_pScpiObject(pSCPIObject)
 {
     adjustScpiHeaders(scpiHeader);
@@ -13,17 +13,15 @@ ScpiNode::ScpiNode(const QString& scpiHeader, cSCPIObject* pSCPIObject) :
 
 ScpiNode::~ScpiNode()
 {
-    while(!m_children.isEmpty())
-        delete m_children.takeFirst();
     m_instanceCount--;
 }
 
-cSCPIObject *ScpiNode::getScpiObject() const
+ScpiObjectPtr ScpiNode::getScpiObject() const
 {
     return m_pScpiObject;
 }
 
-void ScpiNode::setScpiObject(cSCPIObject *pScpiObject)
+void ScpiNode::setScpiObject(ScpiObjectPtr pScpiObject)
 {
     m_pScpiObject = pScpiObject;
 }
@@ -45,7 +43,7 @@ const QString &ScpiNode::getShortHeader() const
     return m_sScpiHeaderShort;
 }
 
-ScpiNode *ScpiNode::findChildShort(const QString &shortHeader) const
+ScpiNodePtr ScpiNode::findChildShort(const QString &shortHeader) const
 {
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
         if((*iter)->getShortHeader() == shortHeader) {
@@ -55,9 +53,9 @@ ScpiNode *ScpiNode::findChildShort(const QString &shortHeader) const
     return nullptr;
 }
 
-QList<ScpiNode *> ScpiNode::findAllChildrenShort(const QString &shortHeader) const
+QList<ScpiNodePtr> ScpiNode::findAllChildrenShort(const QString &shortHeader) const
 {
-    QList<ScpiNode *> found;
+    QList<ScpiNodePtr> found;
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
         if((*iter)->getShortHeader() == shortHeader) {
             found.append(*iter);
@@ -66,7 +64,7 @@ QList<ScpiNode *> ScpiNode::findAllChildrenShort(const QString &shortHeader) con
     return found;
 }
 
-ScpiNode *ScpiNode::findChildFull(const QString &fullHeader) const
+ScpiNodePtr ScpiNode::findChildFull(const QString &fullHeader) const
 {
     for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
         if((*iter)->getFullHeader() == fullHeader) {
@@ -76,14 +74,22 @@ ScpiNode *ScpiNode::findChildFull(const QString &fullHeader) const
     return nullptr;
 }
 
-ScpiNode *ScpiNode::parent() const
+ScpiNodePtr ScpiNode::parent() const
 {
     return m_parent;
 }
 
-void ScpiNode::removeChild(ScpiNode *child)
+void ScpiNode::removeChild(ScpiNodePtr child)
 {
     removeRow(child->row());
+    child->removeAllChildren();
+}
+
+void ScpiNode::removeAllChildren()
+{
+    for (ScpiNodePtr child : m_children)
+        child->removeAllChildren();
+    m_children.clear();
 }
 
 bool ScpiNode::isEmpty() const
@@ -96,23 +102,23 @@ int ScpiNode::row() const
     return m_row;
 }
 
-void ScpiNode::add(ScpiNode *node)
+void ScpiNode::add(ScpiNodePtr node, ScpiNodePtr parent)
 {
-    node->m_parent = this;
+    node->m_parent = parent;
     node->m_row = m_children.count();
     m_children.append(node);
 }
 
-void ScpiNode::addNodeSpecificAttributes(const ScpiNode *childNode, QDomElement &cmdTag)
+void ScpiNode::addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElement &cmdTag)
 {
-    cSCPIObject::XmlKeyValueMap xmlAtributes;
+    ScpiObject::XmlKeyValueMap xmlAtributes;
     if(childNode->getScpiObject())
         xmlAtributes = childNode->getScpiObject()->getXmlAttibuteMap();
     for(auto attIter=xmlAtributes.constBegin(); attIter!=xmlAtributes.constEnd(); ++attIter)
         cmdTag.setAttribute(attIter.key(), attIter.value());
 }
 
-QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNode *childNode)
+QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNodePtr childNode)
 {
     QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
     if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
@@ -121,7 +127,7 @@ QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QS
     return cmdTag;
 }
 
-void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNode *childNode, const QStringList parentNames)
+void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList parentNames)
 {
     QString typeInfo;
     if(parentNames.isEmpty())
@@ -130,10 +136,10 @@ void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNode *childNode, 
     cmdTag.setAttribute("Type", typeInfo);
 }
 
-void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
+void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
-        const ScpiNode *childNode = *iter;
+        const ScpiNodePtr childNode = *iter;
         QString childNameFull = childNode->getFullHeader();
         QStringList childNameListFull = parentNames + QStringList(childNameFull);
 
@@ -146,10 +152,10 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNode *node, QDomDocument &doc, 
     }
 }
 
-void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNode *node, const QStringList parentNames, QList<QStringList> &scpiPathList)
+void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList parentNames, QList<QStringList> &scpiPathList)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
-        const ScpiNode *childNode = *iter;
+        const ScpiNodePtr childNode = *iter;
         QString childName = childNode->getFullHeader();
         QStringList childNameList = parentNames + QStringList(childName);
         if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
@@ -160,7 +166,7 @@ void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNode *node, const QStr
 
 void ScpiNode::removeRow(int row)
 {
-    delete m_children.takeAt(row);
+    m_children.takeAt(row);
     for(; row<m_children.count(); ++row) {
         m_children.at(row)->m_row = row;
     }

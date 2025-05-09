@@ -2,7 +2,7 @@
 #include "scpicommand.h"
 
 ScpiParamCheckerDelegate::ScpiParamCheckerDelegate(const QString &name, quint8 type, int paramCountExpected) :
-    cSCPIObject(name, type),
+    ScpiObject(name, type),
     m_paramCountExpected(paramCountExpected)
 {
 }

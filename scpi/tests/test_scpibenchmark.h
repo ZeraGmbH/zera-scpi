@@ -20,7 +20,7 @@ private:
     void listInsertLayer(int layer, QStringList parentPath);
     void listSearchLayer(int layer, QStringList parentPath);
     void listRemoveLayer(int layer, QStringList parentPath);
-    QList<SCPITestObjectStub*> m_perTestScpiObjects;
+    QList<std::shared_ptr<SCPITestObjectStub>> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;
     int m_listObjectsAdded = 0;
 };

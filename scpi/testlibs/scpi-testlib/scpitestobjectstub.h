@@ -3,10 +3,10 @@
 
 #include "scpiobject.h"
 
-class SCPITestObjectStub : public cSCPIObject
+class SCPITestObjectStub : public ScpiObject
 {
 public:
-    SCPITestObjectStub(QString name, quint8 type) : cSCPIObject(name, type) { }
+    SCPITestObjectStub(QString name, quint8 type) : ScpiObject(name, type) { }
     bool executeSCPI(const QString& sInput, QString& sOutput) override
     {
         return true;

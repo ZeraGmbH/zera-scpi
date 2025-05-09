@@ -15,13 +15,13 @@ void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType
     QStringList path = scpiNodePath.split(":", Qt::SkipEmptyParts);
     if(path.count() > 0) {
         QString nodeName = path.takeLast();
-        m_scpiTree.insertScpiCmd(path, new ScpiParamCheckerDelegate(nodeName, scpiType, paramCountExpected));
+        m_scpiTree.insertScpiCmd(path, std::make_shared<ScpiParamCheckerDelegate>(nodeName, scpiType, paramCountExpected));
     }
 }
 
 bool ScpiFullCmdCheckerForTest::matches(QString cmd)
 {
-    cSCPIObject *object = m_scpiTree.getSCPIObject(cmd);
+    ScpiObjectPtr object = m_scpiTree.getSCPIObject(cmd);
     bool match = object != nullptr;
     if(match) {
         quint8 type = object->getType();
@@ -42,9 +42,8 @@ bool ScpiFullCmdCheckerForTest::matches(QString cmd)
             }
         }
         if(match) {
-            ScpiParamCheckerDelegate* scpiObject = static_cast<ScpiParamCheckerDelegate*>(object);
             QString scpiOutput;
-            match = scpiObject->executeSCPI(cmd, scpiOutput);
+            match = object->executeSCPI(cmd, scpiOutput);
         }
     }
     else

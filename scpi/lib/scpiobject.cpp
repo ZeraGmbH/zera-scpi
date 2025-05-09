@@ -1,45 +1,45 @@
 #include "scpiobject.h"
 
-int cSCPIObject::m_instanceCount = 0;
+int ScpiObject::m_instanceCount = 0;
 
-cSCPIObject::cSCPIObject()
+ScpiObject::ScpiObject()
 {
     m_instanceCount++;
 }
 
-cSCPIObject::cSCPIObject(const QString &name, quint8 type) :
+ScpiObject::ScpiObject(const QString &name, quint8 type) :
     m_sName(name),
     m_nType(type)
 {
     m_instanceCount++;
 }
 
-cSCPIObject::~cSCPIObject()
+ScpiObject::~ScpiObject()
 {
     m_instanceCount--;
 }
 
-const QString cSCPIObject::getName() const
+const QString ScpiObject::getName() const
 {
     return m_sName.toUpper();
 }
 
-quint8 cSCPIObject::getType() const
+quint8 ScpiObject::getType() const
 {
     return m_nType;
 }
 
-void cSCPIObject::setXmlAttribute(const QString &key, const QString &value)
+void ScpiObject::setXmlAttribute(const QString &key, const QString &value)
 {
     m_xmlAtttibuteMap[key] = value;
 }
 
-int cSCPIObject::getInstanceCount()
+int ScpiObject::getInstanceCount()
 {
     return m_instanceCount;
 }
 
-const cSCPIObject::XmlKeyValueMap &cSCPIObject::getXmlAttibuteMap()
+const ScpiObject::XmlKeyValueMap &ScpiObject::getXmlAttibuteMap()
 {
     return m_xmlAtttibuteMap;
 }

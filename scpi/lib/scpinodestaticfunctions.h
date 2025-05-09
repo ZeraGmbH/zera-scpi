@@ -3,16 +3,17 @@
 
 #include "scpiobject.h"
 #include "scpinode.h"
+#include "parse.h"
 
 class ScpiNodeStaticFunctions
 {
 public:
-    static ScpiNode* createNode(const QString &name, cSCPIObject *scpiObject);
-    static void addOrReplaceChild(ScpiNode* node, cSCPIObject *pSCPIObject);
-    static void delNodeAndEmptyParents(ScpiNode* delNode);
-    static ScpiNode* findNode(const ScpiNode *parentNode, cParse* parser, const QChar *pInput);
+    static ScpiNodePtr createNode(const QString &name, ScpiObjectPtr scpiObject);
+    static void addOrReplaceChild(ScpiNodePtr node, ScpiObjectPtr pSCPIObject);
+    static void delNodeAndEmptyParents(ScpiNodePtr delNode);
+    static ScpiNodePtr findNode(const ScpiNodePtr parentNode, cParse* parser, const QChar *pInput);
 
-    static bool isNodeTypeOnly(const ScpiNode *node);
+    static bool isNodeTypeOnly(const ScpiNodePtr node);
     static QString scpiTypeToString(const quint8 scpiType);
     static QString makeValidXmlTag(QString xmlTag);
     static QString appendTypeString(QString typeInfo, const QString &infoAppend);

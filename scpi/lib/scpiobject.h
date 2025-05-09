@@ -3,14 +3,13 @@
 
 #include "scpi_export.h"
 #include <QMap>
+#include <memory>
 
-class cSCPIObjectPrivate;
-
-class SCPI_EXPORT cSCPIObject {
+class SCPI_EXPORT ScpiObject {
 public:
-    cSCPIObject();
-    cSCPIObject(const QString &name, quint8 type);
-    virtual ~cSCPIObject();
+    ScpiObject();
+    ScpiObject(const QString &name, quint8 type);
+    virtual ~ScpiObject();
     virtual bool executeSCPI(const QString& sInput, QString& sOutput) = 0;
     const QString getName() const;
     quint8 getType() const;
@@ -24,8 +23,10 @@ private:
     QString m_sName;
     quint8 m_nType;
     QString m_description;
-    cSCPIObject::XmlKeyValueMap m_xmlAtttibuteMap;
+    ScpiObject::XmlKeyValueMap m_xmlAtttibuteMap;
     static int m_instanceCount;
 };
+
+typedef std::shared_ptr<ScpiObject> ScpiObjectPtr;
 
 #endif // SCPIOBJECT_H

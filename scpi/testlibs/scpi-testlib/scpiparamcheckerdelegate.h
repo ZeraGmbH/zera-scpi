@@ -3,7 +3,7 @@
 
 #include "scpiobject.h"
 
-class ScpiParamCheckerDelegate : public cSCPIObject
+class ScpiParamCheckerDelegate : public ScpiObject
 {
 public:
     ScpiParamCheckerDelegate(const QString &name, quint8 type, int paramCountExpected);
