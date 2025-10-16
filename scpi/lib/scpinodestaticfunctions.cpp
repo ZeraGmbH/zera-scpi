@@ -1,6 +1,7 @@
 #include "scpinodestaticfunctions.h"
 #include "scpi.h"
 #include <QString>
+#include <qregularexpression.h>
 
 ScpiNodePtr ScpiNodeStaticFunctions::createNode(const QString &name, ScpiObjectPtr scpiObject)
 {
@@ -80,6 +81,7 @@ QString ScpiNodeStaticFunctions::scpiTypeToString(const quint8 scpiType)
 
 QString ScpiNodeStaticFunctions::makeValidXmlTag(QString xmlTag)
 {
+    xmlTag.remove(QRegularExpression("\\(.*\\)")); // in case of RPCs
     xmlTag.replace("*", "MUL");
     xmlTag.replace("+", "PLUS");
     xmlTag.replace("-", "MINUS");
