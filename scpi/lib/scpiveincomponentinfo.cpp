@@ -21,6 +21,13 @@ void ScpiVeinComponentInfo::appendSCPIInfo(QJsonArray &jsArr)
     jsonSCPIArr.append(m_sSCPICmdType);
     jsonSCPIArr.append(m_veinComponentName);
     jsonSCPIArr.append(m_sRefType);
+    if(!m_rpcParams.isNull())
+        jsonSCPIArr.append(m_rpcParams);
 
     jsArr.append(jsonSCPIArr);
+}
+
+void ScpiVeinComponentInfo::setRpcParams(QString rpcParams)
+{
+    m_rpcParams = rpcParams;
 }
