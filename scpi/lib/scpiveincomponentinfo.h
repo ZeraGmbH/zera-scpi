@@ -19,6 +19,7 @@ public:
                                    const QString &veinComponentName,
                                    SCPI::eSCPIEntryType entryType = SCPI::isComponent);
     void appendSCPIInfo(QJsonArray &jsArr);
+    void setRpcParams(QString rpcParams);
 
 private:
     const QString m_sSCPIModel;
@@ -26,6 +27,7 @@ private:
     const QString m_sSCPICmdType;
     const QString m_veinComponentName;
     const QString m_sRefType;
+    QString m_rpcParams;
 };
 
 #endif // SCPIVEINCOMPONENTINFO_H
