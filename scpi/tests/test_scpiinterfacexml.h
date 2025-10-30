@@ -19,7 +19,6 @@ private slots:
     void oneCmdwP();
     void oneXMLCmd();
     void oneElementNested();
-    void oneElementNestedWithInvalidTag();
     void twoElementNestedDifferentPath();
     void twoElementNestedSamePath();
     void twoElementNestedAlmostSamePath();

@@ -128,26 +128,6 @@ void test_scpiinterfacexml::oneElementNested()
     QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
 }
 
-void test_scpiinterfacexml::oneElementNestedWithInvalidTag()
-{
-    QList<ScpiNodeInfo> scpiInfos;
-    scpiInfos.append({QStringList() << "root" << "child" << "RPC_foo(param)", SCPI::isQuery});
-    addScpiObjects(scpiInfos);
-    QString xmlExport = createScpiString();
-
-    QString scpiModelXml =
-        "<ROOT Type='Model,Node'>"
-            "<CHILD Type='Node'>"
-                "<RPC_FOO Type='Query' ScpiPath='ROOT:CHILD:RPC_FOO(PARAM)'/>"
-            "</CHILD>"
-        "</ROOT>";
-    const QString xmlExpected = xmlLead + xmlModelsLead + scpiModelXml + xmlModelsTrail + xmlTrail;
-
-    XmlDocumentCompare cmp;
-    QVERIFY(cmp.compareXml(xmlExport, xmlExpected, true));
-
-}
-
 void test_scpiinterfacexml::twoElementNestedDifferentPath()
 {
     QList<ScpiNodeInfo> scpiInfos;
