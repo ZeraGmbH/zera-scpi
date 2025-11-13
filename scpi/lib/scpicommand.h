@@ -40,6 +40,7 @@ public:
     const QStringList &getParamList() const;
     bool isQuery() const;
     bool isQuery(quint8 anzParameter) const;
+    bool isCommand() const;
     bool isCommand(quint8 anzParameter) const;
 
 private:

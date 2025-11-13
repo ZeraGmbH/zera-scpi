@@ -84,6 +84,11 @@ bool cSCPICommand::isQuery(quint8 anzParameter) const
     return ( (m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
 }
 
+bool cSCPICommand::isCommand() const
+{
+    return ( (!m_sCommandStr.contains("?")) && (m_sParamList.count() == 0));
+}
+
 bool cSCPICommand::isCommand(quint8 anzParameter) const
 {
     return ( (!m_sCommandStr.contains("?")) && (m_sParamList.count() == anzParameter));
