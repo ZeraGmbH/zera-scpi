@@ -1,0 +1,6 @@
+# ------------------
+# 6308: pcb
+SYSTEM:CLAMP:m7:TYPE 16;
+SYST:CLAM:m7:SER 123456789;
+SYST:CLAM:WRITE;
+
