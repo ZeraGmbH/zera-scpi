@@ -83,7 +83,7 @@ QString ScpiNodeStaticFunctions::makeValidXmlTag(QString xmlTag)
     xmlTag.replace("*", "MUL");
     xmlTag.replace("+", "PLUS");
     xmlTag.replace("-", "MINUS");
-    if(xmlTag.count() > 0 && xmlTag[0].isNumber())
+    if(xmlTag.size() > 0 && xmlTag[0].isNumber())
         xmlTag = "N_" + xmlTag;
     return xmlTag;
 }
