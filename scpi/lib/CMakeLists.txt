@@ -13,8 +13,8 @@ add_library(SCPI SHARED
 
 target_link_libraries(SCPI
     PUBLIC
-    Qt5::Core
-    Qt5::Xml
+    ${QTX}::Core
+    ${QTX}::Xml
     )
 
 target_include_directories(SCPI
