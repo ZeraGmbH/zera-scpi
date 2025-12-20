@@ -19,7 +19,7 @@ target_include_directories(scpi-testlib
 
 target_link_libraries(scpi-testlib
     PUBLIC
-    Qt5::Core
+    ${QTX}::Core
     SCPI
 )
 
