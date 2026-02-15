@@ -32,8 +32,8 @@ public:
 
     bool isEmpty() const;
     void add(ScpiNodePtr node, ScpiNodePtr parent);
-    static void addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames);
-    static void addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList parentNames, QList<QStringList> &scpiPathList);
+    static void addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames);
+    static void addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList &parentNames, QList<QStringList> &scpiPathList);
     static QString createShortHeader(QString scpiHeader);
 
     static int getInstanceCount();
@@ -45,7 +45,7 @@ private:
     void removeRow(int row);
     static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNodePtr childNode);
     static void addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElement &cmdTag);
-    static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList parentNames);
+    static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames);
 
     ScpiObjectPtr m_pScpiObject;
     QString m_sScpiHeaderShort;

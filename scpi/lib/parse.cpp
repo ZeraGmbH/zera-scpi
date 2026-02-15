@@ -1,15 +1,15 @@
 #include "parse.h"
 
 cParse::cParse() :
-    delimiter(" :?;"),
-    whitespace(" :;")
+    m_delimiter(" :?;"),
+    m_whitespace(" :;")
 {
 }
 
 const QString &cParse::GetKeyword(const QChar** s)
 {
     bool escape = false;
-    keyw ="";
+    m_keyw ="";
     ignoreWhitespace(s);
     for (;;) {
        QChar tc = **s;
@@ -20,13 +20,13 @@ const QString &cParse::GetKeyword(const QChar** s)
        else {
            if (escape)
                escape = false;
-           else if (delimiter.contains(tc, Qt::CaseInsensitive))
+           else if (m_delimiter.contains(tc, Qt::CaseInsensitive))
                break; // if next char is delimiter, we are ready
-           keyw += tc;
+           m_keyw += tc;
        }
        (*s)++;
     }
-    return keyw; // keyword without delimiter
+    return m_keyw; // keyword without delimiter
 }
 
 QChar cParse::GetChar(const QChar** s)
@@ -35,17 +35,17 @@ QChar cParse::GetChar(const QChar** s)
     return **s; // return = 0 or char != whitespace
 }
 
-const QString cParse::SetDelimiter(const QString s)
+const QString cParse::SetDelimiter(const QString &delimiter)
 {
-    QString r = delimiter;
-    delimiter = s;
+    QString r = m_delimiter;
+    m_delimiter = delimiter;
     return(r); // return old delimiter ....
 }
 
-const QString cParse::SetWhiteSpace(const QString s)
+const QString cParse::SetWhiteSpace(const QString &whiteSpace)
 {
-    QString r = whitespace;
-    whitespace = s;
+    QString r = m_whitespace;
+    m_whitespace = whiteSpace;
     return(r); // return old whitespace
 }
 
@@ -54,7 +54,7 @@ void cParse::ignoreWhitespace(const QChar **s)
     for (;;) {
         if ((**s).isNull())
             break;
-        if ( !whitespace.contains(**s, Qt::CaseInsensitive) )
+        if ( !m_whitespace.contains(**s, Qt::CaseInsensitive) )
             break; // if next char is whitespace
         (*s)++; // pointer to next char
     }

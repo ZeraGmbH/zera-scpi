@@ -127,7 +127,7 @@ QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QS
     return cmdTag;
 }
 
-void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList parentNames)
+void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames)
 {
     QString typeInfo;
     if(parentNames.isEmpty())
@@ -136,7 +136,7 @@ void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode
     cmdTag.setAttribute("Type", typeInfo);
 }
 
-void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList parentNames)
+void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNodePtr childNode = *iter;
@@ -152,7 +152,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc
     }
 }
 
-void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList parentNames, QList<QStringList> &scpiPathList)
+void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList &parentNames, QList<QStringList> &scpiPathList)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNodePtr childNode = *iter;

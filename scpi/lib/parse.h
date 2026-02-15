@@ -17,13 +17,13 @@ public:
     const QString& GetKeyword(const QChar **s);
     QChar GetChar(const QChar **s); // read next character string
 
-    const QString SetDelimiter(const QString s);
-    const QString SetWhiteSpace(const QString s);
+    const QString SetDelimiter(const QString &delimiter);
+    const QString SetWhiteSpace(const QString &whiteSpace);
 private:
     void ignoreWhitespace(const QChar **s);
-    QString keyw;
-    QString delimiter;
-    QString whitespace;
+    QString m_keyw;
+    QString m_delimiter;
+    QString m_whitespace;
 };
 
 #endif
