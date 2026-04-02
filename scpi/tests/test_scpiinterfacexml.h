@@ -49,8 +49,8 @@ private:
         quint8 type;
     };
 
-    void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
-    QString createScpiString(QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
+    void addScpiObjects(const QList<ScpiNodeInfo> &scpiNodes);
+    QString createScpiString(const QMap<QString, QString> &modelListBaseEntry = QMap<QString, QString>());
 
     QList<std::shared_ptr<SCPITestObjectStub>> m_perTestScpiObjects;
     cSCPI *m_scpiInterface;

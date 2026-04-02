@@ -34,16 +34,16 @@ public:
     void add(ScpiNodePtr node, ScpiNodePtr parent);
     static void addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames);
     static void addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList &parentNames, QList<QStringList> &scpiPathList);
-    static QString createShortHeader(QString scpiHeader);
+    static QString createShortHeader(const QString &scpiHeader);
 
     static int getInstanceCount();
 
 private:
-    void adjustScpiHeaders(QString scpiHeader);
-    static bool isLastShortAVowel(QString scpiHeader);
+    void adjustScpiHeaders(const QString &scpiHeader);
+    static bool isLastShortAVowel(const QString &scpiHeader);
     int row() const;
     void removeRow(int row);
-    static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNodePtr childNode);
+    static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, const QString &childName, const ScpiNodePtr childNode);
     static void addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElement &cmdTag);
     static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames);
 

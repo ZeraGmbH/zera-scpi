@@ -212,7 +212,7 @@ void test_scpishortambiguity::checkLastSameShort2()
     QVERIFY(shortLongAmbiguityMap["CHIL:READ"].contains("CHILD1:READ1"));
 }
 
-void test_scpishortambiguity::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
+void test_scpishortambiguity::addScpiObjects(const QList<ScpiNodeInfo> &scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;

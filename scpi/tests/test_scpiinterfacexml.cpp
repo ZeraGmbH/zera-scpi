@@ -471,7 +471,7 @@ void test_scpiinterfacexml::cleanup()
     QCOMPARE(ScpiNode::getInstanceCount(), 0);
 }
 
-void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
+void test_scpiinterfacexml::addScpiObjects(const QList<ScpiNodeInfo> &scpiNodes)
 {
     for(const auto &scpiNode : scpiNodes) {
         QStringList nodePath = scpiNode.nodePath;
@@ -481,7 +481,7 @@ void test_scpiinterfacexml::addScpiObjects(QList<ScpiNodeInfo> scpiNodes)
     }
 }
 
-QString test_scpiinterfacexml::createScpiString(QMap<QString, QString> modelListBaseEntry)
+QString test_scpiinterfacexml::createScpiString(const QMap<QString, QString> &modelListBaseEntry)
 {
     QString exportedXml;
     m_scpiInterface->exportSCPIModelXML(exportedXml, modelListBaseEntry);

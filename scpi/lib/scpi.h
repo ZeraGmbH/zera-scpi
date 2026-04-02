@@ -47,12 +47,12 @@ public:
     void insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject);
 
     void delSCPICmds(const QString& cmd);
-    void delSCPICmds(cSCPICommand &cmd);
+    void delSCPICmds(const cSCPICommand &cmd);
 
     ScpiObjectPtr getSCPIObject(const QString& input) const;
     ScpiObjectPtr getSCPIObject(const cSCPICommand &input) const;
 
-    void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry = QMap<QString, QString>());
+    void exportSCPIModelXML(QString &sxml, const QMap<QString, QString> &modelListBaseEntry = QMap<QString, QString>());
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
 
     ScpiAmbiguityMap checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction = [](ScpiAmbiguityMap inMap) { return inMap;});

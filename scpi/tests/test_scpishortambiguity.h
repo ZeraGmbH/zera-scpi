@@ -30,7 +30,7 @@ private:
         QStringList nodePath;
         quint8 type;
     };
-    void addScpiObjects(QList<ScpiNodeInfo> scpiNodes);
+    void addScpiObjects(const QList<ScpiNodeInfo> &scpiNodes);
 
     cSCPI *m_scpiInterface;
 };

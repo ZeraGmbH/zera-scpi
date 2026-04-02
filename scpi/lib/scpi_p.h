@@ -4,7 +4,6 @@
 #include "parse.h"
 #include "scpi.h"
 #include "scpinode.h"
-#include <QDomDocument>
 
 class cSCPIPrivate
 {
@@ -20,10 +19,10 @@ public:
 private:
     ScpiNodePtr findParentAndCreatePath(const QStringList& parentNodePath);
     void findAndDeleteNode(const QStringList &nodePath);
-    QStringList removeEmptyNodes(const QStringList& parentNodeNames);
+    static QStringList removeEmptyNodes(const QStringList& parentNodeNames);
     static QList<QStringList> makeShortNameList(QList<QStringList> childNameListFull);
-    ScpiAmbiguityMap createAllShortLongListMap(QList<QStringList> childNameListFull, QList<QStringList> childNameListShort);
-    ScpiAmbiguityMap filterAmbigous(ScpiAmbiguityMap allShortLong);
+    static ScpiAmbiguityMap createAllShortLongListMap(QList<QStringList> childNameListFull, QList<QStringList> childNameListShort);
+    static ScpiAmbiguityMap filterAmbigous(ScpiAmbiguityMap allShortLong);
 
     ScpiNodePtr m_invisibleRootNode;
     cParse m_Parser;

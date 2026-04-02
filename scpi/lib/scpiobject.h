@@ -21,7 +21,7 @@ public:
     static int getInstanceCount();
 private:
     QString m_sName;
-    quint8 m_nType;
+    quint8 m_nType = 0;
     QString m_description;
     ScpiObject::XmlKeyValueMap m_xmlAtttibuteMap;
     static int m_instanceCount;

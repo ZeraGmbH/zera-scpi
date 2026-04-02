@@ -41,7 +41,7 @@ ScpiNodePtr ScpiNodeStaticFunctions::findNode(const ScpiNodePtr parentNode, cPar
     const QList<ScpiNodePtr> shortChildren = parentNode->findAllChildrenShort(searchHeader);
     if(!shortChildren.isEmpty()) {
         if(*pInput == ':') { // in case input is not parsed completely
-            for(ScpiNodePtr shortChild : shortChildren) {
+            for(const ScpiNodePtr &shortChild : shortChildren) {
                 childNode = findNode(shortChild, parser, pInput);
                 if(childNode)
                     return childNode;

@@ -5,12 +5,12 @@ ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest()
 {
 }
 
-ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected)
+ScpiFullCmdCheckerForTest::ScpiFullCmdCheckerForTest(const QString &scpiNodePath, quint8 scpiType, int paramCountExpected)
 {
     addCommand(scpiNodePath, scpiType, paramCountExpected);
 }
 
-void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType, int paramCountExpected)
+void ScpiFullCmdCheckerForTest::addCommand(const QString &scpiNodePath, quint8 scpiType, int paramCountExpected)
 {
     QStringList path = scpiNodePath.split(":", Qt::SkipEmptyParts);
     if(path.count() > 0) {
@@ -19,7 +19,7 @@ void ScpiFullCmdCheckerForTest::addCommand(QString scpiNodePath, quint8 scpiType
     }
 }
 
-bool ScpiFullCmdCheckerForTest::matches(QString cmd)
+bool ScpiFullCmdCheckerForTest::matches(const QString &cmd)
 {
     ScpiObjectPtr object = m_scpiTree.getSCPIObject(cmd);
     bool match = object != nullptr;

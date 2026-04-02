@@ -87,7 +87,7 @@ void ScpiNode::removeChild(ScpiNodePtr child)
 
 void ScpiNode::removeAllChildren()
 {
-    for (ScpiNodePtr child : m_children)
+    for (ScpiNodePtr child : qAsConst(m_children))
         child->removeAllChildren();
     m_children.clear();
 }
@@ -118,7 +118,7 @@ void ScpiNode::addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElemen
         cmdTag.setAttribute(attIter.key(), attIter.value());
 }
 
-QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, QString childName, const ScpiNodePtr childNode)
+QDomElement ScpiNode::createCmdTag(QStringList childNames, QDomDocument &doc, const QString &childName, const ScpiNodePtr childNode)
 {
     QDomElement cmdTag = doc.createElement(ScpiNodeStaticFunctions::makeValidXmlTag(childName));
     if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
@@ -177,7 +177,7 @@ int ScpiNode::getInstanceCount()
     return m_instanceCount;
 }
 
-QString ScpiNode::createShortHeader(QString scpiHeader)
+QString ScpiNode::createShortHeader(const QString &scpiHeader)
 {
     QString scpiHeaderShort;
     if(scpiHeader.length() < 4)
@@ -189,13 +189,13 @@ QString ScpiNode::createShortHeader(QString scpiHeader)
     return scpiHeaderShort;
 }
 
-void ScpiNode::adjustScpiHeaders(QString scpiHeader)
+void ScpiNode::adjustScpiHeaders(const QString &scpiHeader)
 {
     m_sScpiHeaderFull = scpiHeader.toUpper();
     m_sScpiHeaderShort = createShortHeader(m_sScpiHeaderFull);
 }
 
-bool ScpiNode::isLastShortAVowel(QString scpiHeader)
+bool ScpiNode::isLastShortAVowel(const QString &scpiHeader)
 {
     return QString("AEIOU").contains(scpiHeader.mid(3, 1));
 }

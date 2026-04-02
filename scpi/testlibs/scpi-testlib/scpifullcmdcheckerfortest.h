@@ -9,9 +9,9 @@ class ScpiFullCmdCheckerForTest
 {
 public:
     ScpiFullCmdCheckerForTest();
-    ScpiFullCmdCheckerForTest(QString scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
-    void addCommand(QString scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
-    bool matches(QString cmd);
+    ScpiFullCmdCheckerForTest(const QString &scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
+    void addCommand(const QString &scpiNodePath, quint8 scpiType, int paramCountExpected = -1);
+    bool matches(const QString &cmd);
 private:
     cSCPI m_scpiTree;
 };

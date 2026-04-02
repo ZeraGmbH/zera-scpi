@@ -26,7 +26,7 @@ void cSCPI::delSCPICmds(const QString &cmd)
     d_ptr->delSCPICmds(cmd);
 }
 
-void cSCPI::delSCPICmds(cSCPICommand &cmd)
+void cSCPI::delSCPICmds(const cSCPICommand &cmd)
 {
     delSCPICmds(cmd.getCommand());
 }
@@ -41,7 +41,7 @@ ScpiObjectPtr cSCPI::getSCPIObject(const cSCPICommand &input) const
     return getSCPIObject(input.getCommand());
 }
 
-void cSCPI::exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry)
+void cSCPI::exportSCPIModelXML(QString &sxml, const QMap<QString, QString> &modelListBaseEntry)
 {
     d_ptr->exportSCPIModelXML(sxml, modelListBaseEntry);
 }
