@@ -108,8 +108,7 @@ void cSCPIPrivate::findAndDeleteNode(const QStringList &nodePath)
     if(nodePath.count() > 0 ) {
         ScpiNodePtr parentNode = m_invisibleRootNode;
         for(const auto &nodeName: nodePath) {
-            ScpiNodePtr childNode = parentNode->findChildFull(nodeName);
-            parentNode = childNode;
+            parentNode = parentNode->findChildFull(nodeName);
             if(!parentNode)
                 break;
         }
