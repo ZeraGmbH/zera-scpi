@@ -1,6 +1,6 @@
 #include "parse.h"
 
-constexpr int MaxStrLen = 4096;
+constexpr int MaxStrLen = 8192;
 
 cParse::cParse() :
     m_delimiter(" :?;"),
