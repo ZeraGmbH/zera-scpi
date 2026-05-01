@@ -10,7 +10,8 @@ cParse::cParse() :
 const QString &cParse::GetKeyword(const QChar** s)
 {
     bool escape = false;
-    m_keyw = "";
+    m_keyw.resize(0);
+    m_keyw.reserve(256);
     ignoreWhitespace(s);
     for (;;) {
        QChar tc = **s;
