@@ -4,12 +4,13 @@ cParse::cParse() :
     m_delimiter(" :?;"),
     m_whitespace(" :;")
 {
+    m_keyw.reserve(256);
 }
 
 const QString &cParse::GetKeyword(const QChar** s)
 {
     bool escape = false;
-    m_keyw ="";
+    m_keyw = "";
     ignoreWhitespace(s);
     for (;;) {
        QChar tc = **s;
@@ -22,7 +23,7 @@ const QString &cParse::GetKeyword(const QChar** s)
                escape = false;
            else if (m_delimiter.contains(tc, Qt::CaseInsensitive))
                break; // if next char is delimiter, we are ready
-           m_keyw += tc;
+           m_keyw.append(tc);
        }
        (*s)++;
     }
