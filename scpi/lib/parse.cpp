@@ -1,6 +1,6 @@
 #include "parse.h"
 
-constexpr int MaxStrLen = 256;
+constexpr int MaxStrLen = 4096;
 
 cParse::cParse() :
     m_delimiter(" :?;"),
@@ -17,8 +17,10 @@ const QString &cParse::GetKeyword(const QChar** s)
     ignoreWhitespace(s);
     int charCount = 0;
     for (;;) {
-        if (++charCount >= MaxStrLen)
+        if (++charCount >= MaxStrLen) {
+            qCritical("cParse::GetKeyword: Max string length exceeded!");
             break;
+        }
         QChar tc = **s;
         if (tc.isNull())
             break; // we are at end of string
@@ -60,8 +62,10 @@ void cParse::ignoreWhitespace(const QChar **s)
 {
     int charCount = 0;
     for (;;) {
-        if (++charCount >= MaxStrLen)
+        if (++charCount >= MaxStrLen) {
+            qCritical("cParse::GetKeyword: Max string length exceeded!");
             break;
+        }
         if ((**s).isNull())
             break;
         if ( !m_whitespace.contains(**s, Qt::CaseInsensitive) )
