@@ -2,12 +2,12 @@
 #include "scpi.h"
 #include <QString>
 
-ScpiNodePtr ScpiNodeStaticFunctions::createNode(const QString &name, ScpiObjectPtr scpiObject)
+ScpiNodePtr ScpiNodeStaticFunctions::createNode(const QString &name, const ScpiObjectPtr &scpiObject)
 {
     return std::make_shared<ScpiNode>(name, scpiObject);
 }
 
-void ScpiNodeStaticFunctions::addOrReplaceChild(ScpiNodePtr node, ScpiObjectPtr pSCPIObject)
+void ScpiNodeStaticFunctions::addOrReplaceChild(const ScpiNodePtr &node, const ScpiObjectPtr &pSCPIObject)
 {
     QString fullHeader = pSCPIObject->getName();
     ScpiNodePtr childNode = node->findChildFull(fullHeader);

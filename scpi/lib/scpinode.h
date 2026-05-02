@@ -13,11 +13,11 @@ typedef std::shared_ptr<ScpiNode> ScpiNodePtr;
 class ScpiNode
 {
 public:
-    ScpiNode(const QString& scpiHeader, ScpiObjectPtr pSCPIObject);
+    ScpiNode(const QString& scpiHeader, const ScpiObjectPtr &scpiObject);
     virtual ~ScpiNode();
 
-    ScpiObjectPtr getScpiObject() const;
-    void setScpiObject(ScpiObjectPtr pScpiObject);
+    const ScpiObjectPtr &getScpiObject() const;
+    void setScpiObject(const ScpiObjectPtr &pScpiObject);
 
     quint8 getType() const;
     const QString &getFullHeader() const;
@@ -26,14 +26,14 @@ public:
     ScpiNodePtr findChildShort(const QString &shortHeader) const;
     QList<ScpiNodePtr> findAllChildrenShort(const QString &shortHeader) const;
     ScpiNodePtr findChildFull(const QString &fullHeader) const;
-    ScpiNodePtr parent() const;
-    void removeChild(ScpiNodePtr child);
+    const ScpiNodePtr &parent() const;
+    void removeChild(const ScpiNodePtr &child);
     void removeAllChildren();
 
     bool isEmpty() const;
-    void add(ScpiNodePtr node, ScpiNodePtr parent);
-    static void addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames);
-    static void addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList &parentNames, QList<QStringList> &scpiPathList);
+    void add(const ScpiNodePtr &node, const ScpiNodePtr &parent);
+    static void addNodeAndChildrenToXml(const ScpiNodePtr &node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames);
+    static void addNodeAndChildrenToNameListFull(const ScpiNodePtr &node, const QStringList &parentNames, QList<QStringList> &scpiPathList);
     static QString createShortHeader(const QString &scpiHeader);
 
     static int getInstanceCount();
@@ -44,10 +44,10 @@ private:
     int row() const;
     void removeRow(int row);
     static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, const QString &childName, const ScpiNodePtr childNode);
-    static void addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElement &cmdTag);
+    static void addNodeSpecificAttributes(const ScpiNodePtr &childNode, QDomElement &cmdTag);
     static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames);
 
-    ScpiObjectPtr m_pScpiObject;
+    ScpiObjectPtr m_scpiObject;
     QString m_sScpiHeaderShort;
     QString m_sScpiHeaderFull;
 

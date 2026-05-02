@@ -8,8 +8,8 @@
 class ScpiNodeStaticFunctions
 {
 public:
-    static ScpiNodePtr createNode(const QString &name, ScpiObjectPtr scpiObject);
-    static void addOrReplaceChild(ScpiNodePtr node, ScpiObjectPtr pSCPIObject);
+    static ScpiNodePtr createNode(const QString &name, const ScpiObjectPtr &scpiObject);
+    static void addOrReplaceChild(const ScpiNodePtr &node, const ScpiObjectPtr &pSCPIObject);
     static void delNodeAndEmptyParents(ScpiNodePtr delNode);
     static ScpiNodePtr findNode(const ScpiNodePtr &parentNode, cParse* parser, const QChar *pInput);
 

@@ -10,10 +10,10 @@ class cSCPIPrivate
 public:
     cSCPIPrivate();
     virtual ~cSCPIPrivate();
-    void insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject);
+    void insertScpiCmd(const QStringList& parentNodeNames, const ScpiObjectPtr &scpiObject);
     void delSCPICmds(const QString& cmd);
     ScpiObjectPtr getSCPIObject(const QString& input);
-    void exportSCPIModelXML(QString &sxml, QMap<QString, QString> modelListBaseEntry);
+    void exportSCPIModelXML(QString &sxml, const QMap<QString, QString> &modelListBaseEntry);
     void createFullNonNodeNameList(QList<QStringList> &childNameList);
     ScpiAmbiguityMap checkAmbiguousShortNames(ScpiAmbiguityIgnoreFunction ignoreFunction);
 private:

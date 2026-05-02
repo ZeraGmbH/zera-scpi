@@ -17,7 +17,7 @@ cSCPIPrivate::~cSCPIPrivate()
     m_invisibleRootNode->removeAllChildren();
 }
 
-void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectPtr pSCPIObject)
+void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, const ScpiObjectPtr &scpiObject)
 {
     ScpiNodePtr parentNode = m_invisibleRootNode;
     const QStringList parentNamesCleaned = removeEmptyNodes(parentNodeNames);
@@ -26,11 +26,11 @@ void cSCPIPrivate::insertScpiCmd(const QStringList& parentNodeNames, ScpiObjectP
         qWarning("SCPI: Removed %i empty parent node names in: '%s:%s'",
                  nodesRemoved,
                  qPrintable(parentNodeNames.join(":")),
-                 qPrintable(pSCPIObject->getName()));
+                 qPrintable(scpiObject->getName()));
     if(parentNamesCleaned.count() > 0)
         parentNode = findParentAndCreatePath(parentNamesCleaned);
-    if(pSCPIObject)
-        ScpiNodeStaticFunctions::addOrReplaceChild(parentNode, pSCPIObject);
+    if(scpiObject)
+        ScpiNodeStaticFunctions::addOrReplaceChild(parentNode, scpiObject);
 }
 
 void cSCPIPrivate::delSCPICmds(const QString &cmd)
@@ -52,7 +52,7 @@ ScpiObjectPtr cSCPIPrivate::getSCPIObject(const QString& input)
     return nullptr;
 }
 
-void cSCPIPrivate::exportSCPIModelXML(QString& sxml, QMap<QString, QString> modelListBaseEntry)
+void cSCPIPrivate::exportSCPIModelXML(QString& sxml, const QMap<QString, QString> &modelListBaseEntry)
 {
     QDomDocument modelDoc("SCPIModel");
 

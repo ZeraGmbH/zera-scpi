@@ -4,8 +4,8 @@
 
 int ScpiNode::m_instanceCount = 0;
 
-ScpiNode::ScpiNode(const QString& scpiHeader, ScpiObjectPtr pSCPIObject) :
-    m_pScpiObject(pSCPIObject)
+ScpiNode::ScpiNode(const QString& scpiHeader, const ScpiObjectPtr &scpiObject) :
+    m_scpiObject(scpiObject)
 {
     adjustScpiHeaders(scpiHeader);
     m_instanceCount++;
@@ -16,20 +16,20 @@ ScpiNode::~ScpiNode()
     m_instanceCount--;
 }
 
-ScpiObjectPtr ScpiNode::getScpiObject() const
+const ScpiObjectPtr &ScpiNode::getScpiObject() const
 {
-    return m_pScpiObject;
+    return m_scpiObject;
 }
 
-void ScpiNode::setScpiObject(ScpiObjectPtr pScpiObject)
+void ScpiNode::setScpiObject(const ScpiObjectPtr &pScpiObject)
 {
-    m_pScpiObject = pScpiObject;
+    m_scpiObject = pScpiObject;
 }
 
 quint8 ScpiNode::getType() const
 {
-    if(m_pScpiObject)
-        return m_pScpiObject->getType();
+    if(m_scpiObject)
+        return m_scpiObject->getType();
     return SCPI::isNode;
 }
 
@@ -74,12 +74,12 @@ ScpiNodePtr ScpiNode::findChildFull(const QString &fullHeader) const
     return nullptr;
 }
 
-ScpiNodePtr ScpiNode::parent() const
+const ScpiNodePtr &ScpiNode::parent() const
 {
     return m_parent;
 }
 
-void ScpiNode::removeChild(ScpiNodePtr child)
+void ScpiNode::removeChild(const ScpiNodePtr &child)
 {
     removeRow(child->row());
     child->removeAllChildren();
@@ -102,14 +102,14 @@ int ScpiNode::row() const
     return m_row;
 }
 
-void ScpiNode::add(ScpiNodePtr node, ScpiNodePtr parent)
+void ScpiNode::add(const ScpiNodePtr &node, const ScpiNodePtr &parent)
 {
     node->m_parent = parent;
     node->m_row = m_children.count();
     m_children.append(node);
 }
 
-void ScpiNode::addNodeSpecificAttributes(const ScpiNodePtr childNode, QDomElement &cmdTag)
+void ScpiNode::addNodeSpecificAttributes(const ScpiNodePtr &childNode, QDomElement &cmdTag)
 {
     ScpiObject::XmlKeyValueMap xmlAtributes;
     if(childNode->getScpiObject())
@@ -136,7 +136,7 @@ void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode
     cmdTag.setAttribute("Type", typeInfo);
 }
 
-void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames)
+void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr &node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNodePtr childNode = *iter;
@@ -152,7 +152,7 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr node, QDomDocument &doc
     }
 }
 
-void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr node, const QStringList &parentNames, QList<QStringList> &scpiPathList)
+void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr &node, const QStringList &parentNames, QList<QStringList> &scpiPathList)
 {
     for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
         const ScpiNodePtr childNode = *iter;
