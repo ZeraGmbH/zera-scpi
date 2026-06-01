@@ -63,7 +63,7 @@ void cParse::ignoreWhitespace(const QChar **s)
     int charCount = 0;
     for (;;) {
         if (++charCount >= MaxStrLen) {
-            qCritical("cParse::GetKeyword: Max string length exceeded!");
+            qCritical("cParse::ignoreWhitespace: Max string length exceeded!");
             break;
         }
         if ((**s).isNull())
