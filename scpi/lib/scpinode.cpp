@@ -5,9 +5,10 @@
 int ScpiNode::m_instanceCount = 0;
 
 ScpiNode::ScpiNode(const QString& scpiHeader, const ScpiObjectPtr &scpiObject) :
-    m_scpiObject(scpiObject)
+    m_scpiObject(scpiObject),
+    m_sScpiHeaderFull(scpiHeader.toUpper()),
+    m_sScpiHeaderShort(createShortHeader(m_sScpiHeaderFull))
 {
-    adjustScpiHeaders(scpiHeader);
     m_instanceCount++;
 }
 
@@ -187,12 +188,6 @@ QString ScpiNode::createShortHeader(const QString &scpiHeader)
     else
         scpiHeaderShort = scpiHeader.left(4);
     return scpiHeaderShort;
-}
-
-void ScpiNode::adjustScpiHeaders(const QString &scpiHeader)
-{
-    m_sScpiHeaderFull = scpiHeader.toUpper();
-    m_sScpiHeaderShort = createShortHeader(m_sScpiHeaderFull);
 }
 
 bool ScpiNode::isLastShortAVowel(const QString &scpiHeader)

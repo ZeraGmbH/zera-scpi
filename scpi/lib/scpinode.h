@@ -39,7 +39,6 @@ public:
     static int getInstanceCount();
 
 private:
-    void adjustScpiHeaders(const QString &scpiHeader);
     static bool isLastShortAVowel(const QString &scpiHeader);
     int row() const;
     void removeRow(int row);
@@ -48,8 +47,8 @@ private:
     static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames);
 
     ScpiObjectPtr m_scpiObject;
-    QString m_sScpiHeaderShort;
-    QString m_sScpiHeaderFull;
+    const QString m_sScpiHeaderFull;
+    const QString m_sScpiHeaderShort;
 
     ScpiNodePtr m_parent = nullptr;
 
