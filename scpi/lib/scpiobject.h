@@ -2,10 +2,13 @@
 #define SCPIOBJECT_H
 
 #include "scpi_export.h"
+#include <QObject>
 #include <QMap>
 #include <memory>
 
-class SCPI_EXPORT ScpiObject {
+class SCPI_EXPORT ScpiObject : public QObject
+{
+    Q_OBJECT
 public:
     ScpiObject();
     ScpiObject(const QString &name, quint8 type);
