@@ -6,6 +6,7 @@
 #include <QDomDocument>
 #include <QStringList>
 #include <QList>
+#include <QHash>
 
 class ScpiNode;
 typedef std::shared_ptr<ScpiNode> ScpiNodePtr;
@@ -40,8 +41,6 @@ public:
 
 private:
     static bool isLastShortAVowel(const QString &scpiHeader);
-    int row() const;
-    void removeRow(int row);
     static QDomElement createCmdTag(QStringList childNames, QDomDocument &doc, const QString &childName, const ScpiNodePtr childNode);
     static void addNodeSpecificAttributes(const ScpiNodePtr &childNode, QDomElement &cmdTag);
     static void addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode, const QStringList &parentNames);
@@ -51,9 +50,8 @@ private:
     const QString m_sScpiHeaderShort;
 
     ScpiNodePtr m_parent = nullptr;
-
-    int m_row = 0;
-    QList<ScpiNodePtr> m_children;
+    QHash<QString, ScpiNodePtr> m_childrenFullNames;
+    QHash<QString, QList<ScpiNodePtr>> m_childrenShortNames;
 
     static int m_instanceCount;
 };

@@ -46,32 +46,25 @@ const QString &ScpiNode::getShortHeader() const
 
 ScpiNodePtr ScpiNode::findChildShort(const QString &shortHeader) const
 {
-    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
-        if((*iter)->getShortHeader() == shortHeader) {
-            return *iter;
-        }
-    }
+    auto iter = m_childrenShortNames.constFind(shortHeader);
+    if (iter != m_childrenShortNames.constEnd())
+        return iter.value().first();
     return nullptr;
 }
 
 QList<ScpiNodePtr> ScpiNode::findAllChildrenShort(const QString &shortHeader) const
 {
-    QList<ScpiNodePtr> found;
-    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
-        if((*iter)->getShortHeader() == shortHeader) {
-            found.append(*iter);
-        }
-    }
-    return found;
+    auto iter = m_childrenShortNames.constFind(shortHeader);
+    if (iter != m_childrenShortNames.constEnd())
+        return iter.value();
+    return QList<ScpiNodePtr>();
 }
 
 ScpiNodePtr ScpiNode::findChildFull(const QString &fullHeader) const
 {
-    for(auto iter=m_children.constBegin(); iter!=m_children.constEnd(); iter++) {
-        if((*iter)->getFullHeader() == fullHeader) {
-            return *iter;
-        }
-    }
+    auto iter = m_childrenFullNames.constFind(fullHeader);
+    if (iter != m_childrenFullNames.constEnd())
+        return iter.value();
     return nullptr;
 }
 
@@ -82,32 +75,37 @@ const ScpiNodePtr &ScpiNode::parent() const
 
 void ScpiNode::removeChild(const ScpiNodePtr &child)
 {
-    removeRow(child->row());
+    m_childrenFullNames.remove(child->getFullHeader());
+
+    const QString &shortHeader = child->getShortHeader();
+    auto iter = m_childrenShortNames.find(shortHeader);
+    if (iter != m_childrenShortNames.end()) {
+        iter.value().removeAll(child);
+        if (iter.value().isEmpty())
+            m_childrenShortNames.remove(shortHeader);
+    }
+
     child->removeAllChildren();
 }
 
 void ScpiNode::removeAllChildren()
 {
-    for (ScpiNodePtr child : qAsConst(m_children))
-        child->removeAllChildren();
-    m_children.clear();
+    for (auto iter = m_childrenFullNames.begin(); iter != m_childrenFullNames.end(); ++iter)
+        iter.value()->removeAllChildren();
+    m_childrenFullNames.clear();
+    m_childrenShortNames.clear();
 }
 
 bool ScpiNode::isEmpty() const
 {
-    return m_children.isEmpty();
-}
-
-int ScpiNode::row() const
-{
-    return m_row;
+    return m_childrenFullNames.isEmpty();
 }
 
 void ScpiNode::add(const ScpiNodePtr &node, const ScpiNodePtr &parent)
 {
     node->m_parent = parent;
-    node->m_row = m_children.count();
-    m_children.append(node);
+    m_childrenFullNames[node->getFullHeader()] = node;
+    m_childrenShortNames[node->getShortHeader()].append(node);
 }
 
 void ScpiNode::addNodeSpecificAttributes(const ScpiNodePtr &childNode, QDomElement &cmdTag)
@@ -139,8 +137,8 @@ void ScpiNode::addTypeAttribute(QDomElement &cmdTag, const ScpiNodePtr childNode
 
 void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr &node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames)
 {
-    for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
-        const ScpiNodePtr childNode = *iter;
+    for(auto iter=node->m_childrenFullNames.constBegin(); iter!=node->m_childrenFullNames.constEnd(); iter++) {
+        const ScpiNodePtr childNode = iter.value();
         QString childNameFull = childNode->getFullHeader();
         QStringList childNameListFull = parentNames + QStringList(childNameFull);
 
@@ -155,21 +153,13 @@ void ScpiNode::addNodeAndChildrenToXml(const ScpiNodePtr &node, QDomDocument &do
 
 void ScpiNode::addNodeAndChildrenToNameListFull(const ScpiNodePtr &node, const QStringList &parentNames, QList<QStringList> &scpiPathList)
 {
-    for(auto iter=node->m_children.constBegin(); iter!=node->m_children.constEnd(); iter++) {
-        const ScpiNodePtr childNode = *iter;
+    for(auto iter=node->m_childrenFullNames.constBegin(); iter!=node->m_childrenFullNames.constEnd(); iter++) {
+        const ScpiNodePtr childNode = iter.value();
         QString childName = childNode->getFullHeader();
         QStringList childNameList = parentNames + QStringList(childName);
         if(!ScpiNodeStaticFunctions::isNodeTypeOnly(childNode))
             scpiPathList.append(childNameList);
         addNodeAndChildrenToNameListFull(childNode, childNameList, scpiPathList);
-    }
-}
-
-void ScpiNode::removeRow(int row)
-{
-    m_children.takeAt(row);
-    for(; row<m_children.count(); ++row) {
-        m_children.at(row)->m_row = row;
     }
 }
 
