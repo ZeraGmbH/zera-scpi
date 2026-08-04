@@ -101,9 +101,9 @@ bool ScpiNode::isEmpty() const
     return m_childrenFullNames.isEmpty();
 }
 
-void ScpiNode::add(const ScpiNodePtr &node, const ScpiNodePtr &parent)
+void ScpiNode::add(const ScpiNodePtr &node, const ScpiNodePtr &parentNode)
 {
-    node->m_parent = parent;
+    node->m_parent = parentNode;
     m_childrenFullNames[node->getFullHeader()] = node;
     m_childrenShortNames[node->getShortHeader()].append(node);
 }

@@ -32,7 +32,7 @@ public:
     void removeAllChildren();
 
     bool isEmpty() const;
-    void add(const ScpiNodePtr &node, const ScpiNodePtr &parent);
+    void add(const ScpiNodePtr &node, const ScpiNodePtr &parentNode);
     static void addNodeAndChildrenToXml(const ScpiNodePtr &node, QDomDocument &doc, QDomElement &rootElement, const QStringList &parentNames);
     static void addNodeAndChildrenToNameListFull(const ScpiNodePtr &node, const QStringList &parentNames, QList<QStringList> &scpiPathList);
     static QString createShortHeader(const QString &scpiHeader);
