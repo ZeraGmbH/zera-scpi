@@ -46,7 +46,7 @@ void cSCPIPrivate::delSCPICmds(const QString &cmd)
 
 ScpiObjectPtr cSCPIPrivate::getSCPIObject(const QString& input)
 {
-    ScpiNodePtr childNode = ScpiNodeStaticFunctions::findNode(m_invisibleRootNode, &m_Parser, (QChar*) input.data());
+    ScpiNodePtr childNode = ScpiNodeStaticFunctions::findNode(m_invisibleRootNode, &m_Parser, input.data());
     if(childNode)
         return childNode->getScpiObject();
     return nullptr;
